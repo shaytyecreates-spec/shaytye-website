@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Shaytye Dashboard</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+:root{--ink:#221B1F;--ink2:#7A6C73;--rose:#F2C7D5;--rose-d:#D9899F;--rose-l:#FBEAF0;--gold:#D6B285;
+--cream:#FFFFFF;--cream2:#FBF6F2;--line:#F0E2E8;--ok:#4FA37A;--warn:#C98A2E;--bad:#C25B5B;
+--shadow:0 12px 34px rgba(205,135,165,.12);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:clip}
+body{font-family:'Outfit','Segoe UI',system-ui,sans-serif;background:linear-gradient(172deg,#FDF2F6 0%,#FAF2EA 60%,#F8EEE1 100%);color:var(--ink);line-height:1.55;min-height:100vh;overflow-x:clip}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--rose-d)}
+.hide{display:none!important}
+
+/* ---- login ---- */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{background:var(--cream);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.login-box{width:100%;max-width:400px;padding:36px 32px;text-align:center}
+.login-box img{height:60px;margin-bottom:8px}
+.login-box h1{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin-bottom:4px}
+.login-box p{color:var(--ink2);font-size:14px;margin-bottom:22px}
+.field{text-align:left;margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px;letter-spacing:.02em}
+input,select,textarea{width:100%;font-family:inherit;font-size:15px;color:var(--ink);background:var(--cream);
+border:1px solid var(--line);border-radius:11px;padding:11px 13px;outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--rose-d)}
+textarea{resize:vertical;min-height:70px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;
+background:var(--rose-d);color:#fff;font-weight:600;font-size:15px;padding:12px 22px;width:100%;transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(205,135,165,.32)}
+.btn:disabled{opacity:.55;cursor:default;transform:none;box-shadow:none}
+.btn.ghost{background:transparent;color:var(--rose-d);border:1px solid var(--line)}
+.btn.sm{width:auto;padding:8px 16px;font-size:13px}
+.btn.tiny{width:auto;padding:5px 11px;font-size:12px}
+.btn.danger{background:var(--bad)}
+.btn.gray{background:#EDE4E8;color:var(--ink)}
+.msg{font-size:13px;margin-top:12px;min-height:18px}
+.msg.err{color:var(--bad)}.msg.ok{color:var(--ok)}
+
+/* ---- shell ---- */
+#app{display:flex;min-height:100vh}
+.side{width:230px;flex-shrink:0;background:var(--cream);border-right:1px solid var(--line);
+display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.side .brand{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.side .brand img{height:34px}
+.side .brand b{font-family:'Fraunces',serif;font-weight:600;font-size:16px}
+.nav{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:transparent;border:0;
+border-radius:11px;padding:11px 13px;color:var(--ink2);font-size:14.5px;font-weight:500;transition:background .15s,color .15s}
+.nav button:hover{background:var(--cream2)}
+.nav button.on{background:var(--rose-l);color:var(--rose-d);font-weight:600}
+.nav button .ic{width:18px;text-align:center;font-size:15px}
+.nav .badge{margin-left:auto;background:var(--rose-d);color:#fff;font-size:11px;font-weight:700;border-radius:99px;padding:1px 7px}
+.side .foot{padding:14px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink2)}
+.side .foot button{background:none;border:0;color:var(--rose-d);font-size:12px;font-weight:600;padding:0;margin-top:4px}
+
+.main{flex:1;min-width:0;padding:26px 30px 60px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap}
+.topbar h2{font-family:'Fraunces',serif;font-weight:600;font-size:24px}
+.topbar .sub{color:var(--ink2);font-size:13px}
+
+/* ---- stat cards ---- */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-bottom:26px}
+.stat{background:var(--cream);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow)}
+.stat .n{font-family:'Fraunces',serif;font-size:28px;font-weight:600;line-height:1.1}
+.stat .l{font-size:12.5px;color:var(--ink2);margin-top:3px}
+.stat.accent .n{color:var(--rose-d)}
+.stat.warn .n{color:var(--warn)}
+
+/* ---- panels + tables ---- */
+.panel{background:var(--cream);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:22px}
+.panel .ph{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.panel .ph h3{font-size:15px;font-weight:600}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2);font-weight:700;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--cream2)}
+td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr.clickable{cursor:pointer}
+tr.clickable:hover td{background:var(--cream2)}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.pill.lead{background:#EAF3FF;color:#3E7BC2}
+.pill.active{background:#E7F6EE;color:var(--ok)}
+.pill.klant{background:var(--rose-l);color:var(--rose-d)}
+.pill.done{background:#EDE4E8;color:var(--ink2)}
+.pill.new{background:#FFF3E0;color:var(--warn)}
+.pill.win{background:#E7F6EE;color:var(--ok)}
+.pill.no{background:#F3E9EC;color:var(--ink2)}
+.muted{color:var(--ink2)}
+.right{text-align:right}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:11px;background:var(--cream2);border:1px solid var(--line);border-radius:99px;padding:2px 8px;color:var(--ink2)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.toolbar input{max-width:260px}
+.toolbar select{max-width:190px}
+.seg{display:inline-flex;background:var(--cream);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:7px 14px;font-size:13px;font-weight:600;color:var(--ink2)}
+.seg button.on{background:var(--rose-d);color:#fff}
+.empty{padding:40px 20px;text-align:center;color:var(--ink2);font-size:14px}
+
+/* ---- modal ---- */
+.overlay{position:fixed;inset:0;background:rgba(34,27,31,.5);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.modal{width:100%;max-width:520px;background:var(--cream);border-radius:var(--r);box-shadow:0 30px 70px rgba(0,0,0,.3)}
+.modal .mh{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.modal .mh h3{font-family:'Fraunces',serif;font-weight:600;font-size:19px}
+.modal .mh .x{background:none;border:0;font-size:22px;color:var(--ink2);line-height:1}
+.modal .mb{padding:20px 22px}
+.modal .mf{padding:16px 22px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.note{background:var(--cream2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:8px;font-size:13px}
+.note .meta{font-size:11px;color:var(--ink2);margin-top:4px}
+
+/* ---- availability ---- */
+.days{display:flex;flex-direction:column;gap:8px}
+.dayrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--cream)}
+.dayrow .dn{width:96px;font-weight:600;font-size:14px}
+.dayrow input[type=time]{width:120px}
+.dayrow.off{opacity:.5}
+.switch{position:relative;width:42px;height:24px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch .sl{position:absolute;inset:0;background:#DED2D8;border-radius:99px;transition:.2s}
+.switch .sl:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.switch input:checked+.sl{background:var(--rose-d)}
+.switch input:checked+.sl:before{transform:translateX(18px)}
+
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+padding:11px 20px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;transition:.28s;z-index:200;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{background:var(--bad)}
+
+@media(max-width:760px){
+  .side{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .25s;box-shadow:0 0 40px rgba(0,0,0,.2)}
+  .side.open{transform:translateX(0)}
+  .main{padding:18px 16px 60px}
+  .mobile-bar{display:flex!important}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55}
+}
+.mobile-bar{display:none;align-items:center;gap:12px;margin-bottom:18px}
+.mobile-bar button{background:var(--cream);border:1px solid var(--line);border-radius:11px;width:42px;height:42px;font-size:19px}
+.mobile-bar b{font-family:'Fraunces',serif;font-size:18px}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="login">
+  <div class="card login-box">
+    <img src="/logo.png" alt="Shaytye" onerror="this.style.display='none'">
+    <h1>Dashboard</h1>
+    <p>Log in met je e-mailadres</p>
+    <div id="step-email">
+      <div class="field"><label>E-mailadres</label><input id="l-email" type="email" placeholder="jij@shaytye.com" autocomplete="email"></div>
+      <button class="btn" id="l-send">Stuur inlogcode</button>
+    </div>
+    <div id="step-code" class="hide">
+      <div class="field"><label>Code uit je e-mail</label><input id="l-code" inputmode="numeric" maxlength="6" placeholder="6-cijferige code"></div>
+      <button class="btn" id="l-verify">Inloggen</button>
+      <button class="btn ghost" id="l-back" style="margin-top:8px">Ander e-mailadres</button>
+    </div>
+    <div class="msg" id="l-msg"></div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" class="hide">
+  <aside class="side" id="side">
+    <div class="brand"><img src="/logo.png" alt="" onerror="this.style.display='none'"><b>Shaytye</b></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">Ingelogd als<br><span id="who"></span><br><button id="logout">Uitloggen</button></div>
+  </aside>
+  <div class="scrim hide" id="scrim"></div>
+  <main class="main">
+    <div class="mobile-bar"><button id="burger">&#9776;</button><b>Shaytye</b></div>
+    <div id="view"></div>
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var API = "https://ccdiibhzrtakczvkvqyw.supabase.co/functions/v1/shaytye-admin";
+var KEY = "sb_publishable_Ds3dufQ1O9oQNGRJCa6QZg_9EBY7jq7";
+var TOKEN = localStorage.getItem("shaytye_admin_token") || "";
+var EMAIL = localStorage.getItem("shaytye_admin_email") || "";
+var STATE = { tab:"overview", stats:null };
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ s = (s===null||s===undefined)?"":String(s);
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function toast(m,bad){ var t=$("toast"); t.textContent=m; t.className = bad?"show err":"show"; setTimeout(function(){t.className="";},2600); }
+function fmtDate(s){ if(!s) return "-"; var d=new Date(s); return d.toLocaleDateString("nl-NL",{day:"2-digit",month:"short",year:"numeric"}); }
+function fmtDateTime(s){ if(!s) return "-"; var d=new Date(s); return d.toLocaleDateString("nl-NL",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"}); }
+function money(n){ return "€ " + (Number(n||0)).toLocaleString("nl-NL",{minimumFractionDigits:0,maximumFractionDigits:2}); }
+
+async function api(action, payload){
+  var body = Object.assign({ action:action, token:TOKEN }, payload||{});
+  var r = await fetch(API, {
+    method:"POST",
+    headers:{ "Authorization":"Bearer "+KEY, "apikey":KEY, "content-type":"application/json", "x-admin-token":TOKEN },
+    body: JSON.stringify(body)
+  });
+  var data = await r.json().catch(function(){ return {error:"parse"}; });
+  if(r.status===401 && action!=="request_code" && action!=="verify_code"){ doLogout(true); throw new Error("unauthorized"); }
+  if(data.error){ throw new Error(data.detail || data.error); }
+  return data;
+}
+
+/* ---------------- LOGIN ---------------- */
+function lmsg(m,cls){ var e=$("l-msg"); e.textContent=m||""; e.className="msg "+(cls||""); }
+$("l-send").onclick = async function(){
+  var email = $("l-email").value.trim();
+  if(!email){ lmsg("Vul je e-mailadres in.","err"); return; }
+  this.disabled=true; lmsg("Bezig...");
+  try{
+    await api("request_code", { email:email });
+    window._loginEmail = email;
+    $("step-email").classList.add("hide"); $("step-code").classList.remove("hide");
+    lmsg("Als dit adres bekend is, is er een code verstuurd.","ok");
+    $("l-code").focus();
+  }catch(e){ lmsg("Er ging iets mis. Probeer opnieuw.","err"); }
+  this.disabled=false;
+};
+$("l-back").onclick = function(){ $("step-code").classList.add("hide"); $("step-email").classList.remove("hide"); lmsg(""); };
+$("l-verify").onclick = async function(){
+  var code = $("l-code").value.trim();
+  if(!/^\d{6}$/.test(code)){ lmsg("Voer de 6-cijferige code in.","err"); return; }
+  this.disabled=true; lmsg("Controleren...");
+  try{
+    var d = await api("verify_code", { email:window._loginEmail, code:code });
+    TOKEN = d.token; EMAIL = d.email;
+    localStorage.setItem("shaytye_admin_token", TOKEN);
+    localStorage.setItem("shaytye_admin_email", EMAIL);
+    startApp();
+  }catch(e){ lmsg("Onjuiste of verlopen code.","err"); this.disabled=false; }
+};
+$("l-code").addEventListener("keydown",function(e){ if(e.key==="Enter") $("l-verify").click(); });
+$("l-email").addEventListener("keydown",function(e){ if(e.key==="Enter") $("l-send").click(); });
+
+function doLogout(silent){
+  try{ if(TOKEN) api("logout",{}); }catch(e){}
+  localStorage.removeItem("shaytye_admin_token"); localStorage.removeItem("shaytye_admin_email");
+  TOKEN=""; EMAIL="";
+  $("app").classList.add("hide"); $("login").classList.remove("hide");
+  $("step-code").classList.add("hide"); $("step-email").classList.remove("hide");
+  $("l-code").value=""; if(!silent) lmsg("");
+}
+$("logout").onclick = function(){ doLogout(); };
+
+/* ---------------- SHELL ---------------- */
+var TABS = [
+  { id:"overview",  ic:"◈", label:"Overzicht" },
+  { id:"game",      ic:"❀", label:"CRM Jeu" },
+  { id:"clients",   ic:"●", label:"CRM Cliënten" },
+  { id:"bookings",  ic:"▣", label:"Boekingen" },
+  { id:"availability", ic:"◷", label:"Beschikbaarheid" },
+  { id:"settings",  ic:"⚙", label:"Instellingen" }
+];
+function renderNav(){
+  var h="";
+  for(var i=0;i<TABS.length;i++){ var t=TABS[i];
+    var badge = (t.id==="game" && STATE.stats && STATE.stats.unclaimed) ? "<span class='badge'>"+STATE.stats.unclaimed+"</span>" :
+                (t.id==="bookings" && STATE.stats && STATE.stats.bookingsNew) ? "<span class='badge'>"+STATE.stats.bookingsNew+"</span>" : "";
+    h+="<button data-tab='"+t.id+"' class='"+(STATE.tab===t.id?"on":"")+"'><span class='ic'>"+t.ic+"</span>"+t.label+badge+"</button>";
+  }
+  $("nav").innerHTML=h;
+  var btns=$("nav").querySelectorAll("button");
+  for(var j=0;j<btns.length;j++){ btns[j].onclick=function(){ go(this.getAttribute("data-tab")); closeSide(); }; }
+}
+function go(tab){ STATE.tab=tab; renderNav(); render(); }
+function closeSide(){ $("side").classList.remove("open"); $("scrim").classList.add("hide"); }
+$("burger").onclick=function(){ $("side").classList.add("open"); $("scrim").classList.remove("hide"); };
+$("scrim").onclick=closeSide;
+
+async function startApp(){
+  $("login").classList.add("hide"); $("app").classList.remove("hide");
+  $("who").textContent = EMAIL;
+  renderNav();
+  await loadStats();
+  go("overview");
+}
+async function loadStats(){ try{ var d=await api("overview",{}); STATE.stats=d.stats; STATE.overview=d; renderNav(); }catch(e){} }
+
+function render(){
+  var v=$("view");
+  if(STATE.tab==="overview") return renderOverview(v);
+  if(STATE.tab==="game") return renderGame(v);
+  if(STATE.tab==="clients") return renderClients(v);
+  if(STATE.tab==="bookings") return renderBookings(v);
+  if(STATE.tab==="availability") return renderAvailability(v);
+  if(STATE.tab==="settings") return renderSettings(v);
+}
+
+/* ---------------- OVERVIEW ---------------- */
+async function renderOverview(v){
+  v.innerHTML = head("Overzicht","Een blik op je bedrijf");
+  var d = STATE.overview || await api("overview",{});
+  STATE.overview=d; STATE.stats=d.stats;
+  var s=d.stats;
+  var cards=[
+    ["accent",s.clients,"Cliënten"],["",s.leads,"Leads"],
+    ["",s.entries,"Spel-inzendingen"],["accent",s.winners,"Winnaars"],
+    ["warn",s.unclaimed,"Prijs niet geclaimd"],["warn",s.unredeemed,"Niet verzilverd"],
+    ["",s.bookingsUpcoming,"Komende boekingen"],["accent",money(s.revenue),"Omzet"]
+  ];
+  var h="<div class='stats'>";
+  for(var i=0;i<cards.length;i++){ h+="<div class='stat "+cards[i][0]+"'><div class='n'>"+esc(cards[i][1])+"</div><div class='l'>"+cards[i][2]+"</div></div>"; }
+  h+="</div>";
+  // recent entries
+  h+="<div class='panel'><div class='ph'><h3>Laatste spel-inzendingen</h3></div><div class='tablewrap'>";
+  if((d.recentEntries||[]).length){
+    h+="<table><thead><tr><th>Naam</th><th>Telefoon</th><th>Resultaat</th><th>Wanneer</th></tr></thead><tbody>";
+    d.recentEntries.forEach(function(e){
+      h+="<tr><td>"+esc(e.first_name)+"</td><td class='muted'>"+esc(e.phone)+"</td><td>"+(e.won?"<span class='pill win'>"+esc(e.prize_label)+"</span>":"<span class='pill no'>Geen prijs</span>")+"</td><td class='muted'>"+fmtDateTime(e.created_at)+"</td></tr>";
+    });
+    h+="</tbody></table>";
+  } else { h+="<div class='empty'>Nog geen inzendingen.</div>"; }
+  h+="</div></div>";
+  // recent bookings
+  h+="<div class='panel'><div class='ph'><h3>Laatste boekingen</h3></div><div class='tablewrap'>";
+  if((d.recentBookings||[]).length){
+    h+="<table><thead><tr><th>Cliënt</th><th>Datum</th><th>Dienst</th><th>Status</th></tr></thead><tbody>";
+    d.recentBookings.forEach(function(b){
+      h+="<tr><td>"+esc(b.client_name)+"</td><td>"+fmtDate(b.day)+" "+esc(b.start_time||"")+"</td><td class='muted'>"+esc(b.service||"-")+"</td><td>"+statusPill(b.status)+"</td></tr>";
+    });
+    h+="</tbody></table>";
+  } else { h+="<div class='empty'>Nog geen boekingen.</div>"; }
+  h+="</div></div>";
+  v.innerHTML = head("Overzicht","Een blik op je bedrijf")+h;
+}
+
+/* ---------------- GAME / JEU ---------------- */
+STATE.gameFilter="all";
+async function renderGame(v){
+  v.innerHTML = head("CRM Jeu","Inzendingen van het rad van fortuin");
+  var seg="<div class='seg'>";
+  [["all","Alles"],["winners","Winnaars"],["unclaimed","Niet geclaimd"],["unredeemed","Niet verzilverd"]].forEach(function(f){
+    seg+="<button class='"+(STATE.gameFilter===f[0]?"on":"")+"' data-f='"+f[0]+"'>"+f[1]+"</button>";
+  });
+  seg+="</div>";
+  var d = await api("game_list",{ filter: STATE.gameFilter==="all"?null:STATE.gameFilter });
+  var rows="";
+  if(d.entries.length){
+    rows="<table><thead><tr><th>Naam</th><th>Telefoon</th><th>E-mail</th><th>Resultaat</th><th>Code</th><th>Geclaimd</th><th>Verzilverd</th><th>Datum</th><th></th></tr></thead><tbody>";
+    d.entries.forEach(function(e){
+      rows+="<tr><td><b>"+esc(e.first_name)+"</b></td><td class='muted'>"+esc(e.phone)+"</td><td class='muted'>"+esc(e.email||"-")+"</td>"+
+        "<td>"+(e.won?"<span class='pill win'>"+esc(e.prize_label)+"</span>":"<span class='pill no'>Geen prijs</span>")+"</td>"+
+        "<td class='muted'>"+esc(e.prize_code||"-")+"</td>"+
+        "<td>"+(e.won?boolTag(e.claimed):"-")+"</td>"+
+        "<td>"+(e.won?"<label class='switch'><input type='checkbox' data-red='"+e.id+"' "+(e.redeemed?"checked":"")+"><span class='sl'></span></label>":"-")+"</td>"+
+        "<td class='muted'>"+fmtDateTime(e.created_at)+"</td>"+
+        "<td class='right'>"+(e.email?"<button class='btn tiny gray' data-toclient='"+e.id+"'>&rarr; klant</button>":"")+"</td></tr>";
+    });
+    rows+="</tbody></table>";
+  } else { rows="<div class='empty'>Geen inzendingen in deze filter.</div>"; }
+  v.innerHTML = head("CRM Jeu","Inzendingen van het rad van fortuin")+
+    "<div class='toolbar'>"+seg+"</div><div class='panel'><div class='tablewrap'>"+rows+"</div></div>";
+  // wire
+  var segs=v.querySelectorAll(".seg button");
+  for(var i=0;i<segs.length;i++){ segs[i].onclick=function(){ STATE.gameFilter=this.getAttribute("data-f"); renderGame(v); }; }
+  v.querySelectorAll("[data-red]").forEach(function(cb){ cb.onchange=async function(){
+    try{ await api("game_update",{ id:this.getAttribute("data-red"), redeemed:this.checked }); toast("Bijgewerkt"); loadStats(); }
+    catch(e){ toast("Fout",1); this.checked=!this.checked; } }; });
+  v.querySelectorAll("[data-toclient]").forEach(function(b){ b.onclick=async function(){
+    try{ await api("client_from_entry",{ entry_id:this.getAttribute("data-toclient") }); toast("Cliënt aangemaakt"); loadStats(); }
+    catch(e){ toast("Fout: "+e.message,1); } }; });
+}
+
+/* ---------------- CLIENTS ---------------- */
+STATE.clientSearch="";
+async function renderClients(v){
+  var d = await api("clients_list",{ search:STATE.clientSearch||null });
+  var h = head("CRM Cliënten","Beheer je klanten en leads");
+  h+="<div class='toolbar'><input id='c-search' placeholder='Zoek op naam, e-mail, plaats...' value='"+esc(STATE.clientSearch)+"'><button class='btn sm' id='c-new'>+ Nieuwe cliënt</button></div>";
+  h+="<div class='panel'><div class='tablewrap'>";
+  if(d.clients.length){
+    h+="<table><thead><tr><th>Naam</th><th>Contact</th><th>Plaats</th><th>Status</th><th>Bron</th><th class='right'>Besteed</th></tr></thead><tbody>";
+    d.clients.forEach(function(c){
+      h+="<tr class='clickable' data-id='"+c.id+"'><td><b>"+esc(c.name)+"</b>"+(c.tags&&c.tags.length?"<div class='chips'>"+c.tags.map(function(t){return "<span class='chip'>"+esc(t)+"</span>";}).join("")+"</div>":"")+"</td>"+
+        "<td class='muted'>"+esc(c.email||"")+(c.phone?"<br>"+esc(c.phone):"")+"</td>"+
+        "<td class='muted'>"+esc(c.city||"-")+"</td><td>"+statusPill(c.status)+"</td><td class='muted'>"+esc(c.source||"-")+"</td>"+
+        "<td class='right'>"+money(c.total_spent)+"</td></tr>";
+    });
+    h+="</tbody></table>";
+  } else { h+="<div class='empty'>Nog geen cliënten. Voeg er een toe of zet een spel-inzending om.</div>"; }
+  h+="</div></div>";
+  v.innerHTML=h;
+  var srch=$("c-search"); var tmr;
+  srch.oninput=function(){ clearTimeout(tmr); var val=this.value; tmr=setTimeout(function(){ STATE.clientSearch=val; renderClients(v); },350); };
+  srch.onkeydown=function(e){ if(e.key==="Enter"){ STATE.clientSearch=this.value; renderClients(v); } };
+  $("c-new").onclick=function(){ clientModal(null); };
+  v.querySelectorAll("tr[data-id]").forEach(function(tr){ tr.onclick=function(){ openClient(this.getAttribute("data-id")); }; });
+}
+
+function statusOpts(sel){
+  return ["lead","actief","klant","afgerond","inactief"].map(function(s){ return "<option "+(sel===s?"selected":"")+">"+s+"</option>"; }).join("");
+}
+function clientModal(c){
+  c=c||{};
+  var body="<div class='field'><label>Naam *</label><input id='m-name' value='"+esc(c.name||"")+"'></div>"+
+    "<div class='grid2'><div class='field'><label>E-mail</label><input id='m-email' value='"+esc(c.email||"")+"'></div>"+
+    "<div class='field'><label>Telefoon</label><input id='m-phone' value='"+esc(c.phone||"")+"'></div></div>"+
+    "<div class='grid2'><div class='field'><label>Plaats</label><input id='m-city' value='"+esc(c.city||"")+"'></div>"+
+    "<div class='field'><label>Status</label><select id='m-status'>"+statusOpts(c.status||"lead")+"</select></div></div>"+
+    "<div class='grid2'><div class='field'><label>Bron</label><input id='m-source' value='"+esc(c.source||"")+"' placeholder='spel, website, doorverwijzing...'></div>"+
+    "<div class='field'><label>Besteed (€)</label><input id='m-spent' type='number' step='0.01' value='"+esc(c.total_spent||"")+"'></div></div>"+
+    "<div class='field'><label>Tags (komma-gescheiden)</label><input id='m-tags' value='"+esc((c.tags||[]).join(", "))+"'></div>"+
+    "<div class='field'><label>Notitie</label><textarea id='m-notes'>"+esc(c.notes||"")+"</textarea></div>";
+  var foot=(c.id?"<button class='btn danger sm' id='m-del'>Verwijderen</button>":"")+
+    "<button class='btn gray sm' id='m-cancel'>Annuleren</button><button class='btn sm' id='m-save'>Opslaan</button>";
+  modal(c.id?"Cliënt bewerken":"Nieuwe cliënt", body, foot);
+  $("m-cancel").onclick=closeModal;
+  $("m-save").onclick=async function(){
+    var payload={ name:$("m-name").value.trim(), email:$("m-email").value.trim(), phone:$("m-phone").value.trim(),
+      city:$("m-city").value.trim(), status:$("m-status").value, source:$("m-source").value.trim(),
+      total_spent: $("m-spent").value?Number($("m-spent").value):0,
+      tags: $("m-tags").value.split(",").map(function(s){return s.trim();}).filter(Boolean),
+      notes:$("m-notes").value.trim() };
+    if(!payload.name){ toast("Naam is verplicht",1); return; }
+    this.disabled=true;
+    try{
+      if(c.id){ payload.id=c.id; await api("client_update",payload); } else { await api("client_create",payload); }
+      closeModal(); toast("Opgeslagen"); loadStats(); renderClients($("view"));
+    }catch(e){ toast("Fout: "+e.message,1); this.disabled=false; }
+  };
+  if(c.id){ $("m-del").onclick=async function(){
+    if(!confirm("Deze cliënt verwijderen?")) return;
+    try{ await api("client_delete",{id:c.id}); closeModal(); toast("Verwijderd"); loadStats(); renderClients($("view")); }
+    catch(e){ toast("Fout",1); } }; }
+}
+async function openClient(id){
+  try{
+    var d=await api("client_get",{id:id});
+    var c=d.client;
+    var notesH = (d.notes||[]).length ? d.notes.map(function(n){ return "<div class='note'>"+esc(n.note)+"<div class='meta'>"+esc(n.author||"")+" · "+fmtDateTime(n.created_at)+"</div></div>"; }).join("") : "<div class='muted' style='font-size:13px'>Nog geen notities.</div>";
+    var body="<div style='margin-bottom:14px'>"+statusPill(c.status)+" "+(c.city?"<span class='muted'>· "+esc(c.city)+"</span>":"")+"</div>"+
+      "<div class='grid2' style='margin-bottom:12px'><div><div class='muted' style='font-size:11px'>E-MAIL</div>"+esc(c.email||"-")+"</div>"+
+      "<div><div class='muted' style='font-size:11px'>TELEFOON</div>"+esc(c.phone||"-")+"</div>"+
+      "<div><div class='muted' style='font-size:11px'>BRON</div>"+esc(c.source||"-")+"</div>"+
+      "<div><div class='muted' style='font-size:11px'>BESTEED</div>"+money(c.total_spent)+"</div></div>"+
+      (c.notes?"<div class='note'>"+esc(c.notes)+"</div>":"")+
+      "<div style='margin:16px 0 8px;font-weight:600;font-size:13px'>Notities</div>"+notesH+
+      "<div class='field' style='margin-top:12px'><textarea id='n-new' placeholder='Nieuwe notitie...'></textarea></div><button class='btn sm' id='n-add'>Notitie toevoegen</button>";
+    var foot="<button class='btn gray sm' id='m-close'>Sluiten</button><button class='btn sm' id='m-edit'>Bewerken</button>";
+    modal(esc(c.name), body, foot);
+    $("m-close").onclick=closeModal;
+    $("m-edit").onclick=function(){ closeModal(); clientModal(c); };
+    $("n-add").onclick=async function(){
+      var note=$("n-new").value.trim(); if(!note){ return; }
+      try{ await api("client_note_add",{client_id:id, note:note}); toast("Notitie toegevoegd"); openClient(id); }
+      catch(e){ toast("Fout",1); } };
+  }catch(e){ toast("Fout bij laden",1); }
+}
+
+/* ---------------- BOOKINGS ---------------- */
+async function renderBookings(v){
+  var d=await api("bookings_list",{});
+  var h=head("Boekingen","Aanvragen en afspraken");
+  h+="<div class='panel'><div class='tablewrap'>";
+  if(d.bookings.length){
+    h+="<table><thead><tr><th>Cliënt</th><th>Contact</th><th>Datum</th><th>Dienst</th><th>Status</th><th></th></tr></thead><tbody>";
+    d.bookings.forEach(function(b){
+      h+="<tr><td><b>"+esc(b.client_name)+"</b>"+(b.message?"<div class='muted' style='font-size:12px;max-width:240px'>"+esc(b.message)+"</div>":"")+"</td>"+
+        "<td class='muted'>"+esc(b.email||"")+(b.phone?"<br>"+esc(b.phone):"")+"</td>"+
+        "<td>"+fmtDate(b.day)+(b.start_time?"<br><span class='muted'>"+esc(b.start_time)+"</span>":"")+"</td>"+
+        "<td class='muted'>"+esc(b.service||"-")+"</td><td>"+statusPill(b.status)+"</td>"+
+        "<td><select data-bk='"+b.id+"' class='bk-status'>"+["new","confirmed","done","cancelled"].map(function(s){return "<option "+(b.status===s?"selected":"")+">"+s+"</option>";}).join("")+"</select></td></tr>";
+    });
+    h+="</tbody></table>";
+  } else { h+="<div class='empty'>Nog geen boekingen. Aanvragen vanaf de website verschijnen hier.</div>"; }
+  h+="</div></div>";
+  v.innerHTML=h;
+  v.querySelectorAll(".bk-status").forEach(function(sel){ sel.onchange=async function(){
+    try{ await api("booking_update",{id:this.getAttribute("data-bk"), status:this.value}); toast("Status bijgewerkt"); loadStats(); }
+    catch(e){ toast("Fout",1); } }; });
+}
+
+/* ---------------- AVAILABILITY ---------------- */
+var DAYNAMES=["Zondag","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag"];
+async function renderAvailability(v){
+  var d=await api("availability_get",{});
+  var byDay={}; d.rules.forEach(function(r){ byDay[r.weekday]=r; });
+  var h=head("Beschikbaarheid","Je wekelijkse werkuren en uitzonderingen");
+  h+="<div class='panel'><div class='ph'><h3>Wekelijkse uren</h3></div><div class='mb' style='padding:16px 18px'><div class='days'>";
+  for(var wd=1; wd<=6; wd++){ addDay(wd); } addDay(0);
+  function addDay(wd){ var r=byDay[wd]||{}; var on=r.active!==false && !!r.id ? true : (r.active===true);
+    var active = r.id ? r.active : false;
+    h+="<div class='dayrow"+(active?"":" off")+"' data-wd='"+wd+"'"+(r.id?" data-id='"+r.id+"'":"")+">"+
+      "<label class='switch'><input type='checkbox' class='av-on' "+(active?"checked":"")+"><span class='sl'></span></label>"+
+      "<span class='dn'>"+DAYNAMES[wd]+"</span>"+
+      "<input type='time' class='av-start' value='"+esc(r.start_time?String(r.start_time).slice(0,5):"09:00")+"'>"+
+      "<span class='muted'>tot</span><input type='time' class='av-end' value='"+esc(r.end_time?String(r.end_time).slice(0,5):"17:00")+"'>"+
+      "<button class='btn tiny sm av-save'>Opslaan</button></div>";
+  }
+  h+="</div></div></div>";
+  // exceptions
+  h+="<div class='panel'><div class='ph'><h3>Uitzonderingen (vrije dagen / afwijkende tijden)</h3></div><div style='padding:16px 18px'>";
+  h+="<div class='toolbar'><input type='date' id='ex-day'><select id='ex-kind'><option value='closed'>Gesloten</option><option value='open'>Open (afwijkend)</option></select><input type='text' id='ex-note' placeholder='Notitie (optioneel)' style='max-width:220px'><button class='btn sm' id='ex-add'>Toevoegen</button></div>";
+  if(d.exceptions.length){
+    h+="<div class='tablewrap'><table><thead><tr><th>Datum</th><th>Type</th><th>Notitie</th><th></th></tr></thead><tbody>";
+    d.exceptions.forEach(function(x){
+      h+="<tr><td>"+fmtDate(x.day)+"</td><td>"+(x.kind==="closed"?"<span class='pill done'>Gesloten</span>":"<span class='pill active'>Open</span>")+"</td><td class='muted'>"+esc(x.note||"-")+"</td><td class='right'><button class='btn tiny danger' data-exdel='"+x.id+"'>Verwijderen</button></td></tr>";
+    });
+    h+="</tbody></table></div>";
+  } else { h+="<div class='muted' style='font-size:13px'>Geen uitzonderingen.</div>"; }
+  h+="</div></div>";
+  v.innerHTML=h;
+  // wire rows
+  v.querySelectorAll(".dayrow").forEach(function(row){
+    var cb=row.querySelector(".av-on");
+    cb.onchange=function(){ row.classList.toggle("off",!this.checked); };
+    row.querySelector(".av-save").onclick=async function(){
+      var payload={ weekday:Number(row.getAttribute("data-wd")), start_time:row.querySelector(".av-start").value,
+        end_time:row.querySelector(".av-end").value, active:cb.checked };
+      if(row.getAttribute("data-id")) payload.id=row.getAttribute("data-id");
+      try{ var res=await api("availability_rule_set",payload); if(res.rule&&res.rule.id) row.setAttribute("data-id",res.rule.id); toast("Opgeslagen"); }
+      catch(e){ toast("Fout",1); } };
+  });
+  $("ex-add").onclick=async function(){
+    var day=$("ex-day").value; if(!day){ toast("Kies een datum",1); return; }
+    try{ await api("availability_exception_add",{ day:day, kind:$("ex-kind").value, note:$("ex-note").value.trim()||null }); toast("Toegevoegd"); renderAvailability(v); }
+    catch(e){ toast("Fout",1); } };
+  v.querySelectorAll("[data-exdel]").forEach(function(b){ b.onclick=async function(){
+    try{ await api("availability_exception_delete",{id:this.getAttribute("data-exdel")}); toast("Verwijderd"); renderAvailability(v); }
+    catch(e){ toast("Fout",1); } }; });
+}
+
+/* ---------------- SETTINGS ---------------- */
+async function renderSettings(v){
+  var d=await api("settings_get",{});
+  var c=d.settings.contest||{active:true,ends:"2026-08-31",max_per_person:2};
+  var w=d.settings.prize_weights||{EUR5:13,EUR25:4,HOUR:3,NONE:60,AGAIN:20};
+  var h=head("Instellingen","Het spel en algemene instellingen");
+  h+="<div class='panel'><div class='ph'><h3>Rad van fortuin</h3></div><div style='padding:18px'>"+
+    "<div class='dayrow' style='border:0;padding:0;margin-bottom:14px'><label class='switch'><input type='checkbox' id='s-active' "+(c.active?"checked":"")+"><span class='sl'></span></label><span class='dn' style='width:auto'>Spel actief</span></div>"+
+    "<div class='grid2'><div class='field'><label>Einddatum</label><input type='date' id='s-ends' value='"+esc(c.ends||"")+"'></div>"+
+    "<div class='field'><label>Max. per persoon</label><input type='number' id='s-max' value='"+esc(c.max_per_person||2)+"'></div></div>"+
+    "<button class='btn sm' id='s-save-contest'>Opslaan</button></div></div>";
+  h+="<div class='panel'><div class='ph'><h3>Prijskansen (gewichten)</h3></div><div style='padding:18px'>"+
+    "<p class='muted' style='font-size:13px;margin-bottom:14px'>Hoe hoger het getal, hoe groter de kans. NONE = geen prijs, AGAIN = extra draai.</p>"+
+    "<div class='grid2'>"+
+    ["EUR5","EUR25","HOUR","NONE","AGAIN"].map(function(k){ return "<div class='field'><label>"+k+"</label><input type='number' id='w-"+k+"' value='"+esc(w[k]!==undefined?w[k]:0)+"'></div>"; }).join("")+
+    "</div><button class='btn sm' id='s-save-weights'>Opslaan</button></div></div>";
+  v.innerHTML=h;
+  $("s-save-contest").onclick=async function(){
+    try{ await api("settings_set",{key:"contest",value:{active:$("s-active").checked, ends:$("s-ends").value, max_per_person:Number($("s-max").value)||2}}); toast("Opgeslagen"); }
+    catch(e){ toast("Fout",1); } };
+  $("s-save-weights").onclick=async function(){
+    var val={}; ["EUR5","EUR25","HOUR","NONE","AGAIN"].forEach(function(k){ val[k]=Number($("w-"+k).value)||0; });
+    try{ await api("settings_set",{key:"prize_weights",value:val}); toast("Opgeslagen"); }
+    catch(e){ toast("Fout",1); } };
+}
+
+/* ---------------- helpers ---------------- */
+function head(title,sub){ return "<div class='topbar'><div><h2>"+title+"</h2><div class='sub'>"+sub+"</div></div></div>"; }
+function statusPill(s){ s=s||"lead"; var m={lead:"lead",actief:"active",klant:"klant",afgerond:"done",inactief:"done",
+  "new":"new",confirmed:"active",done:"done",cancelled:"done"};
+  var labels={"new":"nieuw",confirmed:"bevestigd",done:"afgerond",cancelled:"geannuleerd"};
+  return "<span class='pill "+(m[s]||"done")+"'>"+(labels[s]||s)+"</span>"; }
+function boolTag(b){ return b?"<span class='pill active'>ja</span>":"<span class='pill no'>nee</span>"; }
+function modal(title,body,foot){
+  var o=document.createElement("div"); o.className="overlay"; o.id="overlay";
+  o.innerHTML="<div class='modal'><div class='mh'><h3>"+title+"</h3><button class='x' onclick='closeModal()'>&times;</button></div><div class='mb'>"+body+"</div><div class='mf'>"+foot+"</div></div>";
+  o.onclick=function(e){ if(e.target===o) closeModal(); };
+  document.body.appendChild(o);
+}
+function closeModal(){ var o=$("overlay"); if(o) o.remove(); }
+
+/* ---------------- boot ---------------- */
+(async function(){
+  if(TOKEN){
+    try{ await api("me",{}); startApp(); }
+    catch(e){ doLogout(true); }
+  }
+})();
+</script>
+</body>
+</html>
