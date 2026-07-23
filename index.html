@@ -17,6 +17,76 @@
 <meta name="twitter:title" content="Shaytye Organizing — Home Organizer Almere">
 <meta name="twitter:description" content="Ik breng rust terug in jouw huis.">
 <meta name="twitter:image" content="https://shaytye.com/og-image.png">
+<link rel="canonical" href="https://shaytye.com/">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="keywords" content="home organizer Almere, professional organizer Amsterdam, opruimcoach, opruimhulp, home organizing Nederland, kledingkast organiseren, voorraadkast opruimen, Shaytye, Shanice Chin A Joe">
+<meta name="author" content="Shaytye Organizing">
+<meta name="theme-color" content="#D9899F">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Shaytye Organizing — home organizer in Almere en Amsterdam">
+<meta name="geo.region" content="NL-FL">
+<meta name="geo.placename" content="Almere">
+<meta name="geo.position" content="52.3508;5.2647">
+<meta name="ICBM" content="52.3508, 5.2647">
+<link rel="alternate" hreflang="nl" href="https://shaytye.com/">
+<link rel="alternate" hreflang="en" href="https://shaytye.com/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://shaytye.com/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["ProfessionalService", "LocalBusiness"],
+  "@id": "https://shaytye.com/#business",
+  "name": "Shaytye Organizing",
+  "alternateName": "Shaytye",
+  "description": "Professional home organizer gevestigd in Almere, werkzaam in Amsterdam en heel Nederland. Shaytye brengt rust, overzicht en systemen die blijven werken terug in je huis of werkplek.",
+  "url": "https://shaytye.com/",
+  "logo": "https://shaytye.com/logo.png",
+  "image": "https://shaytye.com/og-image.png",
+  "telephone": "+31653910755",
+  "email": "contact@shaytye.com",
+  "priceRange": "€135–€405",
+  "currenciesAccepted": "EUR",
+  "paymentAccepted": "Tikkie, Cash",
+  "founder": { "@type": "Person", "name": "Shanice Chin A Joe" },
+  "knowsLanguage": ["nl", "en"],
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Almere",
+    "addressRegion": "Flevoland",
+    "postalCode": "1312",
+    "addressCountry": "NL"
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": 52.3508, "longitude": 5.2647 },
+  "areaServed": [
+    { "@type": "City", "name": "Almere" },
+    { "@type": "City", "name": "Amsterdam" },
+    { "@type": "Country", "name": "Nederland" }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5.0",
+    "reviewCount": "9",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "sameAs": [
+    "https://www.instagram.com/shaytye.organized",
+    "https://www.tiktok.com/@shaytye.organized"
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Home organizing pakketten",
+    "itemListElement": [
+      { "@type": "Offer", "name": "Standard — 3 uur", "price": "135", "priceCurrency": "EUR" },
+      { "@type": "Offer", "name": "Advanced — 6 uur", "price": "270", "priceCurrency": "EUR" },
+      { "@type": "Offer", "name": "Pro — 9 uur", "price": "405", "priceCurrency": "EUR" },
+      { "@type": "Offer", "name": "Custom — meerdaagse projecten", "priceCurrency": "EUR" }
+    ]
+  }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,450..650;1,9..144,450..650&family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -604,13 +674,16 @@ body::-webkit-scrollbar-thumb:hover{background:var(--rose-d)}
 @media(min-width:1060px){.bagrid{grid-template-columns:repeat(3,1fr)}}
 .ba{position:relative;aspect-ratio:1/1;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line);user-select:none;background:var(--white)}
 .ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
-.ba .bwrap{position:absolute;inset:0;width:52%;overflow:hidden}
-.ba .bwrap img{width:auto;height:100%;max-width:none}
-.ba .bhandle{position:absolute;top:0;bottom:0;left:52%;width:2px;background:#fff;box-shadow:0 0 14px rgba(0,0,0,.28);cursor:ew-resize;touch-action:none}
+.ba .ba-before{clip-path:inset(0 48% 0 0);-webkit-clip-path:inset(0 48% 0 0);z-index:1}
+.ba .bhandle{position:absolute;top:0;bottom:0;left:52%;width:2px;background:#fff;box-shadow:0 0 14px rgba(0,0,0,.28);cursor:ew-resize;touch-action:none;z-index:2}
 .ba .bhandle::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:var(--white);box-shadow:0 6px 20px rgba(120,70,95,.3);background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23C47592%27 stroke-width=%272%27%3E%3Cpath d=%27M8 7l-4 5 4 5M16 7l4 5-4 5%27/%3E%3C/svg%3E");background-size:20px;background-position:center;background-repeat:no-repeat}
 .ba .btag{position:absolute;top:12px;font-size:11px;letter-spacing:.12em;font-weight:700;color:#fff;background:rgba(34,27,31,.55);padding:6px 12px;border-radius:99px;backdrop-filter:none}
 .ba .btag.tv{left:12px}
 .ba .btag.tn{right:12px;background:var(--rose-d)}
+.grbadge{display:inline-flex;align-items:center;gap:9px;margin:20px auto 0;padding:9px 18px;border:1px solid var(--line);border-radius:99px;background:var(--white);box-shadow:var(--shadow);text-decoration:none;color:var(--ink);font-size:14px;font-weight:600;transition:transform .2s ease,box-shadow .2s ease}
+.grbadge:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(205,135,165,.2)}
+.grbadge .grstars{color:#FBBC05;letter-spacing:1px;font-size:15px}
+.grbadge .grsub{color:var(--ink2);font-weight:500}
 /* CURSOR TRAIL */
 .tp .bf{display:block;animation:bflap .42s ease-in-out infinite alternate;transform-origin:center}
 @keyframes bflap{from{transform:scaleX(1)}to{transform:scaleX(.5)}}
@@ -736,6 +809,11 @@ document.documentElement.className += " anim";
       <div class="eyebrow" style="justify-content:center" data-i18n="ts_eyebrow"></div>
       <h2 class="sec-t" data-i18n="ts_title"></h2>
       <p class="sec-sub" style="margin:0 auto" data-i18n="ts_sub"></p>
+      <a class="grbadge" href="https://share.google/DrXmS8YPYg6XnuSFy" target="_blank" rel="noopener noreferrer" aria-label="Google reviews Shaytye">
+        <svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <span class="grstars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <b>5,0</b><span class="grsub" data-i18n="gr_txt"></span>
+      </a>
     </div>
     <div class="tcols" id="tcols"></div>
   </div></div>
@@ -940,7 +1018,7 @@ document.documentElement.className += " anim";
     <div class="f-bot">
       <span id="copy"></span>
       <span data-i18n="ft_made"></span>
-      <span style="opacity:.45;font-size:11px">v55</span>
+      <span style="opacity:.45;font-size:11px">v57</span>
     </div>
   </div>
 </footer>
@@ -984,7 +1062,7 @@ sv_sub:"Elke ruimte vraagt om een eigen aanpak. Dit zijn de ruimtes waar ik het 
 pr_eyebrow:"De methode",pr_title:"Hoe verloopt <em>jouw traject?</em>",
 ga_eyebrow:"Resultaten",ga_title:"Voor en na",ga_sub:"Sleep de knop om het verschil te zien — echte ruimtes, echte resultaten.",
 vd_eyebrow:"In actie",vd_title:"Kijk mee tijdens het organizen",vd_sub:"Een kijkje achter de schermen: zo pak ik een ruimte aan, van chaos tot systeem.",vd_more:"Meer video\u0027s op",ts_eyebrow:"Ervaringen",ts_title:"Wat klanten zeggen",
-ts_sub:"Rust in huis is rust in je hoofd — dat hoor ik het vaakst terug.",
+ts_sub:"Rust in huis is rust in je hoofd — dat hoor ik het vaakst terug.",gr_txt:"op Google · 9 reviews",
 cta_title:"Klaar voor een opgeruimd huis?",
 cta_sub:"Plan een gratis kennismakingsgesprek van 15 minuten. Ik luister naar jouw situatie en vertel je eerlijk wat ik voor je kan doen.",
 cta_btn:"Plan mijn gratis gesprek",
@@ -1042,7 +1120,7 @@ sv_sub:"Every space needs its own approach. These are the rooms where I make the
 pr_eyebrow:"The method",pr_title:"How does <em>your journey</em> unfold?",
 ga_eyebrow:"Results",ga_title:"Before and after",ga_sub:"Drag the handle to see the difference — real spaces, real results.",
 vd_eyebrow:"In action",vd_title:"Watch me organize",vd_sub:"A look behind the scenes: this is how I tackle a space, from chaos to system.",vd_more:"More videos on",ts_eyebrow:"Reviews",ts_title:"What clients say",
-ts_sub:"A calm home means a calm mind — that is what I hear most often.",
+ts_sub:"A calm home means a calm mind — that is what I hear most often.",gr_txt:"on Google · 9 reviews",
 cta_title:"Ready for an organized home?",
 cta_sub:"Book a free 15-minute intro call. I will listen to your situation and tell you honestly what I can do for you.",
 cta_btn:"Book my free call",
@@ -1113,15 +1191,15 @@ var TESTIMONIALS = [
  {n:"Yasmina", r:{nl:"Almere",en:"Almere"},
   nl:"Na mijn verhuizing stond alles nog in dozen. Shanice heeft samen met mij in twee dagen het hele huis ingericht, kamer voor kamer. Zo lief, zo rustig, en wat een energie. Ik voelde me meteen thuis.",
   en:"Na mijn verhuizing stond alles nog in dozen. Shanice heeft samen met mij in twee dagen het hele huis ingericht, kamer voor kamer. Zo lief, zo rustig, en wat een energie. Ik voelde me meteen thuis."},
- {n:"Esther", r:{nl:"Lelystad",en:"Lelystad"},
-  nl:"Na de sessie voelde mijn keuken twee keer zo groot. Koken is weer leuk! En de tips om het bij te houden werken echt.",
-  en:"Na de sessie voelde mijn keuken twee keer zo groot. Koken is weer leuk! En de tips om het bij te houden werken echt."},
+ {n:"Esther", r:{nl:"Amsterdam",en:"Amsterdam"},
+  nl:"Onze keuken in Amsterdam is klein, dus elke centimeter telt. Na de sessie voelde hij twee keer zo groot. Koken is weer leuk, en de tips om het bijgehouden te houden werken echt.",
+  en:"Our kitchen in Amsterdam is small, so every centimeter counts. After the session it felt twice as big. Cooking is fun again, and the tips to keep it that way really work."},
  {n:"Amira", r:{nl:"Amsterdam",en:"Amsterdam"},
   nl:"Ik ben moeder van drie en had gewoon geen overzicht meer. Shanice oordeelt niet, ze helpt. De speelhoek, de gang, de berging: alles heeft nu logica. Mijn hoofd is zoveel rustiger.",
   en:"Ik ben moeder van drie en had gewoon geen overzicht meer. Shanice oordeelt niet, ze helpt. De speelhoek, de gang, de berging: alles heeft nu logica. Mijn hoofd is zoveel rustiger."},
- {n:"Chantal", r:{nl:"Hilversum",en:"Hilversum"},
-  nl:"Ik zag er als een berg tegenop, maar Shanice maakte er bijna iets gezelligs van. Geen oordeel, veel energie, en een resultaat waar ik elke dag blij van word.",
-  en:"Ik zag er als een berg tegenop, maar Shanice maakte er bijna iets gezelligs van. Geen oordeel, veel energie, en een resultaat waar ik elke dag blij van word."},
+ {n:"Chantal", r:{nl:"Amsterdam",en:"Amsterdam"},
+  nl:"Ik zag er als een berg tegenop, maar Shanice maakte er bijna iets gezelligs van. Ze kwam naar ons appartement in Amsterdam: geen oordeel, veel energie, en een resultaat waar ik elke dag blij van word.",
+  en:"I was really dreading it, but Shanice almost made it fun. She came to our apartment in Amsterdam: no judgment, lots of energy, and a result that makes me happy every single day."},
  {n:"Imani", r:{nl:"Almere",en:"Almere"},
   nl:"Mijn zolder was jaren een plek waar ik niet naar durfde te kijken. In \u00E9\u00E9n dag was alles gesorteerd, weggebracht of netjes opgeborgen. Ik heb er letterlijk een kamer bij gekregen. Aanrader!",
   en:"Mijn zolder was jaren een plek waar ik niet naar durfde te kijken. In \u00E9\u00E9n dag was alles gesorteerd, weggebracht of netjes opgeborgen. Ik heb er letterlijk een kamer bij gekregen. Aanrader!"},
@@ -1264,7 +1342,7 @@ function buildGallery(){
     var pv = GIMGS[BA_PAIRS[i][0]], pn = GIMGS[BA_PAIRS[i][1]];
     html += "<div class='ba rv' data-b='" + i + "'>"
       + "<img src='" + pn + "' alt='" + t("after") + "' loading='lazy'>"
-      + "<div class='bwrap'><img src='" + pv + "' alt='" + t("before") + "' loading='lazy'></div>"
+      + "<img class='ba-before' src='" + pv + "' alt='" + t("before") + "' loading='lazy'>"
       + "<div class='bhandle'></div>"
       + "<span class='btag tv'>" + t("before") + "</span>"
       + "<span class='btag tn'>" + t("after") + "</span>"
@@ -1275,20 +1353,15 @@ function buildGallery(){
   var cards = g.querySelectorAll(".ba");
   for (var k=0;k<cards.length;k++){
     (function(card){
-      var wrap = card.querySelector(".bwrap");
+      var before = card.querySelector(".ba-before");
       var handle = card.querySelector(".bhandle");
-      var wimg = wrap.querySelector("img");
-      function fitInner(){
-        wimg.style.width = card.clientWidth + "px";
-        wimg.style.height = card.clientHeight + "px";
-      }
-      fitInner();
-      window.addEventListener("resize", fitInner);
       function setPos(clientX){
         var r = card.getBoundingClientRect();
         var p = (clientX - r.left) / r.width * 100;
         if (p < 4) p = 4; if (p > 96) p = 96;
-        wrap.style.width = p + "%";
+        var clip = "inset(0 " + (100 - p) + "% 0 0)";
+        before.style.clipPath = clip;
+        before.style.webkitClipPath = clip;
         handle.style.left = p + "%";
       }
       var dragging = false;
