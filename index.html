@@ -1018,7 +1018,7 @@ document.documentElement.className += " anim";
     <div class="f-bot">
       <span id="copy"></span>
       <span data-i18n="ft_made"></span>
-      <span style="opacity:.45;font-size:11px">v59</span>
+      <span style="opacity:.45;font-size:11px">v60</span>
     </div>
   </div>
 </footer>
@@ -1267,6 +1267,48 @@ function el(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
 
 /* ---------- i18n apply ---------- */
+/* ---------- live availability (agenda beheerd vanuit de admin) ---------- */
+var ADMIN_FN = "https://ccdiibhzrtakczvkvqyw.supabase.co/functions/v1/shaytye-admin";
+var PUB_KEY = "sb_publishable_Ds3dufQ1O9oQNGRJCa6QZg_9EBY7jq7";
+var AVAIL = { rules: [], exceptions: [], loaded: false };
+function isoDay(dt){
+  var mm = ("0" + (dt.getMonth()+1)).slice(-2), dd = ("0" + dt.getDate()).slice(-2);
+  return dt.getFullYear() + "-" + mm + "-" + dd;
+}
+function dayInfo(dt){
+  var iso = isoDay(dt), i;
+  for (i=0;i<AVAIL.exceptions.length;i++){
+    if (String(AVAIL.exceptions[i].day).slice(0,10) === iso){
+      var ex = AVAIL.exceptions[i];
+      if (ex.kind === "closed") return { open:false };
+      return { open:true, start: ex.start_time || "09:00", end: ex.end_time || "17:00" };
+    }
+  }
+  if (!AVAIL.rules.length){ return { open: dt.getDay() !== 0, start:"09:00", end:"17:00", fallback:true }; }
+  for (i=0;i<AVAIL.rules.length;i++){
+    if (AVAIL.rules[i].weekday === dt.getDay()){
+      var r = AVAIL.rules[i];
+      if (r.active) return { open:true, start: r.start_time || "09:00", end: r.end_time || "17:00" };
+      return { open:false };
+    }
+  }
+  return { open:false };
+}
+function genSlots(start, end){
+  function toMin(x){ var p = String(x).split(":"); return parseInt(p[0],10)*60 + parseInt(p[1]||"0",10); }
+  var s = toMin(start), e = toMin(end), out = [], mn;
+  for (mn = s; mn + 30 <= e; mn += 30){
+    out.push(("0"+Math.floor(mn/60)).slice(-2) + ":" + ("0"+(mn%60)).slice(-2));
+  }
+  return out;
+}
+function fetchAvail(){
+  fetch(ADMIN_FN, { method:"POST", headers:{ "Authorization":"Bearer "+PUB_KEY, "apikey":PUB_KEY, "content-type":"application/json" }, body: JSON.stringify({ action:"public_availability" }) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){ if (d && d.ok){ AVAIL.rules = d.rules || []; AVAIL.exceptions = d.exceptions || []; AVAIL.loaded = true; if (el("calbox")){ buildCal(); } if (el("slotbox")){ buildSlots(); } } })
+    .catch(function(){});
+}
+
 function applyI18n(){
   var nodes = document.querySelectorAll("[data-i18n]");
   for (var i=0;i<nodes.length;i++){ nodes[i].textContent = t(nodes[i].getAttribute("data-i18n")); }
@@ -1277,7 +1319,7 @@ function applyI18n(){
   el("len").className = LANG==="en" ? "on":"";
   buildServices(); buildSteps(); buildGallery(); buildTestimonials();
   buildPrices(); buildVals(); buildFaq(); buildPolicy(); if (window.buildArticles){ buildArticles(); } buildChips(); buildCal(); buildSlots();
-  updateKm(); updateSummary();
+  updateKm(); updateSummary(); fetchAvail();
   el("copy").textContent = String.fromCharCode(169) + " " + new Date().getFullYear() + " Shaytye Organizing — Almere";
 }
 
@@ -1502,7 +1544,7 @@ function buildCal(){
   var max = new Date(); max.setDate(max.getDate() + 60);
   for (var day=1; day<=dim; day++){
     var dt = new Date(y, m, day);
-    var disabled = dt < today || dt > max || dt.getDay() === 0;
+    var disabled = dt < today || dt > max || !dayInfo(dt).open;
     var sel = state.date && dt.getTime() === state.date.getTime();
     html += "<button type='button' data-d='" + dt.getTime() + "'" + (disabled ? " disabled":"") + (sel ? " class='sel'":"") + ">" + day + "</button>";
   }
@@ -1513,12 +1555,17 @@ function buildCal(){
   for (var k=0;k<btns.length;k++){
     btns[k].addEventListener("click", function(){
       state.date = new Date(parseInt(this.getAttribute("data-d"),10));
-      buildCal(); updateSummary();
+      state.time = null;
+      buildCal(); buildSlots(); updateSummary();
     });
   }
 }
 function buildSlots(){
   var slots = ["09:00","09:30","10:00","10:30","11:00","11:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","19:00","19:30"];
+  if (state.date){
+    var info = dayInfo(state.date);
+    if (info.open && !info.fallback){ var g = genSlots(info.start, info.end); if (g.length){ slots = g; } }
+  }
   var html = "";
   for (var i=0;i<slots.length;i++){
     html += "<button type='button' data-s='" + slots[i] + "'" + (state.time === slots[i] ? " class='sel'":"") + ">" + slots[i] + "</button>";
@@ -1676,6 +1723,16 @@ function sendBooking(){
       + NL + "You can reach me at " + tel + " or via " + email + "." + (addr ? " My address is " + addr + "." : "") + NL + NL
       + "Looking forward to it. Best, " + name;
   }
+  // leave a trace in the CRM (fire-and-forget, must never block WhatsApp)
+  try {
+    fetch(ADMIN_FN, { method:"POST", headers:{ "Authorization":"Bearer "+PUB_KEY, "apikey":PUB_KEY, "content-type":"application/json" }, body: JSON.stringify({
+      action: "public_booking",
+      client_name: name, email: email, phone: tel,
+      day: state.date ? isoDay(state.date) : null, start_time: state.time || null,
+      service: t("sum_typeval"), rooms: rooms,
+      message: (msg || "") + (addr ? ((msg ? " | " : "") + "Adres: " + addr) : "") + (count ? (" | " + count + " ruimte(s)") : "")
+    }) }).catch(function(){});
+  } catch(e){}
   var waUrl = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + body.replace(/ /g, "%20");
   var plain = body.replace(/%0A/g, "\n");
   if (navigator.clipboard && navigator.clipboard.writeText){
@@ -1717,6 +1774,7 @@ function route(){
     h = "artikel";
   }
   if (PAGES.indexOf(h) === -1) h = "home";
+  if (h === "booking"){ fetchAvail(); }
   if (h === "artikel"){
     if (isNaN(artIdx) || !window.ARTICLES || !ARTICLES[artIdx] || !window.renderArticle){ h = "artikelen"; }
     else if (window.renderArticle){ renderArticle(artIdx); }
