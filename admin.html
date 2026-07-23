@@ -128,6 +128,9 @@ tr.clickable:hover td{background:var(--cream2)}
 .switch input:checked+.sl{background:var(--rose-d)}
 .switch input:checked+.sl:before{transform:translateX(18px)}
 
+.langtog{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;background:var(--cream)}
+.langtog .langbtn{background:transparent;border:0;padding:4px 12px;font-size:12px;font-weight:700;color:var(--ink2);cursor:pointer}
+.langtog .langbtn.on{background:var(--rose-d);color:#fff}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
 padding:11px 20px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;transition:.28s;z-index:200;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -150,15 +153,16 @@ padding:11px 20px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;tr
 <!-- ============ LOGIN ============ -->
 <div id="login">
   <div class="card login-box">
+    <div style="display:flex;justify-content:center;margin-bottom:10px"><div class="langtog"><button class="langbtn" data-l="nl">NL</button><button class="langbtn" data-l="en">EN</button></div></div>
     <img src="/logo.png" alt="Shaytye" onerror="this.style.display='none'">
     <h1>Dashboard</h1>
-    <p>Log in met je e-mailadres</p>
+    <p id="login-sub">Log in met je e-mailadres</p>
     <div id="step-email">
-      <div class="field"><label>E-mailadres</label><input id="l-email" type="email" placeholder="jij@shaytye.com" autocomplete="email"></div>
+      <div class="field"><label id="lbl-email">E-mailadres</label><input id="l-email" type="email" placeholder="jij@shaytye.com" autocomplete="email"></div>
       <button class="btn" id="l-send">Stuur inlogcode</button>
     </div>
     <div id="step-code" class="hide">
-      <div class="field"><label>Code uit je e-mail</label><input id="l-code" inputmode="numeric" maxlength="6" placeholder="6-cijferige code"></div>
+      <div class="field"><label id="lbl-code">Code uit je e-mail</label><input id="l-code" inputmode="numeric" maxlength="6" placeholder="6-cijferige code"></div>
       <button class="btn" id="l-verify">Inloggen</button>
       <button class="btn ghost" id="l-back" style="margin-top:8px">Ander e-mailadres</button>
     </div>
@@ -171,7 +175,7 @@ padding:11px 20px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;tr
   <aside class="side" id="side">
     <div class="brand"><img src="/logo.png" alt="" onerror="this.style.display='none'"><b>Shaytye</b></div>
     <nav class="nav" id="nav"></nav>
-    <div class="foot">Ingelogd als<br><span id="who"></span><br><button id="logout">Uitloggen</button></div>
+    <div class="foot"><div class="langtog" style="margin-bottom:10px"><button class="langbtn" data-l="nl">NL</button><button class="langbtn" data-l="en">EN</button></div><br><span id="ingelabel">Ingelogd als</span><br><span id="who"></span><br><button id="logout">Uitloggen</button></div>
   </aside>
   <div class="scrim hide" id="scrim"></div>
   <main class="main">
@@ -188,6 +192,58 @@ var KEY = "sb_publishable_Ds3dufQ1O9oQNGRJCa6QZg_9EBY7jq7";
 var TOKEN = localStorage.getItem("shaytye_admin_token") || "";
 var EMAIL = localStorage.getItem("shaytye_admin_email") || "";
 var STATE = { tab:"overview", stats:null };
+var LANG = localStorage.getItem("shaytye_admin_lang") || "nl";
+var T = {
+ "Overzicht":"Overview","CRM Jeu":"Game CRM","CRM Cliënten":"Client CRM","Boekingen":"Bookings","Beschikbaarheid":"Availability","Instellingen":"Settings",
+ "Een blik op je bedrijf":"A snapshot of your business",
+ "Cliënten":"Clients","Leads":"Leads","Spel-inzendingen":"Game entries","Winnaars":"Winners","Prijs niet geclaimd":"Prize unclaimed","Niet verzilverd":"Not redeemed","Komende boekingen":"Upcoming bookings","Omzet":"Revenue",
+ "Laatste spel-inzendingen":"Latest game entries","Laatste boekingen":"Latest bookings",
+ "Naam":"Name","Telefoon":"Phone","Resultaat":"Result","Wanneer":"When","Geen prijs":"No prize","Nog geen inzendingen.":"No entries yet.",
+ "Cliënt":"Client","Datum":"Date","Dienst":"Service","Status":"Status","Nog geen boekingen.":"No bookings yet.",
+ "Inzendingen van het rad van fortuin":"Entries from the prize wheel","E-mail":"Email","Code":"Code","Geclaimd":"Claimed","Verzilverd":"Redeemed",
+ "Alles":"All","Niet geclaimd":"Unclaimed","Geen inzendingen in deze filter.":"No entries in this filter.","&rarr; klant":"&rarr; client",
+ "Beheer je klanten en leads":"Manage your clients and leads","Contact":"Contact","Plaats":"City","Bron":"Source","Besteed":"Spent",
+ "+ Nieuwe cliënt":"+ New client","Nog geen cliënten. Voeg er een toe of zet een spel-inzending om.":"No clients yet. Add one or convert a game entry.",
+ "Cliënt bewerken":"Edit client","Nieuwe cliënt":"New client","Naam *":"Name *","Besteed (€)":"Spent (€)","Tags (komma-gescheiden)":"Tags (comma-separated)","Notitie":"Note",
+ "Verwijderen":"Delete","Annuleren":"Cancel","Opslaan":"Save",
+ "Notities":"Notes","Nog geen notities.":"No notes yet.","Notitie toevoegen":"Add note","Sluiten":"Close","Bewerken":"Edit",
+ "Aanvragen en afspraken":"Requests and appointments","Nog geen boekingen. Aanvragen vanaf de website verschijnen hier.":"No bookings yet. Requests from the website appear here.",
+ "Je wekelijkse werkuren en uitzonderingen":"Your weekly hours and exceptions","Wekelijkse uren":"Weekly hours","tot":"to",
+ "Uitzonderingen (vrije dagen / afwijkende tijden)":"Exceptions (days off / custom hours)","Gesloten":"Closed","Open (afwijkend)":"Open (custom)","Open":"Open","Toevoegen":"Add","Type":"Type","Geen uitzonderingen.":"No exceptions.",
+ "Het spel en algemene instellingen":"The game and general settings","Rad van fortuin":"Prize wheel","Spel actief":"Game active","Einddatum":"End date","Max. per persoon":"Max. per person","Prijskansen (gewichten)":"Prize odds (weights)",
+ "Hoe hoger het getal, hoe groter de kans. NONE = geen prijs, AGAIN = extra draai.":"The higher the number, the higher the chance. NONE = no prize, AGAIN = extra spin.",
+ "Ingelogd als":"Logged in as","Uitloggen":"Log out",
+ "Log in met je e-mailadres":"Log in with your email","E-mailadres":"Email address","Stuur inlogcode":"Send login code","Code uit je e-mail":"Code from your email","Inloggen":"Log in","Ander e-mailadres":"Different email",
+ "lead":"lead","actief":"active","klant":"client","afgerond":"completed","inactief":"inactive","nieuw":"new","bevestigd":"confirmed","geannuleerd":"cancelled","ja":"yes","nee":"no",
+ "Zondag":"Sunday","Maandag":"Monday","Dinsdag":"Tuesday","Woensdag":"Wednesday","Donderdag":"Thursday","Vrijdag":"Friday","Zaterdag":"Saturday",
+ // toast / placeholder / message strings
+ "Bijgewerkt":"Updated","Fout":"Error","Fout bij laden":"Error loading","Cliënt aangemaakt":"Client created","Verwijderd":"Deleted","Toegevoegd":"Added","Notitie toegevoegd":"Note added","Status bijgewerkt":"Status updated","Kies een datum":"Pick a date","Naam is verplicht":"Name is required","Deze cliënt verwijderen?":"Delete this client?",
+ "Zoek op naam, e-mail, plaats...":"Search by name, email, city...","spel, website, doorverwijzing...":"game, website, referral...","Notitie (optioneel)":"Note (optional)","Nieuwe notitie...":"New note...",
+ "Vul je e-mailadres in.":"Enter your email.","Bezig...":"Working...","Als dit adres bekend is, is er een code verstuurd.":"If this address is known, a code has been sent.","Er ging iets mis. Probeer opnieuw.":"Something went wrong. Try again.","Voer de 6-cijferige code in.":"Enter the 6-digit code.","Controleren...":"Checking...","Onjuiste of verlopen code.":"Incorrect or expired code."
+};
+function tr(x){ return (LANG==="en" && T[x]!==undefined) ? T[x] : x; }
+function TL(html){
+  if(LANG!=="en") return html;
+  return html.replace(/>([^<>]+)</g, function(m, txt){
+    var k=txt.trim();
+    if(T[k]!==undefined){ return ">"+T[k]+"<"; }
+    return m;
+  });
+}
+function translateStatics(){
+  function set(id,nl){ var e=document.getElementById(id); if(e) e.textContent=tr(nl); }
+  set("login-sub","Log in met je e-mailadres"); set("lbl-email","E-mailadres");
+  set("l-send","Stuur inlogcode"); set("lbl-code","Code uit je e-mail");
+  set("l-verify","Inloggen"); set("l-back","Ander e-mailadres");
+  set("ingelabel","Ingelogd als"); set("logout","Uitloggen");
+}
+function setLang(l){
+  LANG=l; localStorage.setItem("shaytye_admin_lang", l); document.documentElement.lang=l;
+  var bs=document.querySelectorAll(".langbtn");
+  for(var i=0;i<bs.length;i++){ bs[i].className="langbtn"+(bs[i].getAttribute("data-l")===LANG?" on":""); }
+  translateStatics();
+  if($("app") && !$("app").classList.contains("hide")){ renderNav(); render(); }
+}
 
 function $(id){ return document.getElementById(id); }
 function esc(s){ s = (s===null||s===undefined)?"":String(s);
@@ -214,29 +270,29 @@ async function api(action, payload){
 function lmsg(m,cls){ var e=$("l-msg"); e.textContent=m||""; e.className="msg "+(cls||""); }
 $("l-send").onclick = async function(){
   var email = $("l-email").value.trim();
-  if(!email){ lmsg("Vul je e-mailadres in.","err"); return; }
-  this.disabled=true; lmsg("Bezig...");
+  if(!email){ lmsg(tr("Vul je e-mailadres in."),"err"); return; }
+  this.disabled=true; lmsg(tr("Bezig..."));
   try{
     await api("request_code", { email:email });
     window._loginEmail = email;
     $("step-email").classList.add("hide"); $("step-code").classList.remove("hide");
-    lmsg("Als dit adres bekend is, is er een code verstuurd.","ok");
+    lmsg(tr("Als dit adres bekend is, is er een code verstuurd."),"ok");
     $("l-code").focus();
-  }catch(e){ lmsg("Er ging iets mis. Probeer opnieuw.","err"); }
+  }catch(e){ lmsg(tr("Er ging iets mis. Probeer opnieuw."),"err"); }
   this.disabled=false;
 };
 $("l-back").onclick = function(){ $("step-code").classList.add("hide"); $("step-email").classList.remove("hide"); lmsg(""); };
 $("l-verify").onclick = async function(){
   var code = $("l-code").value.trim();
-  if(!/^\d{6}$/.test(code)){ lmsg("Voer de 6-cijferige code in.","err"); return; }
-  this.disabled=true; lmsg("Controleren...");
+  if(!/^\d{6}$/.test(code)){ lmsg(tr("Voer de 6-cijferige code in."),"err"); return; }
+  this.disabled=true; lmsg(tr("Controleren..."));
   try{
     var d = await api("verify_code", { email:window._loginEmail, code:code });
     TOKEN = d.token; EMAIL = d.email;
     localStorage.setItem("shaytye_admin_token", TOKEN);
     localStorage.setItem("shaytye_admin_email", EMAIL);
     startApp();
-  }catch(e){ lmsg("Onjuiste of verlopen code.","err"); this.disabled=false; }
+  }catch(e){ lmsg(tr("Onjuiste of verlopen code."),"err"); this.disabled=false; }
 };
 $("l-code").addEventListener("keydown",function(e){ if(e.key==="Enter") $("l-verify").click(); });
 $("l-email").addEventListener("keydown",function(e){ if(e.key==="Enter") $("l-send").click(); });
@@ -267,7 +323,7 @@ function renderNav(){
                 (t.id==="bookings" && STATE.stats && STATE.stats.bookingsNew) ? "<span class='badge'>"+STATE.stats.bookingsNew+"</span>" : "";
     h+="<button data-tab='"+t.id+"' class='"+(STATE.tab===t.id?"on":"")+"'><span class='ic'>"+t.ic+"</span>"+t.label+badge+"</button>";
   }
-  $("nav").innerHTML=h;
+  $("nav").innerHTML=TL(h);
   var btns=$("nav").querySelectorAll("button");
   for(var j=0;j<btns.length;j++){ btns[j].onclick=function(){ go(this.getAttribute("data-tab")); closeSide(); }; }
 }
@@ -330,7 +386,7 @@ async function renderOverview(v){
     h+="</tbody></table>";
   } else { h+="<div class='empty'>Nog geen boekingen.</div>"; }
   h+="</div></div>";
-  v.innerHTML = head("Overzicht","Een blik op je bedrijf")+h;
+  v.innerHTML = TL(head("Overzicht","Een blik op je bedrijf")+h);
 }
 
 /* ---------------- GAME / JEU ---------------- */
@@ -357,17 +413,17 @@ async function renderGame(v){
     });
     rows+="</tbody></table>";
   } else { rows="<div class='empty'>Geen inzendingen in deze filter.</div>"; }
-  v.innerHTML = head("CRM Jeu","Inzendingen van het rad van fortuin")+
-    "<div class='toolbar'>"+seg+"</div><div class='panel'><div class='tablewrap'>"+rows+"</div></div>";
+  v.innerHTML = TL(head("CRM Jeu","Inzendingen van het rad van fortuin")+
+    "<div class='toolbar'>"+seg+"</div><div class='panel'><div class='tablewrap'>"+rows+"</div></div>");
   // wire
   var segs=v.querySelectorAll(".seg button");
   for(var i=0;i<segs.length;i++){ segs[i].onclick=function(){ STATE.gameFilter=this.getAttribute("data-f"); renderGame(v); }; }
   v.querySelectorAll("[data-red]").forEach(function(cb){ cb.onchange=async function(){
-    try{ await api("game_update",{ id:this.getAttribute("data-red"), redeemed:this.checked }); toast("Bijgewerkt"); loadStats(); }
-    catch(e){ toast("Fout",1); this.checked=!this.checked; } }; });
+    try{ await api("game_update",{ id:this.getAttribute("data-red"), redeemed:this.checked }); toast(tr("Bijgewerkt")); loadStats(); }
+    catch(e){ toast(tr("Fout"),1); this.checked=!this.checked; } }; });
   v.querySelectorAll("[data-toclient]").forEach(function(b){ b.onclick=async function(){
-    try{ await api("client_from_entry",{ entry_id:this.getAttribute("data-toclient") }); toast("Cliënt aangemaakt"); loadStats(); }
-    catch(e){ toast("Fout: "+e.message,1); } }; });
+    try{ await api("client_from_entry",{ entry_id:this.getAttribute("data-toclient") }); toast(tr("Cliënt aangemaakt")); loadStats(); }
+    catch(e){ toast(tr("Fout")+": "+e.message,1); } }; });
 }
 
 /* ---------------- CLIENTS ---------------- */
@@ -375,7 +431,7 @@ STATE.clientSearch="";
 async function renderClients(v){
   var d = await api("clients_list",{ search:STATE.clientSearch||null });
   var h = head("CRM Cliënten","Beheer je klanten en leads");
-  h+="<div class='toolbar'><input id='c-search' placeholder='Zoek op naam, e-mail, plaats...' value='"+esc(STATE.clientSearch)+"'><button class='btn sm' id='c-new'>+ Nieuwe cliënt</button></div>";
+  h+="<div class='toolbar'><input id='c-search' placeholder='"+tr('Zoek op naam, e-mail, plaats...')+"' value='"+esc(STATE.clientSearch)+"'><button class='btn sm' id='c-new'>+ Nieuwe cliënt</button></div>";
   h+="<div class='panel'><div class='tablewrap'>";
   if(d.clients.length){
     h+="<table><thead><tr><th>Naam</th><th>Contact</th><th>Plaats</th><th>Status</th><th>Bron</th><th class='right'>Besteed</th></tr></thead><tbody>";
@@ -388,7 +444,7 @@ async function renderClients(v){
     h+="</tbody></table>";
   } else { h+="<div class='empty'>Nog geen cliënten. Voeg er een toe of zet een spel-inzending om.</div>"; }
   h+="</div></div>";
-  v.innerHTML=h;
+  v.innerHTML=TL(h);
   var srch=$("c-search"); var tmr;
   srch.oninput=function(){ clearTimeout(tmr); var val=this.value; tmr=setTimeout(function(){ STATE.clientSearch=val; renderClients(v); },350); };
   srch.onkeydown=function(e){ if(e.key==="Enter"){ STATE.clientSearch=this.value; renderClients(v); } };
@@ -397,7 +453,7 @@ async function renderClients(v){
 }
 
 function statusOpts(sel){
-  return ["lead","actief","klant","afgerond","inactief"].map(function(s){ return "<option "+(sel===s?"selected":"")+">"+s+"</option>"; }).join("");
+  return ["lead","actief","klant","afgerond","inactief"].map(function(s){ return "<option value='"+s+"' "+(sel===s?"selected":"")+">"+s+"</option>"; }).join("");
 }
 function clientModal(c){
   c=c||{};
@@ -406,7 +462,7 @@ function clientModal(c){
     "<div class='field'><label>Telefoon</label><input id='m-phone' value='"+esc(c.phone||"")+"'></div></div>"+
     "<div class='grid2'><div class='field'><label>Plaats</label><input id='m-city' value='"+esc(c.city||"")+"'></div>"+
     "<div class='field'><label>Status</label><select id='m-status'>"+statusOpts(c.status||"lead")+"</select></div></div>"+
-    "<div class='grid2'><div class='field'><label>Bron</label><input id='m-source' value='"+esc(c.source||"")+"' placeholder='spel, website, doorverwijzing...'></div>"+
+    "<div class='grid2'><div class='field'><label>Bron</label><input id='m-source' value='"+esc(c.source||"")+"' placeholder='"+tr('spel, website, doorverwijzing...')+"'></div>"+
     "<div class='field'><label>Besteed (€)</label><input id='m-spent' type='number' step='0.01' value='"+esc(c.total_spent||"")+"'></div></div>"+
     "<div class='field'><label>Tags (komma-gescheiden)</label><input id='m-tags' value='"+esc((c.tags||[]).join(", "))+"'></div>"+
     "<div class='field'><label>Notitie</label><textarea id='m-notes'>"+esc(c.notes||"")+"</textarea></div>";
@@ -420,17 +476,17 @@ function clientModal(c){
       total_spent: $("m-spent").value?Number($("m-spent").value):0,
       tags: $("m-tags").value.split(",").map(function(s){return s.trim();}).filter(Boolean),
       notes:$("m-notes").value.trim() };
-    if(!payload.name){ toast("Naam is verplicht",1); return; }
+    if(!payload.name){ toast(tr("Naam is verplicht"),1); return; }
     this.disabled=true;
     try{
       if(c.id){ payload.id=c.id; await api("client_update",payload); } else { await api("client_create",payload); }
-      closeModal(); toast("Opgeslagen"); loadStats(); renderClients($("view"));
-    }catch(e){ toast("Fout: "+e.message,1); this.disabled=false; }
+      closeModal(); toast(tr("Opgeslagen")); loadStats(); renderClients($("view"));
+    }catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; }
   };
   if(c.id){ $("m-del").onclick=async function(){
-    if(!confirm("Deze cliënt verwijderen?")) return;
-    try{ await api("client_delete",{id:c.id}); closeModal(); toast("Verwijderd"); loadStats(); renderClients($("view")); }
-    catch(e){ toast("Fout",1); } }; }
+    if(!confirm(tr("Deze cliënt verwijderen?"))) return;
+    try{ await api("client_delete",{id:c.id}); closeModal(); toast(tr("Verwijderd")); loadStats(); renderClients($("view")); }
+    catch(e){ toast(tr("Fout"),1); } }; }
 }
 async function openClient(id){
   try{
@@ -444,16 +500,16 @@ async function openClient(id){
       "<div><div class='muted' style='font-size:11px'>BESTEED</div>"+money(c.total_spent)+"</div></div>"+
       (c.notes?"<div class='note'>"+esc(c.notes)+"</div>":"")+
       "<div style='margin:16px 0 8px;font-weight:600;font-size:13px'>Notities</div>"+notesH+
-      "<div class='field' style='margin-top:12px'><textarea id='n-new' placeholder='Nieuwe notitie...'></textarea></div><button class='btn sm' id='n-add'>Notitie toevoegen</button>";
+      "<div class='field' style='margin-top:12px'><textarea id='n-new' placeholder='"+tr('Nieuwe notitie...')+"'></textarea></div><button class='btn sm' id='n-add'>Notitie toevoegen</button>";
     var foot="<button class='btn gray sm' id='m-close'>Sluiten</button><button class='btn sm' id='m-edit'>Bewerken</button>";
     modal(esc(c.name), body, foot);
     $("m-close").onclick=closeModal;
     $("m-edit").onclick=function(){ closeModal(); clientModal(c); };
     $("n-add").onclick=async function(){
       var note=$("n-new").value.trim(); if(!note){ return; }
-      try{ await api("client_note_add",{client_id:id, note:note}); toast("Notitie toegevoegd"); openClient(id); }
-      catch(e){ toast("Fout",1); } };
-  }catch(e){ toast("Fout bij laden",1); }
+      try{ await api("client_note_add",{client_id:id, note:note}); toast(tr("Notitie toegevoegd")); openClient(id); }
+      catch(e){ toast(tr("Fout"),1); } };
+  }catch(e){ toast(tr("Fout bij laden"),1); }
 }
 
 /* ---------------- BOOKINGS ---------------- */
@@ -473,10 +529,10 @@ async function renderBookings(v){
     h+="</tbody></table>";
   } else { h+="<div class='empty'>Nog geen boekingen. Aanvragen vanaf de website verschijnen hier.</div>"; }
   h+="</div></div>";
-  v.innerHTML=h;
+  v.innerHTML=TL(h);
   v.querySelectorAll(".bk-status").forEach(function(sel){ sel.onchange=async function(){
-    try{ await api("booking_update",{id:this.getAttribute("data-bk"), status:this.value}); toast("Status bijgewerkt"); loadStats(); }
-    catch(e){ toast("Fout",1); } }; });
+    try{ await api("booking_update",{id:this.getAttribute("data-bk"), status:this.value}); toast(tr("Status bijgewerkt")); loadStats(); }
+    catch(e){ toast(tr("Fout"),1); } }; });
 }
 
 /* ---------------- AVAILABILITY ---------------- */
@@ -499,7 +555,7 @@ async function renderAvailability(v){
   h+="</div></div></div>";
   // exceptions
   h+="<div class='panel'><div class='ph'><h3>Uitzonderingen (vrije dagen / afwijkende tijden)</h3></div><div style='padding:16px 18px'>";
-  h+="<div class='toolbar'><input type='date' id='ex-day'><select id='ex-kind'><option value='closed'>Gesloten</option><option value='open'>Open (afwijkend)</option></select><input type='text' id='ex-note' placeholder='Notitie (optioneel)' style='max-width:220px'><button class='btn sm' id='ex-add'>Toevoegen</button></div>";
+  h+="<div class='toolbar'><input type='date' id='ex-day'><select id='ex-kind'><option value='closed'>Gesloten</option><option value='open'>Open (afwijkend)</option></select><input type='text' id='ex-note' placeholder='"+tr('Notitie (optioneel)')+"' style='max-width:220px'><button class='btn sm' id='ex-add'>Toevoegen</button></div>";
   if(d.exceptions.length){
     h+="<div class='tablewrap'><table><thead><tr><th>Datum</th><th>Type</th><th>Notitie</th><th></th></tr></thead><tbody>";
     d.exceptions.forEach(function(x){
@@ -508,7 +564,7 @@ async function renderAvailability(v){
     h+="</tbody></table></div>";
   } else { h+="<div class='muted' style='font-size:13px'>Geen uitzonderingen.</div>"; }
   h+="</div></div>";
-  v.innerHTML=h;
+  v.innerHTML=TL(h);
   // wire rows
   v.querySelectorAll(".dayrow").forEach(function(row){
     var cb=row.querySelector(".av-on");
@@ -517,16 +573,16 @@ async function renderAvailability(v){
       var payload={ weekday:Number(row.getAttribute("data-wd")), start_time:row.querySelector(".av-start").value,
         end_time:row.querySelector(".av-end").value, active:cb.checked };
       if(row.getAttribute("data-id")) payload.id=row.getAttribute("data-id");
-      try{ var res=await api("availability_rule_set",payload); if(res.rule&&res.rule.id) row.setAttribute("data-id",res.rule.id); toast("Opgeslagen"); }
-      catch(e){ toast("Fout",1); } };
+      try{ var res=await api("availability_rule_set",payload); if(res.rule&&res.rule.id) row.setAttribute("data-id",res.rule.id); toast(tr("Opgeslagen")); }
+      catch(e){ toast(tr("Fout"),1); } };
   });
   $("ex-add").onclick=async function(){
-    var day=$("ex-day").value; if(!day){ toast("Kies een datum",1); return; }
-    try{ await api("availability_exception_add",{ day:day, kind:$("ex-kind").value, note:$("ex-note").value.trim()||null }); toast("Toegevoegd"); renderAvailability(v); }
-    catch(e){ toast("Fout",1); } };
+    var day=$("ex-day").value; if(!day){ toast(tr("Kies een datum"),1); return; }
+    try{ await api("availability_exception_add",{ day:day, kind:$("ex-kind").value, note:$("ex-note").value.trim()||null }); toast(tr("Toegevoegd")); renderAvailability(v); }
+    catch(e){ toast(tr("Fout"),1); } };
   v.querySelectorAll("[data-exdel]").forEach(function(b){ b.onclick=async function(){
-    try{ await api("availability_exception_delete",{id:this.getAttribute("data-exdel")}); toast("Verwijderd"); renderAvailability(v); }
-    catch(e){ toast("Fout",1); } }; });
+    try{ await api("availability_exception_delete",{id:this.getAttribute("data-exdel")}); toast(tr("Verwijderd")); renderAvailability(v); }
+    catch(e){ toast(tr("Fout"),1); } }; });
 }
 
 /* ---------------- SETTINGS ---------------- */
@@ -545,14 +601,14 @@ async function renderSettings(v){
     "<div class='grid2'>"+
     ["EUR5","EUR25","HOUR","NONE","AGAIN"].map(function(k){ return "<div class='field'><label>"+k+"</label><input type='number' id='w-"+k+"' value='"+esc(w[k]!==undefined?w[k]:0)+"'></div>"; }).join("")+
     "</div><button class='btn sm' id='s-save-weights'>Opslaan</button></div></div>";
-  v.innerHTML=h;
+  v.innerHTML=TL(h);
   $("s-save-contest").onclick=async function(){
-    try{ await api("settings_set",{key:"contest",value:{active:$("s-active").checked, ends:$("s-ends").value, max_per_person:Number($("s-max").value)||2}}); toast("Opgeslagen"); }
-    catch(e){ toast("Fout",1); } };
+    try{ await api("settings_set",{key:"contest",value:{active:$("s-active").checked, ends:$("s-ends").value, max_per_person:Number($("s-max").value)||2}}); toast(tr("Opgeslagen")); }
+    catch(e){ toast(tr("Fout"),1); } };
   $("s-save-weights").onclick=async function(){
     var val={}; ["EUR5","EUR25","HOUR","NONE","AGAIN"].forEach(function(k){ val[k]=Number($("w-"+k).value)||0; });
-    try{ await api("settings_set",{key:"prize_weights",value:val}); toast("Opgeslagen"); }
-    catch(e){ toast("Fout",1); } };
+    try{ await api("settings_set",{key:"prize_weights",value:val}); toast(tr("Opgeslagen")); }
+    catch(e){ toast(tr("Fout"),1); } };
 }
 
 /* ---------------- helpers ---------------- */
@@ -564,11 +620,15 @@ function statusPill(s){ s=s||"lead"; var m={lead:"lead",actief:"active",klant:"k
 function boolTag(b){ return b?"<span class='pill active'>ja</span>":"<span class='pill no'>nee</span>"; }
 function modal(title,body,foot){
   var o=document.createElement("div"); o.className="overlay"; o.id="overlay";
-  o.innerHTML="<div class='modal'><div class='mh'><h3>"+title+"</h3><button class='x' onclick='closeModal()'>&times;</button></div><div class='mb'>"+body+"</div><div class='mf'>"+foot+"</div></div>";
+  o.innerHTML=TL("<div class='modal'><div class='mh'><h3>"+title+"</h3><button class='x' onclick='closeModal()'>&times;</button></div><div class='mb'>"+body+"</div><div class='mf'>"+foot+"</div></div>");
   o.onclick=function(e){ if(e.target===o) closeModal(); };
   document.body.appendChild(o);
 }
 function closeModal(){ var o=$("overlay"); if(o) o.remove(); }
+
+/* ---------------- language toggle wiring ---------------- */
+document.querySelectorAll(".langbtn").forEach(function(b){ b.onclick=function(){ setLang(this.getAttribute("data-l")); }; });
+setLang(LANG);
 
 /* ---------------- boot ---------------- */
 (async function(){
