@@ -143,6 +143,8 @@ tr.clickable:hover td{background:var(--cream2)}
 .cal-day.closed{background:var(--cream2);opacity:.75}
 .cal-day.custom{box-shadow:inset 0 0 0 2px var(--rose-d)}
 .cal-day.past{opacity:.4;pointer-events:none}
+.slotrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.slotrow input[type=time]{flex:1;min-width:0}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
 padding:11px 20px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;transition:.28s;z-index:200;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -201,11 +203,12 @@ padding:11px 20px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;tr
 <script>
 var API = "https://ccdiibhzrtakczvkvqyw.supabase.co/functions/v1/shaytye-admin";
 var KEY = "sb_publishable_Ds3dufQ1O9oQNGRJCa6QZg_9EBY7jq7";
-var TOKEN = localStorage.getItem("shaytye_admin_token") || "";
-var EMAIL = localStorage.getItem("shaytye_admin_email") || "";
+var TOKEN = ""; // in-memory only: login (email code) required every visit
+var EMAIL = "";
 var STATE = { tab:"overview", stats:null };
-var LANG = localStorage.getItem("shaytye_admin_lang") || "nl";
+var LANG = "nl";
 var T = {
+ "Nieuwe boeking":"New booking","+ Nieuwe boeking":"+ New booking","Naam en datum verplicht":"Name and date required","Deze boeking verwijderen?":"Delete this booking?","Tijdslots":"Time slots","+ Tijdslot toevoegen":"+ Add time slot","Wijzigingen worden automatisch opgeslagen.":"Changes are saved automatically.","Datum *":"Date *","Tijd":"Time",
  "Standaard week":"Default week","Kalender":"Calendar","Dag aanpassen":"Edit day","Van":"From","Tot":"To","Terug naar standaard":"Back to default","Ma":"Mo","Di":"Tu","Wo":"We","Do":"Th","Vr":"Fr","Za":"Sa","Zo":"Su",
  "Betalingen / bonnen":"Payments / receipts","+ Nieuwe bon":"+ New receipt","Nieuwe bon":"New receipt","Bon bewerken":"Edit receipt","Versturen":"Send","Bon verstuurd":"Receipt sent","Deze bon verwijderen?":"Delete this receipt?","concept":"draft","verstuurd":"sent","Historie":"History","Boeking":"Booking","Spel":"Game","geen prijs":"no prize","Geen historie.":"No history.","Nog geen bonnen.":"No receipts yet.","Sessiedatum":"Session date","Uren":"Hours","Uurtarief (€)":"Hourly rate (€)","Parkeerkosten (€)":"Parking (€)","Kilometers":"Kilometers","Betaalwijze":"Payment method","Overboeking":"Bank transfer","Contant":"Cash","Totaal":"Total","Reiskosten €0,80/km (heen en terug).":"Travel €0.80/km (round trip).","Notitie toevoegen":"Add note",
  "Overzicht":"Overview","CRM Jeu":"Game CRM","CRM Cliënten":"Client CRM","Boekingen":"Bookings","Beschikbaarheid":"Availability","Instellingen":"Settings",
@@ -252,7 +255,7 @@ function translateStatics(){
   set("ingelabel","Ingelogd als"); set("logout","Uitloggen");
 }
 function setLang(l){
-  LANG=l; localStorage.setItem("shaytye_admin_lang", l); document.documentElement.lang=l;
+  LANG=l; document.documentElement.lang=l;
   var bs=document.querySelectorAll(".langbtn");
   for(var i=0;i<bs.length;i++){ bs[i].className="langbtn"+(bs[i].getAttribute("data-l")===LANG?" on":""); }
   translateStatics();
@@ -303,8 +306,6 @@ $("l-verify").onclick = async function(){
   try{
     var d = await api("verify_code", { email:window._loginEmail, code:code });
     TOKEN = d.token; EMAIL = d.email;
-    localStorage.setItem("shaytye_admin_token", TOKEN);
-    localStorage.setItem("shaytye_admin_email", EMAIL);
     startApp();
   }catch(e){ lmsg(tr("Onjuiste of verlopen code."),"err"); this.disabled=false; }
 };
@@ -313,7 +314,6 @@ $("l-email").addEventListener("keydown",function(e){ if(e.key==="Enter") $("l-se
 
 function doLogout(silent){
   try{ if(TOKEN) api("logout",{}); }catch(e){}
-  localStorage.removeItem("shaytye_admin_token"); localStorage.removeItem("shaytye_admin_email");
   TOKEN=""; EMAIL="";
   $("app").classList.add("hide"); $("login").classList.remove("hide");
   $("step-code").classList.add("hide"); $("step-email").classList.remove("hide");
@@ -581,6 +581,7 @@ function paymentModal(clientId, p){
 async function renderBookings(v){
   var d=await api("bookings_list",{});
   var h=head("Boekingen","Aanvragen en afspraken");
+  h+="<div class='toolbar'><button class='btn sm' id='bk-new'>+ Nieuwe boeking</button></div>";
   h+="<div class='panel'><div class='tablewrap'>";
   if(d.bookings.length){
     h+="<table><thead><tr><th>Cliënt</th><th>Contact</th><th>Datum</th><th>Dienst</th><th>Status</th><th></th></tr></thead><tbody>";
@@ -589,7 +590,7 @@ async function renderBookings(v){
         "<td class='muted'>"+esc(b.email||"")+(b.phone?"<br>"+esc(b.phone):"")+"</td>"+
         "<td>"+fmtDate(b.day)+(b.start_time?"<br><span class='muted'>"+esc(b.start_time)+"</span>":"")+"</td>"+
         "<td class='muted'>"+esc(b.service||"-")+"</td><td>"+statusPill(b.status)+"</td>"+
-        "<td><select data-bk='"+b.id+"' class='bk-status'>"+["new","confirmed","done","cancelled"].map(function(s){return "<option "+(b.status===s?"selected":"")+">"+s+"</option>";}).join("")+"</select></td></tr>";
+        "<td><select data-bk='"+b.id+"' class='bk-status'>"+["new","confirmed","done","cancelled"].map(function(s){return "<option "+(b.status===s?"selected":"")+">"+s+"</option>";}).join("")+"</select> <button class='btn tiny danger' data-bkdel='"+b.id+"'>&times;</button></td></tr>";
     });
     h+="</tbody></table>";
   } else { h+="<div class='empty'>Nog geen boekingen. Aanvragen vanaf de website verschijnen hier.</div>"; }
@@ -598,6 +599,20 @@ async function renderBookings(v){
   v.querySelectorAll(".bk-status").forEach(function(sel){ sel.onchange=async function(){
     try{ await api("booking_update",{id:this.getAttribute("data-bk"), status:this.value}); toast(tr("Status bijgewerkt")); loadStats(); }
     catch(e){ toast(tr("Fout"),1); } }; });
+  $("bk-new").onclick=function(){ bookingModal(v); };
+  v.querySelectorAll("[data-bkdel]").forEach(function(b){ b.onclick=async function(){ if(!confirm(tr("Deze boeking verwijderen?"))) return; try{ await api("booking_delete",{id:this.getAttribute("data-bkdel")}); toast(tr("Verwijderd")); loadStats(); renderBookings(v); }catch(e){ toast(tr("Fout"),1);} }; });
+}
+function bookingModal(v){
+  var body="<div class='grid2'><div class='field'><label>Naam *</label><input id='bk-name'></div><div class='field'><label>Telefoon</label><input id='bk-phone'></div></div>"+
+    "<div class='field'><label>E-mail</label><input id='bk-email'></div>"+
+    "<div class='grid2'><div class='field'><label>Datum *</label><input id='bk-day' type='date'></div><div class='field'><label>Tijd</label><input id='bk-time' type='time'></div></div>"+
+    "<div class='field'><label>Dienst</label><input id='bk-service'></div>"+
+    "<div class='field'><label>Notitie</label><textarea id='bk-msg'></textarea></div>";
+  modal("Nieuwe boeking", body, "<button class='btn gray sm' id='bk-cancel'>Annuleren</button><button class='btn sm' id='bk-save'>Opslaan</button>");
+  $("bk-cancel").onclick=closeModal;
+  $("bk-save").onclick=async function(){ var name=$("bk-name").value.trim(), day=$("bk-day").value; if(!name||!day){ toast(tr("Naam en datum verplicht"),1); return; } this.disabled=true;
+    try{ await api("booking_create",{client_name:name,email:$("bk-email").value.trim(),phone:$("bk-phone").value.trim(),day:day,start_time:$("bk-time").value||null,service:$("bk-service").value.trim(),message:$("bk-msg").value.trim(),status:"confirmed"}); closeModal(); toast(tr("Opgeslagen")); loadStats(); renderBookings(v); }
+    catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; } };
 }
 
 /* ---------------- AVAILABILITY ---------------- */
@@ -606,13 +621,18 @@ function isoLocal(dt){ return dt.getFullYear()+"-"+("0"+(dt.getMonth()+1)).slice
 var AV={rules:[],exceptions:[],month:null};
 function avByDate(iso){ for(var i=0;i<AV.exceptions.length;i++){ if(String(AV.exceptions[i].day).slice(0,10)===iso) return AV.exceptions[i]; } return null; }
 function avRuleFor(wd){ for(var i=0;i<AV.rules.length;i++){ if(AV.rules[i].weekday===wd) return AV.rules[i]; } return null; }
+function avExsForDate(iso){ return AV.exceptions.filter(function(x){ return String(x.day).slice(0,10)===iso; }); }
 function avDayState(dt){
-  var ex=avByDate(isoLocal(dt));
-  if(ex){ if(ex.kind==="closed") return {open:false,custom:true,ex:ex}; return {open:true,custom:true,start:String(ex.start_time||"09:00").slice(0,5),end:String(ex.end_time||"17:00").slice(0,5),ex:ex}; }
+  var iso=isoLocal(dt); var exs=avExsForDate(iso);
+  if(exs.length){
+    if(exs.some(function(x){return x.kind==="closed";})) return {open:false,custom:true,windows:[],exs:exs};
+    var w=exs.filter(function(x){return x.kind==="open";}).map(function(x){return {start:String(x.start_time||"09:00").slice(0,5),end:String(x.end_time||"17:00").slice(0,5)};}).sort(function(a,b){return a.start<b.start?-1:1;});
+    return {open:w.length>0,custom:true,windows:w,exs:exs};
+  }
   var r=avRuleFor(dt.getDay());
-  if(r) return r.active?{open:true,custom:false,start:String(r.start_time||"09:00").slice(0,5),end:String(r.end_time||"17:00").slice(0,5)}:{open:false,custom:false};
-  if(!AV.rules.length) return {open:dt.getDay()!==0,custom:false,start:"09:00",end:"17:00"};
-  return {open:false,custom:false};
+  if(r) return r.active?{open:true,custom:false,windows:[{start:String(r.start_time||"09:00").slice(0,5),end:String(r.end_time||"17:00").slice(0,5)}]}:{open:false,custom:false,windows:[]};
+  if(!AV.rules.length) return {open:dt.getDay()!==0,custom:false,windows:dt.getDay()!==0?[{start:"09:00",end:"17:00"}]:[]};
+  return {open:false,custom:false,windows:[]};
 }
 async function renderAvailability(v){
   var d=await api("availability_get",{});
@@ -641,7 +661,8 @@ async function renderAvailability(v){
   var dim=new Date(y,m+1,0).getDate(); var today=new Date(); today.setHours(0,0,0,0);
   for(var day=1;day<=dim;day++){ var dt=new Date(y,m,day); var st=avDayState(dt); var iso=isoLocal(dt);
     var cls="cal-day"+(st.open?" open":" closed")+(st.custom?" custom":"")+(dt<today?" past":"");
-    h+="<button class='"+cls+"' data-cal='"+iso+"'><span class='cd'>"+day+"</span><span class='ct'>"+(st.open?st.start:"—")+"</span></button>";
+    var lbl=st.open?(st.windows[0].start+"-"+st.windows[0].end+(st.windows.length>1?(" +"+(st.windows.length-1)):"")):"—";
+    h+="<button class='"+cls+"' data-cal='"+iso+"'><span class='cd'>"+day+"</span><span class='ct'>"+lbl+"</span></button>";
   }
   h+="</div><div class='muted' style='font-size:12px;margin-top:10px'>Groen = beschikbaar, grijs = gesloten. Roze rand = handmatig aangepast. Klik een dag om aan te passen.</div>";
   h+="</div></div>";
@@ -655,17 +676,26 @@ async function renderAvailability(v){
 function dayModal(iso, v){
   var p=iso.split("-"); var dt=new Date(Number(p[0]),Number(p[1])-1,Number(p[2])); var st=avDayState(dt);
   var mon=["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+  var slots=(st.open&&st.windows.length)?st.windows.slice():[{start:"09:00",end:"17:00"}];
+  var closed=st.custom&&!st.open;
+  function slotRowHtml(w){ return "<div class='slotrow'><input type='time' class='sl-start' value='"+w.start+"'><span class='muted'>tot</span><input type='time' class='sl-end' value='"+w.end+"'><button type='button' class='btn tiny danger sl-del'>&times;</button></div>"; }
   var body="<p class='muted' style='font-size:13px;margin-bottom:14px'>"+DAYNAMES[dt.getDay()]+" "+dt.getDate()+" "+mon[dt.getMonth()]+" "+dt.getFullYear()+"</p>"+
-    "<div class='field'><label>Status</label><select id='dm-kind'><option value='open'"+(st.open?" selected":"")+">Open</option><option value='closed'"+(!st.open?" selected":"")+">Gesloten</option></select></div>"+
-    "<div class='grid2' id='dm-times'><div class='field'><label>Van</label><input id='dm-start' type='time' value='"+(st.start||"09:00")+"'></div><div class='field'><label>Tot</label><input id='dm-end' type='time' value='"+(st.end||"17:00")+"'></div></div>";
+    "<div class='field'><label>Status</label><select id='dm-kind'><option value='open'"+(!closed?" selected":"")+">Open</option><option value='closed'"+(closed?" selected":"")+">Gesloten</option></select></div>"+
+    "<div id='dm-slots'"+(closed?" style='display:none'":"")+"><label style='display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px'>Tijdslots</label><div id='dm-list'>"+slots.map(slotRowHtml).join("")+"</div><button type='button' class='btn tiny gray' id='dm-add' style='margin-top:6px'>+ Tijdslot toevoegen</button></div>";
   var foot=(st.custom?"<button class='btn gray sm' id='dm-default'>Terug naar standaard</button>":"")+"<button class='btn gray sm' id='dm-cancel'>Annuleren</button><button class='btn sm' id='dm-save'>Opslaan</button>";
   modal("Dag aanpassen", body, foot);
-  function tog(){ $("dm-times").style.display=($("dm-kind").value==="open"?"grid":"none"); } tog();
-  $("dm-kind").onchange=tog; $("dm-cancel").onclick=closeModal;
-  if($("dm-default")) $("dm-default").onclick=async function(){ try{ if(st.ex) await api("availability_exception_delete",{id:st.ex.id}); closeModal(); toast(tr("Opgeslagen")); renderAvailability(v); }catch(e){ toast(tr("Fout"),1);} };
+  function wireDel(){ $("dm-list").querySelectorAll(".sl-del").forEach(function(b){ b.onclick=function(){ if($("dm-list").children.length>1) this.parentNode.remove(); }; }); }
+  wireDel();
+  function tog(){ $("dm-slots").style.display=($("dm-kind").value==="open"?"block":"none"); } tog();
+  $("dm-kind").onchange=tog;
+  $("dm-add").onclick=function(){ var t=document.createElement("div"); t.innerHTML=slotRowHtml({start:"09:00",end:"17:00"}); $("dm-list").appendChild(t.firstChild); wireDel(); };
+  $("dm-cancel").onclick=closeModal;
+  async function clearDay(){ if(st.exs){ for(var i=0;i<st.exs.length;i++){ await api("availability_exception_delete",{id:st.exs[i].id}); } } }
+  if($("dm-default")) $("dm-default").onclick=async function(){ try{ await clearDay(); closeModal(); toast(tr("Opgeslagen")); renderAvailability(v); }catch(e){ toast(tr("Fout"),1);} };
   $("dm-save").onclick=async function(){ this.disabled=true;
-    try{ if(st.ex) await api("availability_exception_delete",{id:st.ex.id}); var kind=$("dm-kind").value;
-      await api("availability_exception_add",{ day:iso, kind:kind, start_time:kind==="open"?$("dm-start").value:null, end_time:kind==="open"?$("dm-end").value:null });
+    try{ await clearDay();
+      if($("dm-kind").value==="closed"){ await api("availability_exception_add",{day:iso,kind:"closed"}); }
+      else { var rows=$("dm-list").querySelectorAll(".slotrow"); for(var i=0;i<rows.length;i++){ await api("availability_exception_add",{day:iso,kind:"open",start_time:rows[i].querySelector(".sl-start").value,end_time:rows[i].querySelector(".sl-end").value}); } }
       closeModal(); toast(tr("Opgeslagen")); renderAvailability(v);
     }catch(e){ toast(tr("Fout"),1); this.disabled=false; }
   };
@@ -681,20 +711,17 @@ async function renderSettings(v){
     "<div class='dayrow' style='border:0;padding:0;margin-bottom:14px'><label class='switch'><input type='checkbox' id='s-active' "+(c.active?"checked":"")+"><span class='sl'></span></label><span class='dn' style='width:auto'>Spel actief</span></div>"+
     "<div class='grid2'><div class='field'><label>Einddatum</label><input type='date' id='s-ends' value='"+esc(c.ends||"")+"'></div>"+
     "<div class='field'><label>Max. per persoon</label><input type='number' id='s-max' value='"+esc(c.max_per_person||2)+"'></div></div>"+
-    "<button class='btn sm' id='s-save-contest'>Opslaan</button></div></div>";
+    "<div class='muted' style='font-size:12px;margin-top:4px'>Wijzigingen worden automatisch opgeslagen.</div></div></div>";
   h+="<div class='panel'><div class='ph'><h3>Prijskansen (gewichten)</h3></div><div style='padding:18px'>"+
     "<p class='muted' style='font-size:13px;margin-bottom:14px'>Hoe hoger het getal, hoe groter de kans. NONE = geen prijs, AGAIN = extra draai.</p>"+
     "<div class='grid2'>"+
     ["EUR5","EUR25","HOUR","NONE","AGAIN"].map(function(k){ return "<div class='field'><label>"+k+"</label><input type='number' id='w-"+k+"' value='"+esc(w[k]!==undefined?w[k]:0)+"'></div>"; }).join("")+
-    "</div><button class='btn sm' id='s-save-weights'>Opslaan</button></div></div>";
+    "</div><div class='muted' style='font-size:12px;margin-top:8px'>Wijzigingen worden automatisch opgeslagen.</div></div></div>";
   v.innerHTML=TL(h);
-  $("s-save-contest").onclick=async function(){
-    try{ await api("settings_set",{key:"contest",value:{active:$("s-active").checked, ends:$("s-ends").value, max_per_person:Number($("s-max").value)||2}}); toast(tr("Opgeslagen")); }
-    catch(e){ toast(tr("Fout"),1); } };
-  $("s-save-weights").onclick=async function(){
-    var val={}; ["EUR5","EUR25","HOUR","NONE","AGAIN"].forEach(function(k){ val[k]=Number($("w-"+k).value)||0; });
-    try{ await api("settings_set",{key:"prize_weights",value:val}); toast(tr("Opgeslagen")); }
-    catch(e){ toast(tr("Fout"),1); } };
+  function saveContest(){ api("settings_set",{key:"contest",value:{active:$("s-active").checked, ends:$("s-ends").value, max_per_person:Number($("s-max").value)||2}}).then(function(){ toast(tr("Opgeslagen")); }).catch(function(){ toast(tr("Fout"),1); }); }
+  function saveWeights(){ var val={}; ["EUR5","EUR25","HOUR","NONE","AGAIN"].forEach(function(k){ val[k]=Number($("w-"+k).value)||0; }); api("settings_set",{key:"prize_weights",value:val}).then(function(){ toast(tr("Opgeslagen")); }).catch(function(){ toast(tr("Fout"),1); }); }
+  ["s-active","s-ends","s-max"].forEach(function(id){ $(id).onchange=saveContest; });
+  ["EUR5","EUR25","HOUR","NONE","AGAIN"].forEach(function(k){ $("w-"+k).onchange=saveWeights; });
 }
 
 /* ---------------- helpers ---------------- */
