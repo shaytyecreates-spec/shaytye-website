@@ -208,7 +208,7 @@ var EMAIL = "";
 var STATE = { tab:"overview", stats:null };
 var LANG = "nl";
 var T = {
- "Nieuwe boeking":"New booking","+ Nieuwe boeking":"+ New booking","Naam en datum verplicht":"Name and date required","Deze boeking verwijderen?":"Delete this booking?","Bevestigen":"Confirm","Deze boeking bevestigen en de cliënt een bevestigingsmail sturen?":"Confirm this booking and send the client a confirmation email?","Deze boeking annuleren en de cliënt een annuleringsmail sturen?":"Cancel this booking and send the client a cancellation email?","Boeking bevestigd · mail verstuurd":"Booking confirmed · email sent","Boeking bevestigd (geen e-mail)":"Booking confirmed (no email)","Boeking geannuleerd · mail verstuurd":"Booking cancelled · email sent","Boeking geannuleerd (geen e-mail)":"Booking cancelled (no email)","Tijdslots":"Time slots","+ Tijdslot toevoegen":"+ Add time slot","Wijzigingen worden automatisch opgeslagen.":"Changes are saved automatically.","Datum *":"Date *","Tijd":"Time",
+ "Nieuwe boeking":"New booking","+ Nieuwe boeking":"+ New booking","Naam en datum verplicht":"Name and date required","Deze boeking verwijderen?":"Delete this booking?","Bevestigen":"Confirm","Deze boeking bevestigen en de cliënt een bevestigingsmail sturen?":"Confirm this booking and send the client a confirmation email?","Deze boeking annuleren en de cliënt een annuleringsmail sturen?":"Cancel this booking and send the client a cancellation email?","Boeking bevestigd · mail verstuurd":"Booking confirmed · email sent","Boeking bevestigd (geen e-mail)":"Booking confirmed (no email)","Boeking geannuleerd · mail verstuurd":"Booking cancelled · email sent","Boeking geannuleerd (geen e-mail)":"Booking cancelled (no email)","Bonnen":"Receipts","Betalingsbewijzen versturen":"Send payment receipts","kies cliënt":"choose client","Kies een cliënt":"Choose a client","Deze bon naar de cliënt versturen?":"Send this receipt to the client?","Opslaan &amp; versturen":"Save &amp; send","Nog geen bonnen. Maak er een aan met “+ Nieuwe bon”.":"No receipts yet. Create one with “+ New receipt”.","Tijdslots":"Time slots","+ Tijdslot toevoegen":"+ Add time slot","Wijzigingen worden automatisch opgeslagen.":"Changes are saved automatically.","Datum *":"Date *","Tijd":"Time",
  "Standaard week":"Default week","Kalender":"Calendar","Dag aanpassen":"Edit day","Van":"From","Tot":"To","Terug naar standaard":"Back to default","Ma":"Mo","Di":"Tu","Wo":"We","Do":"Th","Vr":"Fr","Za":"Sa","Zo":"Su",
  "Betalingen / bonnen":"Payments / receipts","+ Nieuwe bon":"+ New receipt","Nieuwe bon":"New receipt","Bon bewerken":"Edit receipt","Versturen":"Send","Bon verstuurd":"Receipt sent","Deze bon verwijderen?":"Delete this receipt?","concept":"draft","verstuurd":"sent","Historie":"History","Boeking":"Booking","Spel":"Game","geen prijs":"no prize","Geen historie.":"No history.","Nog geen bonnen.":"No receipts yet.","Sessiedatum":"Session date","Uren":"Hours","Uurtarief (€)":"Hourly rate (€)","Parkeerkosten (€)":"Parking (€)","Kilometers":"Kilometers","Betaalwijze":"Payment method","Overboeking":"Bank transfer","Contant":"Cash","Totaal":"Total","Reiskosten €0,80/km (heen en terug).":"Travel €0.80/km (round trip).","Notitie toevoegen":"Add note",
  "Overzicht":"Overview","CRM Jeu":"Game CRM","CRM Cliënten":"Client CRM","Boekingen":"Bookings","Beschikbaarheid":"Availability","Instellingen":"Settings",
@@ -327,6 +327,7 @@ var TABS = [
   { id:"game",      ic:"❀", label:"CRM Jeu" },
   { id:"clients",   ic:"●", label:"CRM Cliënten" },
   { id:"bookings",  ic:"▣", label:"Boekingen" },
+  { id:"receipts",  ic:"€", label:"Bonnen" },
   { id:"availability", ic:"◷", label:"Beschikbaarheid" },
   { id:"settings",  ic:"⚙", label:"Instellingen" }
 ];
@@ -361,6 +362,7 @@ function render(){
   if(STATE.tab==="game") return renderGame(v);
   if(STATE.tab==="clients") return renderClients(v);
   if(STATE.tab==="bookings") return renderBookings(v);
+  if(STATE.tab==="receipts") return renderPayments(v);
   if(STATE.tab==="availability") return renderAvailability(v);
   if(STATE.tab==="settings") return renderSettings(v);
 }
@@ -578,6 +580,74 @@ function paymentModal(clientId, p){
 }
 
 /* ---------------- BOOKINGS ---------------- */
+async function renderPayments(v){
+  var d=await api("payments_all",{});
+  var h=head("Bonnen","Betalingsbewijzen versturen");
+  h+="<div class='toolbar'><button class='btn sm' id='rc-new'>+ Nieuwe bon</button></div>";
+  h+="<div class='card'>";
+  if(d.payments && d.payments.length){
+    h+="<table><thead><tr><th>Cliënt</th><th>Dienst</th><th>Datum</th><th>Totaal</th><th>Status</th><th></th></tr></thead><tbody>";
+    d.payments.forEach(function(p){
+      var cn=(p.client&&p.client.name)||"—";
+      h+="<tr><td><b>"+esc(cn)+"</b>"+((p.client&&p.client.email)?"<div class='muted' style='font-size:12px'>"+esc(p.client.email)+"</div>":"")+"</td>"+
+        "<td class='muted'>"+esc(p.service||"-")+"</td>"+
+        "<td>"+fmtDate(p.session_date||p.created_at)+"</td>"+
+        "<td><b>"+money(p.total)+"</b></td>"+
+        "<td>"+(p.status==='sent'?"<span class='pill active'>verstuurd</span>":"<span class='pill new'>concept</span>")+"</td>"+
+        "<td><div style='display:flex;flex-wrap:wrap;gap:4px;align-items:center'>"+
+          "<button class='btn tiny' data-rcsend='"+p.id+"'>Versturen</button>"+
+          "<button class='btn tiny gray' data-rcedit='"+p.id+"'>Bewerken</button>"+
+          "<button class='btn tiny danger' data-rcdel='"+p.id+"'>&times;</button>"+
+        "</div></td></tr>";
+    });
+    h+="</tbody></table>";
+  } else { h+="<div class='empty'>Nog geen bonnen. Maak er een aan met “+ Nieuwe bon”.</div>"; }
+  h+="</div></div>";
+  v.innerHTML=TL(h);
+  $("rc-new").onclick=function(){ receiptModal(null); };
+  v.querySelectorAll("[data-rcsend]").forEach(function(b){ b.onclick=async function(){ if(!confirm(tr("Deze bon naar de cliënt versturen?"))) return; this.disabled=true; try{ var r=await api("payment_send",{id:this.getAttribute("data-rcsend"), lang:LANG}); toast(r.emailed?tr("Bon verstuurd"):tr("Fout"), r.emailed?0:1); renderPayments(v); }catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; } }; });
+  v.querySelectorAll("[data-rcedit]").forEach(function(b){ b.onclick=function(){ var id=this.getAttribute("data-rcedit"); var p=(d.payments||[]).find(function(x){return x.id===id;}); receiptModal(p); }; });
+  v.querySelectorAll("[data-rcdel]").forEach(function(b){ b.onclick=async function(){ if(!confirm(tr("Deze bon verwijderen?"))) return; try{ await api("payment_delete",{id:this.getAttribute("data-rcdel")}); toast(tr("Verwijderd")); renderPayments(v); }catch(e){ toast(tr("Fout"),1);} }; });
+}
+async function receiptModal(p){
+  p = p || {};
+  function v(x,dflt){ return (x!==undefined&&x!==null)?x:dflt; }
+  var cs=await api("clients_list",{});
+  var clients=cs.clients||[];
+  var opts="<option value=''>— "+tr("kies cliënt")+" —</option>"+clients.map(function(c){ return "<option value='"+c.id+"'"+((p.client_id===c.id)?" selected":"")+">"+esc(c.name)+(c.email?" ("+esc(c.email)+")":"")+"</option>"; }).join("");
+  var body="<div class='field'><label>Cliënt *</label><select id='p-client'"+(p.id?" disabled":"")+">"+opts+"</select></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Dienst</label><input id='p-service' value='"+esc(p.service||"")+"'></div>"+
+    "<div class='field'><label>Sessiedatum</label><input id='p-date' type='date' value='"+esc(p.session_date?String(p.session_date).slice(0,10):"")+"'></div></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Uren</label><input id='p-hours' type='number' step='0.5' value='"+esc(v(p.hours,""))+"'></div>"+
+    "<div class='field'><label>Uurtarief (€)</label><input id='p-rate' type='number' value='"+esc(v(p.hourly_rate,45))+"'></div></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Parkeerkosten (€)</label><input id='p-parking' type='number' step='0.01' value='"+esc(v(p.parking,0))+"'></div>"+
+    "<div class='field'><label>Kilometers</label><input id='p-km' type='number' value='"+esc(v(p.km,0))+"'></div></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Betaalwijze</label><select id='p-method'><option value='virement'"+((p.method!=='cash'&&p.method!=='contant')?" selected":"")+">Overboeking</option><option value='cash'"+((p.method==='cash'||p.method==='contant')?" selected":"")+">Contant</option></select></div>"+
+    "<div class='field'><label>Totaal</label><input id='p-total' readonly style='font-weight:700;background:var(--cream2)'></div></div>"+
+    "<div class='field'><label>Notitie</label><textarea id='p-note'>"+esc(p.note||"")+"</textarea></div>"+
+    "<div class='muted' style='font-size:12px'>Reiskosten €0,80/km (heen en terug).</div>";
+  var foot="<button class='btn gray sm' id='pm-cancel'>Annuleren</button><button class='btn gray sm' id='pm-save'>Opslaan</button><button class='btn sm' id='pm-savesend'>Opslaan &amp; versturen</button>";
+  modal(p.id?"Bon bewerken":"Nieuwe bon", body, foot);
+  function calc(){ var t=Number($("p-hours").value||0)*Number($("p-rate").value||0)+Number($("p-parking").value||0)+Number($("p-km").value||0)*0.80; $("p-total").value=money(Math.round(t*100)/100); }
+  ["p-hours","p-rate","p-parking","p-km"].forEach(function(fid){ $(fid).oninput=calc; }); calc();
+  $("pm-cancel").onclick=function(){ closeModal(); renderPayments($("view")); };
+  async function save(){
+    var cid=p.id?p.client_id:$("p-client").value;
+    if(!cid){ toast(tr("Kies een cliënt"),1); return null; }
+    var payload={ client_id:cid, service:$("p-service").value.trim(), session_date:$("p-date").value||null,
+      hours:Number($("p-hours").value||0), hourly_rate:Number($("p-rate").value||45),
+      parking:Number($("p-parking").value||0), km:Number($("p-km").value||0),
+      method:$("p-method").value, note:$("p-note").value.trim() };
+    if(p.id){ payload.id=p.id; await api("payment_update",payload); return p.id; }
+    var r=await api("payment_create",payload); return r.payment.id;
+  }
+  $("pm-save").onclick=async function(){ this.disabled=true; try{ var id=await save(); if(!id){ this.disabled=false; return; } closeModal(); toast(tr("Opgeslagen")); renderPayments($("view")); }catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; } };
+  $("pm-savesend").onclick=async function(){ this.disabled=true; try{ var id=await save(); if(!id){ this.disabled=false; return; } var r=await api("payment_send",{id:id, lang:LANG}); closeModal(); toast(r.emailed?tr("Bon verstuurd"):tr("Fout"), r.emailed?0:1); renderPayments($("view")); }catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; } };
+}
 async function renderBookings(v){
   var d=await api("bookings_list",{});
   var h=head("Boekingen","Aanvragen en afspraken");
