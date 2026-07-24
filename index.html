@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="nl" translate="no">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta http-equiv="content-language" content="nl">
+<meta name="language" content="Dutch">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shaytye | Home Organizer Almere</title>
 <meta name="description" content="Shaytye Organizing - home organizer in Almere, werkzaam door heel Nederland. Rust, overzicht en systemen die blijven werken.">
@@ -226,6 +229,7 @@ main{padding-top:74px}
 .tcol.first{display:flex}
 .tcol-track{display:flex;flex-direction:column;gap:20px;animation:tscroll var(--dur,26s) linear infinite}
 .tcol:hover .tcol-track{animation-play-state:paused}
+@media(max-width:760px){.tcol-track{animation-duration:15s}}
 @keyframes tscroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
 .tcard{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px;box-shadow:0 8px 24px rgba(36,29,24,.05)}
 .tcard p{font-size:14.5px;color:var(--ink2);font-weight:300;margin-bottom:16px}
@@ -1011,14 +1015,12 @@ document.documentElement.className += " anim";
         <li><a href="mailto:contact@shaytye.com">contact@shaytye.com</a></li>
       </ul></div>
       <div><h4 data-i18n="ft_area"></h4><ul>
-        <li><span style="font-size:14px">Almere</span></li>
         <li><a href="#services" id="ftFee" data-i18n="ft_fee"></a></li>
       </ul></div>
     </div>
     <div class="f-bot">
       <span id="copy"></span>
       <span data-i18n="ft_made"></span>
-      <span style="opacity:.45;font-size:11px">v60</span>
     </div>
   </div>
 </footer>
@@ -1182,15 +1184,15 @@ var STEPS = [
 ];
 /* VOORBEELDREVIEWS voor presentatie \u2014 vervangen door echte klantreviews voor livegang */
 var TESTIMONIALS = [
- {n:"Sanne", r:{nl:"Almere",en:"Almere"},
-  nl:"Mijn kledingkast was jarenlang een ramp. Shanice heeft er in \u00E9\u00E9n middag een systeem in gebracht dat ik zelf makkelijk bijhoud. Ik kan eindelijk alles weer vinden \u2014 wat een verademing!",
-  en:"Mijn kledingkast was jarenlang een ramp. Shanice heeft er in \u00E9\u00E9n middag een systeem in gebracht dat ik zelf makkelijk bijhoud. Ik kan eindelijk alles weer vinden \u2014 wat een verademing!"},
- {n:"Fatima", r:{nl:"Amsterdam",en:"Amsterdam"},
-  nl:"Dank je wel voor het organiseren van mijn trapkast! Alles heeft nu een vaste plek met labels. Zelfs mijn man ruimt nu op \u2014 dat zegt genoeg.",
-  en:"Dank je wel voor het organiseren van mijn trapkast! Alles heeft nu een vaste plek met labels. Zelfs mijn man ruimt nu op \u2014 dat zegt genoeg."},
- {n:"Yasmina", r:{nl:"Almere",en:"Almere"},
-  nl:"Na mijn verhuizing stond alles nog in dozen. Shanice heeft samen met mij in twee dagen het hele huis ingericht, kamer voor kamer. Zo lief, zo rustig, en wat een energie. Ik voelde me meteen thuis.",
-  en:"Na mijn verhuizing stond alles nog in dozen. Shanice heeft samen met mij in twee dagen het hele huis ingericht, kamer voor kamer. Zo lief, zo rustig, en wat een energie. Ik voelde me meteen thuis."},
+ {n:"Kineta", r:{nl:"Almere",en:"Almere"},
+  nl:"Ik ben ontzettend blij met het resultaat! Mijn keuken is nu veel overzichtelijker en beter georganiseerd. Alles heeft een logische plek, waardoor ik niet meer steeds hoef te zoeken naar spullen. Het resultaat heeft me niet alleen meer orde gegeven, maar ook echt meer rust. Shay is daarnaast ontzettend goed in wat ze doet: ze heeft echt visie en ziet meteen hoe je een ruimte slimmer en praktischer kunt indelen. Heel tevreden en absoluut een aanrader!",
+  en:"I am incredibly happy with the result! My kitchen is now much clearer and better organised. Everything has a logical place, so I no longer have to keep searching for things. It gave me not just more order, but real calm. Shay is also incredibly good at what she does: she has vision and immediately sees how to arrange a space more smartly and practically. Very satisfied and absolutely a recommendation!"},
+ {n:"Shaindel", r:{nl:"Amsterdam",en:"Amsterdam"},
+  nl:"Shanice is het cadeautje voor elke moeder. Zonder ook maar een woord te zeggen, snapt ze wat je nodig hebt. Ze gaat secuur om met je wensen en behoeftes en organiseert alles zoals jij het wilt! Echt een aanrader!",
+  en:"Shanice is the gift for every mother. Without saying a single word, she understands what you need. She handles your wishes and needs with care and organises everything exactly the way you want it. Truly a recommendation!"},
+ {n:"Thelittlelionking", r:{nl:"Almere",en:"Almere"},
+  nl:"Shaytye Organising is een geweldig bedrijf! Er wordt veel rekening gehouden met je wensen. Er wordt veel werk verricht in een hoog tempo, maar wel zorgvuldig. Daarnaast is er ruimte voor persoonlijke aandacht en krijg je tips om ook in de toekomst een schone en prettige omgeving te behouden. Echt top!",
+  en:"Shaytye Organising is a wonderful company! Your wishes are really taken into account. A lot of work gets done at a high pace, yet carefully. There is also room for personal attention, and you get tips to keep a clean and pleasant space in the future too. Really top!"},
  {n:"Esther", r:{nl:"Amsterdam",en:"Amsterdam"},
   nl:"Onze keuken in Amsterdam is klein, dus elke centimeter telt. Na de sessie voelde hij twee keer zo groot. Koken is weer leuk, en de tips om het bijgehouden te houden werken echt.",
   en:"Our kitchen in Amsterdam is small, so every centimeter counts. After the session it felt twice as big. Cooking is fun again, and the tips to keep it that way really work."},
@@ -2270,7 +2272,7 @@ document.addEventListener("DOMContentLoaded", function(){
   if (waM){ waM.href = waBase; }
   if (waFt){
     waFt.href = waBase;
-    waFt.textContent = "WhatsApp: +" + WHATSAPP_NUMBER.slice(0,2) + " " + WHATSAPP_NUMBER.slice(2,3) + " " + WHATSAPP_NUMBER.slice(3);
+    waFt.textContent = "WhatsApp";
   }
   var ftFee = el("ftFee");
   if (ftFee){
