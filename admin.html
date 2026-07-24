@@ -131,6 +131,18 @@ tr.clickable:hover td{background:var(--cream2)}
 .langtog{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;background:var(--cream)}
 .langtog .langbtn{background:transparent;border:0;padding:4px 12px;font-size:12px;font-weight:700;color:var(--ink2);cursor:pointer}
 .langtog .langbtn.on{background:var(--rose-d);color:#fff}
+.calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-dh{text-align:center;font-size:11px;font-weight:700;color:var(--ink2);padding:4px 0}
+.cal-day{border:1px solid var(--line);border-radius:10px;padding:7px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;background:var(--cream);min-height:50px;transition:transform .1s}
+.cal-day:hover{transform:translateY(-1px)}
+.cal-day .cd{font-size:14px;font-weight:600}
+.cal-day .ct{font-size:10px;color:var(--ink2)}
+.cal-day.open{background:#E7F6EE;border-color:#c9ebd7}
+.cal-day.open .ct{color:var(--ok)}
+.cal-day.closed{background:var(--cream2);opacity:.75}
+.cal-day.custom{box-shadow:inset 0 0 0 2px var(--rose-d)}
+.cal-day.past{opacity:.4;pointer-events:none}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
 padding:11px 20px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;transition:.28s;z-index:200;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -194,6 +206,8 @@ var EMAIL = localStorage.getItem("shaytye_admin_email") || "";
 var STATE = { tab:"overview", stats:null };
 var LANG = localStorage.getItem("shaytye_admin_lang") || "nl";
 var T = {
+ "Standaard week":"Default week","Kalender":"Calendar","Dag aanpassen":"Edit day","Van":"From","Tot":"To","Terug naar standaard":"Back to default","Ma":"Mo","Di":"Tu","Wo":"We","Do":"Th","Vr":"Fr","Za":"Sa","Zo":"Su",
+ "Betalingen / bonnen":"Payments / receipts","+ Nieuwe bon":"+ New receipt","Nieuwe bon":"New receipt","Bon bewerken":"Edit receipt","Versturen":"Send","Bon verstuurd":"Receipt sent","Deze bon verwijderen?":"Delete this receipt?","concept":"draft","verstuurd":"sent","Historie":"History","Boeking":"Booking","Spel":"Game","geen prijs":"no prize","Geen historie.":"No history.","Nog geen bonnen.":"No receipts yet.","Sessiedatum":"Session date","Uren":"Hours","Uurtarief (€)":"Hourly rate (€)","Parkeerkosten (€)":"Parking (€)","Kilometers":"Kilometers","Betaalwijze":"Payment method","Overboeking":"Bank transfer","Contant":"Cash","Totaal":"Total","Reiskosten €0,80/km (heen en terug).":"Travel €0.80/km (round trip).","Notitie toevoegen":"Add note",
  "Overzicht":"Overview","CRM Jeu":"Game CRM","CRM Cliënten":"Client CRM","Boekingen":"Bookings","Beschikbaarheid":"Availability","Instellingen":"Settings",
  "Een blik op je bedrijf":"A snapshot of your business",
  "Cliënten":"Clients","Leads":"Leads","Spel-inzendingen":"Game entries","Winnaars":"Winners","Prijs niet geclaimd":"Prize unclaimed","Niet verzilverd":"Not redeemed","Komende boekingen":"Upcoming bookings","Omzet":"Revenue",
@@ -493,23 +507,74 @@ async function openClient(id){
     var d=await api("client_get",{id:id});
     var c=d.client;
     var notesH = (d.notes||[]).length ? d.notes.map(function(n){ return "<div class='note'>"+esc(n.note)+"<div class='meta'>"+esc(n.author||"")+" · "+fmtDateTime(n.created_at)+"</div></div>"; }).join("") : "<div class='muted' style='font-size:13px'>Nog geen notities.</div>";
+    var payH = (d.payments||[]).length ? d.payments.map(function(p){
+      var ml=(p.method==='cash'||p.method==='contant')?"Contant":"Overboeking";
+      return "<div class='note' style='display:flex;justify-content:space-between;align-items:center;gap:8px'>"+
+        "<div><b>"+money(p.total)+"</b> <span class='muted'>· "+ml+"</span>"+(p.service?"<div class='muted' style='font-size:12px'>"+esc(p.service)+"</div>":"")+
+        "<div class='meta'>"+(p.status==='sent'?"<span class='pill active'>verstuurd</span>":"<span class='pill new'>concept</span>")+" · "+fmtDate(p.session_date||p.created_at)+"</div></div>"+
+        "<div style='display:flex;gap:5px;flex-shrink:0'><button class='btn tiny gray' data-payedit='"+p.id+"'>Bewerken</button><button class='btn tiny sm' data-paysend='"+p.id+"'>Versturen</button><button class='btn tiny danger' data-paydel='"+p.id+"'>&times;</button></div></div>";
+    }).join("") : "<div class='muted' style='font-size:13px'>Nog geen bonnen.</div>";
+    var histH="";
+    (d.bookings||[]).forEach(function(b){ histH+="<div class='note'><b>Boeking</b> · "+fmtDate(b.day)+" "+esc(b.start_time||"")+" <span class='muted'>"+esc(b.service||"")+"</span> "+statusPill(b.status)+"</div>"; });
+    (d.entries||[]).forEach(function(e){ histH+="<div class='note'><b>Spel</b> · "+(e.won?("<span class='pill win'>"+esc(e.prize_label)+"</span>"):"<span class='muted'>geen prijs</span>")+"<div class='meta'>"+fmtDateTime(e.created_at)+"</div></div>"; });
+    if(!histH) histH="<div class='muted' style='font-size:13px'>Geen historie.</div>";
     var body="<div style='margin-bottom:14px'>"+statusPill(c.status)+" "+(c.city?"<span class='muted'>· "+esc(c.city)+"</span>":"")+"</div>"+
       "<div class='grid2' style='margin-bottom:12px'><div><div class='muted' style='font-size:11px'>E-MAIL</div>"+esc(c.email||"-")+"</div>"+
       "<div><div class='muted' style='font-size:11px'>TELEFOON</div>"+esc(c.phone||"-")+"</div>"+
       "<div><div class='muted' style='font-size:11px'>BRON</div>"+esc(c.source||"-")+"</div>"+
       "<div><div class='muted' style='font-size:11px'>BESTEED</div>"+money(c.total_spent)+"</div></div>"+
       (c.notes?"<div class='note'>"+esc(c.notes)+"</div>":"")+
-      "<div style='margin:16px 0 8px;font-weight:600;font-size:13px'>Notities</div>"+notesH+
+      "<div style='display:flex;justify-content:space-between;align-items:center;margin:18px 0 8px'><span style='font-weight:600;font-size:13px'>Betalingen / bonnen</span><button class='btn tiny sm' id='p-new'>+ Nieuwe bon</button></div>"+payH+
+      "<div style='margin:18px 0 8px;font-weight:600;font-size:13px'>Historie</div>"+histH+
+      "<div style='margin:18px 0 8px;font-weight:600;font-size:13px'>Notities</div>"+notesH+
       "<div class='field' style='margin-top:12px'><textarea id='n-new' placeholder='"+tr('Nieuwe notitie...')+"'></textarea></div><button class='btn sm' id='n-add'>Notitie toevoegen</button>";
     var foot="<button class='btn gray sm' id='m-close'>Sluiten</button><button class='btn sm' id='m-edit'>Bewerken</button>";
     modal(esc(c.name), body, foot);
     $("m-close").onclick=closeModal;
     $("m-edit").onclick=function(){ closeModal(); clientModal(c); };
+    if($("p-new")) $("p-new").onclick=function(){ closeModal(); paymentModal(id, null); };
+    var ov=$("overlay");
+    ov.querySelectorAll("[data-payedit]").forEach(function(b){ b.onclick=function(){ var pid=this.getAttribute("data-payedit"); var pay=(d.payments||[]).filter(function(x){return x.id===pid;})[0]; closeModal(); paymentModal(id, pay); }; });
+    ov.querySelectorAll("[data-paysend]").forEach(function(b){ b.onclick=async function(){ this.disabled=true; try{ var r=await api("payment_send",{id:this.getAttribute("data-paysend"), lang:LANG}); toast(r.emailed?tr("Bon verstuurd"):tr("Fout"), r.emailed?0:1); openClient(id); }catch(e){ toast(tr("Fout")+": "+e.message,1);} }; });
+    ov.querySelectorAll("[data-paydel]").forEach(function(b){ b.onclick=async function(){ if(!confirm(tr("Deze bon verwijderen?"))) return; try{ await api("payment_delete",{id:this.getAttribute("data-paydel")}); toast(tr("Verwijderd")); openClient(id); }catch(e){ toast(tr("Fout"),1);} }; });
     $("n-add").onclick=async function(){
       var note=$("n-new").value.trim(); if(!note){ return; }
       try{ await api("client_note_add",{client_id:id, note:note}); toast(tr("Notitie toegevoegd")); openClient(id); }
       catch(e){ toast(tr("Fout"),1); } };
   }catch(e){ toast(tr("Fout bij laden"),1); }
+}
+
+function paymentModal(clientId, p){
+  p = p || {};
+  function v(x,dflt){ return (x!==undefined&&x!==null)?x:dflt; }
+  var body="<div class='grid2'>"+
+    "<div class='field'><label>Dienst</label><input id='p-service' value='"+esc(p.service||"")+"'></div>"+
+    "<div class='field'><label>Sessiedatum</label><input id='p-date' type='date' value='"+esc(p.session_date?String(p.session_date).slice(0,10):"")+"'></div></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Uren</label><input id='p-hours' type='number' step='0.5' value='"+esc(v(p.hours,""))+"'></div>"+
+    "<div class='field'><label>Uurtarief (€)</label><input id='p-rate' type='number' value='"+esc(v(p.hourly_rate,45))+"'></div></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Parkeerkosten (€)</label><input id='p-parking' type='number' step='0.01' value='"+esc(v(p.parking,0))+"'></div>"+
+    "<div class='field'><label>Kilometers</label><input id='p-km' type='number' value='"+esc(v(p.km,0))+"'></div></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Betaalwijze</label><select id='p-method'><option value='virement'"+((p.method!=='cash'&&p.method!=='contant')?" selected":"")+">Overboeking</option><option value='cash'"+((p.method==='cash'||p.method==='contant')?" selected":"")+">Contant</option></select></div>"+
+    "<div class='field'><label>Totaal</label><input id='p-total' readonly style='font-weight:700;background:var(--cream2)'></div></div>"+
+    "<div class='field'><label>Notitie</label><textarea id='p-note'>"+esc(p.note||"")+"</textarea></div>"+
+    "<div class='muted' style='font-size:12px'>Reiskosten €0,80/km (heen en terug).</div>";
+  var foot="<button class='btn gray sm' id='pm-cancel'>Annuleren</button><button class='btn sm' id='pm-save'>Opslaan</button>";
+  modal(p.id?"Bon bewerken":"Nieuwe bon", body, foot);
+  function calc(){ var t=Number($("p-hours").value||0)*Number($("p-rate").value||0)+Number($("p-parking").value||0)+Number($("p-km").value||0)*0.80; $("p-total").value=money(Math.round(t*100)/100); }
+  ["p-hours","p-rate","p-parking","p-km"].forEach(function(fid){ $(fid).oninput=calc; }); calc();
+  $("pm-cancel").onclick=function(){ closeModal(); openClient(clientId); };
+  $("pm-save").onclick=async function(){
+    var payload={ client_id:clientId, service:$("p-service").value.trim(), session_date:$("p-date").value||null,
+      hours:Number($("p-hours").value||0), hourly_rate:Number($("p-rate").value||45),
+      parking:Number($("p-parking").value||0), km:Number($("p-km").value||0),
+      method:$("p-method").value, note:$("p-note").value.trim() };
+    this.disabled=true;
+    try{ if(p.id){ payload.id=p.id; await api("payment_update",payload); } else { await api("payment_create",payload); } closeModal(); toast(tr("Opgeslagen")); openClient(clientId); }
+    catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; }
+  };
 }
 
 /* ---------------- BOOKINGS ---------------- */
@@ -537,52 +602,73 @@ async function renderBookings(v){
 
 /* ---------------- AVAILABILITY ---------------- */
 var DAYNAMES=["Zondag","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag"];
+function isoLocal(dt){ return dt.getFullYear()+"-"+("0"+(dt.getMonth()+1)).slice(-2)+"-"+("0"+dt.getDate()).slice(-2); }
+var AV={rules:[],exceptions:[],month:null};
+function avByDate(iso){ for(var i=0;i<AV.exceptions.length;i++){ if(String(AV.exceptions[i].day).slice(0,10)===iso) return AV.exceptions[i]; } return null; }
+function avRuleFor(wd){ for(var i=0;i<AV.rules.length;i++){ if(AV.rules[i].weekday===wd) return AV.rules[i]; } return null; }
+function avDayState(dt){
+  var ex=avByDate(isoLocal(dt));
+  if(ex){ if(ex.kind==="closed") return {open:false,custom:true,ex:ex}; return {open:true,custom:true,start:String(ex.start_time||"09:00").slice(0,5),end:String(ex.end_time||"17:00").slice(0,5),ex:ex}; }
+  var r=avRuleFor(dt.getDay());
+  if(r) return r.active?{open:true,custom:false,start:String(r.start_time||"09:00").slice(0,5),end:String(r.end_time||"17:00").slice(0,5)}:{open:false,custom:false};
+  if(!AV.rules.length) return {open:dt.getDay()!==0,custom:false,start:"09:00",end:"17:00"};
+  return {open:false,custom:false};
+}
 async function renderAvailability(v){
   var d=await api("availability_get",{});
-  var byDay={}; d.rules.forEach(function(r){ byDay[r.weekday]=r; });
-  var h=head("Beschikbaarheid","Je wekelijkse werkuren en uitzonderingen");
-  h+="<div class='panel'><div class='ph'><h3>Wekelijkse uren</h3></div><div class='mb' style='padding:16px 18px'><div class='days'>";
-  for(var wd=1; wd<=6; wd++){ addDay(wd); } addDay(0);
-  function addDay(wd){ var r=byDay[wd]||{}; var on=r.active!==false && !!r.id ? true : (r.active===true);
-    var active = r.id ? r.active : false;
+  AV.rules=d.rules||[]; AV.exceptions=d.exceptions||[];
+  var now=new Date(); if(!AV.month) AV.month=new Date(now.getFullYear(),now.getMonth(),1);
+  var byDay={}; AV.rules.forEach(function(r){ byDay[r.weekday]=r; });
+  var h=head("Beschikbaarheid","Echte kalender per dag — deze week kan anders zijn dan volgende week");
+  h+="<div class='panel'><div class='ph'><h3>Standaard week</h3></div><div style='padding:16px 18px'><div class='days'>";
+  [1,2,3,4,5,6,0].forEach(function(wd){ var r=byDay[wd]||{}; var active=r.id?r.active:false;
     h+="<div class='dayrow"+(active?"":" off")+"' data-wd='"+wd+"'"+(r.id?" data-id='"+r.id+"'":"")+">"+
       "<label class='switch'><input type='checkbox' class='av-on' "+(active?"checked":"")+"><span class='sl'></span></label>"+
       "<span class='dn'>"+DAYNAMES[wd]+"</span>"+
       "<input type='time' class='av-start' value='"+esc(r.start_time?String(r.start_time).slice(0,5):"09:00")+"'>"+
       "<span class='muted'>tot</span><input type='time' class='av-end' value='"+esc(r.end_time?String(r.end_time).slice(0,5):"17:00")+"'>"+
       "<button class='btn tiny sm av-save'>Opslaan</button></div>";
-  }
+  });
   h+="</div></div></div>";
-  // exceptions
-  h+="<div class='panel'><div class='ph'><h3>Uitzonderingen (vrije dagen / afwijkende tijden)</h3></div><div style='padding:16px 18px'>";
-  h+="<div class='toolbar'><input type='date' id='ex-day'><select id='ex-kind'><option value='closed'>Gesloten</option><option value='open'>Open (afwijkend)</option></select><input type='text' id='ex-note' placeholder='"+tr('Notitie (optioneel)')+"' style='max-width:220px'><button class='btn sm' id='ex-add'>Toevoegen</button></div>";
-  if(d.exceptions.length){
-    h+="<div class='tablewrap'><table><thead><tr><th>Datum</th><th>Type</th><th>Notitie</th><th></th></tr></thead><tbody>";
-    d.exceptions.forEach(function(x){
-      h+="<tr><td>"+fmtDate(x.day)+"</td><td>"+(x.kind==="closed"?"<span class='pill done'>Gesloten</span>":"<span class='pill active'>Open</span>")+"</td><td class='muted'>"+esc(x.note||"-")+"</td><td class='right'><button class='btn tiny danger' data-exdel='"+x.id+"'>Verwijderen</button></td></tr>";
-    });
-    h+="</tbody></table></div>";
-  } else { h+="<div class='muted' style='font-size:13px'>Geen uitzonderingen.</div>"; }
+  var y=AV.month.getFullYear(), m=AV.month.getMonth();
+  var MN=["Januari","Februari","Maart","April","Mei","Juni","Juli","Augustus","September","Oktober","November","December"];
+  h+="<div class='panel'><div class='ph'><h3>Kalender</h3></div><div style='padding:16px 18px'>";
+  h+="<div class='calnav'><button class='btn tiny gray' id='cal-prev'>&lsaquo;</button><b>"+MN[m]+" "+y+"</b><button class='btn tiny gray' id='cal-next'>&rsaquo;</button></div>";
+  h+="<div class='calgrid'>";
+  ["Ma","Di","Wo","Do","Vr","Za","Zo"].forEach(function(dn){ h+="<div class='cal-dh'>"+dn+"</div>"; });
+  var first=new Date(y,m,1), offset=(first.getDay()+6)%7;
+  for(var bb=0;bb<offset;bb++) h+="<div></div>";
+  var dim=new Date(y,m+1,0).getDate(); var today=new Date(); today.setHours(0,0,0,0);
+  for(var day=1;day<=dim;day++){ var dt=new Date(y,m,day); var st=avDayState(dt); var iso=isoLocal(dt);
+    var cls="cal-day"+(st.open?" open":" closed")+(st.custom?" custom":"")+(dt<today?" past":"");
+    h+="<button class='"+cls+"' data-cal='"+iso+"'><span class='cd'>"+day+"</span><span class='ct'>"+(st.open?st.start:"—")+"</span></button>";
+  }
+  h+="</div><div class='muted' style='font-size:12px;margin-top:10px'>Groen = beschikbaar, grijs = gesloten. Roze rand = handmatig aangepast. Klik een dag om aan te passen.</div>";
   h+="</div></div>";
   v.innerHTML=TL(h);
-  // wire rows
-  v.querySelectorAll(".dayrow").forEach(function(row){
-    var cb=row.querySelector(".av-on");
-    cb.onchange=function(){ row.classList.toggle("off",!this.checked); };
-    row.querySelector(".av-save").onclick=async function(){
-      var payload={ weekday:Number(row.getAttribute("data-wd")), start_time:row.querySelector(".av-start").value,
-        end_time:row.querySelector(".av-end").value, active:cb.checked };
-      if(row.getAttribute("data-id")) payload.id=row.getAttribute("data-id");
-      try{ var res=await api("availability_rule_set",payload); if(res.rule&&res.rule.id) row.setAttribute("data-id",res.rule.id); toast(tr("Opgeslagen")); }
-      catch(e){ toast(tr("Fout"),1); } };
-  });
-  $("ex-add").onclick=async function(){
-    var day=$("ex-day").value; if(!day){ toast(tr("Kies een datum"),1); return; }
-    try{ await api("availability_exception_add",{ day:day, kind:$("ex-kind").value, note:$("ex-note").value.trim()||null }); toast(tr("Toegevoegd")); renderAvailability(v); }
-    catch(e){ toast(tr("Fout"),1); } };
-  v.querySelectorAll("[data-exdel]").forEach(function(b){ b.onclick=async function(){
-    try{ await api("availability_exception_delete",{id:this.getAttribute("data-exdel")}); toast(tr("Verwijderd")); renderAvailability(v); }
-    catch(e){ toast(tr("Fout"),1); } }; });
+  v.querySelectorAll(".dayrow").forEach(function(row){ var cb=row.querySelector(".av-on"); cb.onchange=function(){ row.classList.toggle("off",!this.checked); };
+    row.querySelector(".av-save").onclick=async function(){ var payload={ weekday:Number(row.getAttribute("data-wd")), start_time:row.querySelector(".av-start").value, end_time:row.querySelector(".av-end").value, active:cb.checked }; if(row.getAttribute("data-id")) payload.id=row.getAttribute("data-id"); try{ var res=await api("availability_rule_set",payload); toast(tr("Opgeslagen")); renderAvailability(v); }catch(e){ toast(tr("Fout"),1);} }; });
+  $("cal-prev").onclick=function(){ AV.month=new Date(y,m-1,1); renderAvailability(v); };
+  $("cal-next").onclick=function(){ AV.month=new Date(y,m+1,1); renderAvailability(v); };
+  v.querySelectorAll("[data-cal]").forEach(function(x){ x.onclick=function(){ dayModal(this.getAttribute("data-cal"), v); }; });
+}
+function dayModal(iso, v){
+  var p=iso.split("-"); var dt=new Date(Number(p[0]),Number(p[1])-1,Number(p[2])); var st=avDayState(dt);
+  var mon=["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+  var body="<p class='muted' style='font-size:13px;margin-bottom:14px'>"+DAYNAMES[dt.getDay()]+" "+dt.getDate()+" "+mon[dt.getMonth()]+" "+dt.getFullYear()+"</p>"+
+    "<div class='field'><label>Status</label><select id='dm-kind'><option value='open'"+(st.open?" selected":"")+">Open</option><option value='closed'"+(!st.open?" selected":"")+">Gesloten</option></select></div>"+
+    "<div class='grid2' id='dm-times'><div class='field'><label>Van</label><input id='dm-start' type='time' value='"+(st.start||"09:00")+"'></div><div class='field'><label>Tot</label><input id='dm-end' type='time' value='"+(st.end||"17:00")+"'></div></div>";
+  var foot=(st.custom?"<button class='btn gray sm' id='dm-default'>Terug naar standaard</button>":"")+"<button class='btn gray sm' id='dm-cancel'>Annuleren</button><button class='btn sm' id='dm-save'>Opslaan</button>";
+  modal("Dag aanpassen", body, foot);
+  function tog(){ $("dm-times").style.display=($("dm-kind").value==="open"?"grid":"none"); } tog();
+  $("dm-kind").onchange=tog; $("dm-cancel").onclick=closeModal;
+  if($("dm-default")) $("dm-default").onclick=async function(){ try{ if(st.ex) await api("availability_exception_delete",{id:st.ex.id}); closeModal(); toast(tr("Opgeslagen")); renderAvailability(v); }catch(e){ toast(tr("Fout"),1);} };
+  $("dm-save").onclick=async function(){ this.disabled=true;
+    try{ if(st.ex) await api("availability_exception_delete",{id:st.ex.id}); var kind=$("dm-kind").value;
+      await api("availability_exception_add",{ day:iso, kind:kind, start_time:kind==="open"?$("dm-start").value:null, end_time:kind==="open"?$("dm-end").value:null });
+      closeModal(); toast(tr("Opgeslagen")); renderAvailability(v);
+    }catch(e){ toast(tr("Fout"),1); this.disabled=false; }
+  };
 }
 
 /* ---------------- SETTINGS ---------------- */
