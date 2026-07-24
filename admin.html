@@ -208,7 +208,7 @@ var EMAIL = "";
 var STATE = { tab:"overview", stats:null };
 var LANG = "nl";
 var T = {
- "Nieuwe boeking":"New booking","+ Nieuwe boeking":"+ New booking","Naam en datum verplicht":"Name and date required","Deze boeking verwijderen?":"Delete this booking?","Tijdslots":"Time slots","+ Tijdslot toevoegen":"+ Add time slot","Wijzigingen worden automatisch opgeslagen.":"Changes are saved automatically.","Datum *":"Date *","Tijd":"Time",
+ "Nieuwe boeking":"New booking","+ Nieuwe boeking":"+ New booking","Naam en datum verplicht":"Name and date required","Deze boeking verwijderen?":"Delete this booking?","Bevestigen":"Confirm","Deze boeking bevestigen en de cliënt een bevestigingsmail sturen?":"Confirm this booking and send the client a confirmation email?","Deze boeking annuleren en de cliënt een annuleringsmail sturen?":"Cancel this booking and send the client a cancellation email?","Boeking bevestigd · mail verstuurd":"Booking confirmed · email sent","Boeking bevestigd (geen e-mail)":"Booking confirmed (no email)","Boeking geannuleerd · mail verstuurd":"Booking cancelled · email sent","Boeking geannuleerd (geen e-mail)":"Booking cancelled (no email)","Tijdslots":"Time slots","+ Tijdslot toevoegen":"+ Add time slot","Wijzigingen worden automatisch opgeslagen.":"Changes are saved automatically.","Datum *":"Date *","Tijd":"Time",
  "Standaard week":"Default week","Kalender":"Calendar","Dag aanpassen":"Edit day","Van":"From","Tot":"To","Terug naar standaard":"Back to default","Ma":"Mo","Di":"Tu","Wo":"We","Do":"Th","Vr":"Fr","Za":"Sa","Zo":"Su",
  "Betalingen / bonnen":"Payments / receipts","+ Nieuwe bon":"+ New receipt","Nieuwe bon":"New receipt","Bon bewerken":"Edit receipt","Versturen":"Send","Bon verstuurd":"Receipt sent","Deze bon verwijderen?":"Delete this receipt?","concept":"draft","verstuurd":"sent","Historie":"History","Boeking":"Booking","Spel":"Game","geen prijs":"no prize","Geen historie.":"No history.","Nog geen bonnen.":"No receipts yet.","Sessiedatum":"Session date","Uren":"Hours","Uurtarief (€)":"Hourly rate (€)","Parkeerkosten (€)":"Parking (€)","Kilometers":"Kilometers","Betaalwijze":"Payment method","Overboeking":"Bank transfer","Contant":"Cash","Totaal":"Total","Reiskosten €0,80/km (heen en terug).":"Travel €0.80/km (round trip).","Notitie toevoegen":"Add note",
  "Overzicht":"Overview","CRM Jeu":"Game CRM","CRM Cliënten":"Client CRM","Boekingen":"Bookings","Beschikbaarheid":"Availability","Instellingen":"Settings",
@@ -590,7 +590,12 @@ async function renderBookings(v){
         "<td class='muted'>"+esc(b.email||"")+(b.phone?"<br>"+esc(b.phone):"")+"</td>"+
         "<td>"+fmtDate(b.day)+(b.start_time?"<br><span class='muted'>"+esc(b.start_time)+"</span>":"")+"</td>"+
         "<td class='muted'>"+esc(b.service||"-")+"</td><td>"+statusPill(b.status)+"</td>"+
-        "<td><select data-bk='"+b.id+"' class='bk-status'>"+["new","confirmed","done","cancelled"].map(function(s){return "<option "+(b.status===s?"selected":"")+">"+s+"</option>";}).join("")+"</select> <button class='btn tiny danger' data-bkdel='"+b.id+"'>&times;</button></td></tr>";
+        "<td><div style='display:flex;flex-wrap:wrap;gap:4px;align-items:center'>"+
+          "<button class='btn tiny' data-bkconfirm='"+b.id+"'>&#10003; Bevestigen</button>"+
+          "<button class='btn tiny gray' data-bkcancel='"+b.id+"'>&#10005; Annuleren</button>"+
+          "<select data-bk='"+b.id+"' class='bk-status'>"+["new","confirmed","done","cancelled"].map(function(s){return "<option "+(b.status===s?"selected":"")+">"+s+"</option>";}).join("")+"</select>"+
+          "<button class='btn tiny danger' data-bkdel='"+b.id+"'>&times;</button>"+
+        "</div></td></tr>";
     });
     h+="</tbody></table>";
   } else { h+="<div class='empty'>Nog geen boekingen. Aanvragen vanaf de website verschijnen hier.</div>"; }
@@ -600,6 +605,8 @@ async function renderBookings(v){
     try{ await api("booking_update",{id:this.getAttribute("data-bk"), status:this.value}); toast(tr("Status bijgewerkt")); loadStats(); }
     catch(e){ toast(tr("Fout"),1); } }; });
   $("bk-new").onclick=function(){ bookingModal(v); };
+  v.querySelectorAll("[data-bkconfirm]").forEach(function(b){ b.onclick=async function(){ if(!confirm(tr("Deze boeking bevestigen en de cliënt een bevestigingsmail sturen?"))) return; this.disabled=true; try{ var r=await api("booking_confirm",{id:this.getAttribute("data-bkconfirm"), lang:LANG}); toast(r.emailed?tr("Boeking bevestigd · mail verstuurd"):tr("Boeking bevestigd (geen e-mail)")); loadStats(); renderBookings(v); }catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; } }; });
+  v.querySelectorAll("[data-bkcancel]").forEach(function(b){ b.onclick=async function(){ if(!confirm(tr("Deze boeking annuleren en de cliënt een annuleringsmail sturen?"))) return; this.disabled=true; try{ var r=await api("booking_cancel",{id:this.getAttribute("data-bkcancel"), lang:LANG}); toast(r.emailed?tr("Boeking geannuleerd · mail verstuurd"):tr("Boeking geannuleerd (geen e-mail)")); loadStats(); renderBookings(v); }catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; } }; });
   v.querySelectorAll("[data-bkdel]").forEach(function(b){ b.onclick=async function(){ if(!confirm(tr("Deze boeking verwijderen?"))) return; try{ await api("booking_delete",{id:this.getAttribute("data-bkdel")}); toast(tr("Verwijderd")); loadStats(); renderBookings(v); }catch(e){ toast(tr("Fout"),1);} }; });
 }
 function bookingModal(v){
