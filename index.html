@@ -1277,23 +1277,22 @@ function isoDay(dt){
   return dt.getFullYear() + "-" + mm + "-" + dd;
 }
 function dayInfo(dt){
-  var iso = isoDay(dt), i;
-  for (i=0;i<AVAIL.exceptions.length;i++){
-    if (String(AVAIL.exceptions[i].day).slice(0,10) === iso){
-      var ex = AVAIL.exceptions[i];
-      if (ex.kind === "closed") return { open:false };
-      return { open:true, start: ex.start_time || "09:00", end: ex.end_time || "17:00" };
-    }
+  var iso = isoDay(dt), i, exs = [];
+  for (i=0;i<AVAIL.exceptions.length;i++){ if (String(AVAIL.exceptions[i].day).slice(0,10) === iso){ exs.push(AVAIL.exceptions[i]); } }
+  if (exs.length){
+    for (i=0;i<exs.length;i++){ if (exs[i].kind === "closed") return { open:false, windows:[] }; }
+    var w = [];
+    for (i=0;i<exs.length;i++){ if (exs[i].kind === "open"){ w.push({ start: exs[i].start_time || "09:00", end: exs[i].end_time || "17:00" }); } }
+    return { open: w.length>0, windows: w };
   }
-  if (!AVAIL.rules.length){ return { open: dt.getDay() !== 0, start:"09:00", end:"17:00", fallback:true }; }
+  if (!AVAIL.rules.length){ return { open: dt.getDay() !== 0, windows:[{start:"09:00",end:"17:00"}], fallback:true }; }
   for (i=0;i<AVAIL.rules.length;i++){
     if (AVAIL.rules[i].weekday === dt.getDay()){
       var r = AVAIL.rules[i];
-      if (r.active) return { open:true, start: r.start_time || "09:00", end: r.end_time || "17:00" };
-      return { open:false };
+      return r.active ? { open:true, windows:[{ start: r.start_time || "09:00", end: r.end_time || "17:00" }] } : { open:false, windows:[] };
     }
   }
-  return { open:false };
+  return { open:false, windows:[] };
 }
 function genSlots(start, end){
   function toMin(x){ var p = String(x).split(":"); return parseInt(p[0],10)*60 + parseInt(p[1]||"0",10); }
@@ -1586,7 +1585,12 @@ function buildSlots(){
   var slots = ["09:00","09:30","10:00","10:30","11:00","11:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","19:00","19:30"];
   if (state.date){
     var info = dayInfo(state.date);
-    if (info.open && !info.fallback){ var g = genSlots(info.start, info.end); if (g.length){ slots = g; } }
+    if (info.open && !info.fallback){
+      var g = [];
+      for (var wi=0; wi<info.windows.length; wi++){ g = g.concat(genSlots(info.windows[wi].start, info.windows[wi].end)); }
+      g = g.filter(function(x,ix){ return g.indexOf(x)===ix; }).sort();
+      if (g.length){ slots = g; }
+    }
   }
   var html = "";
   for (var i=0;i<slots.length;i++){
