@@ -197,8 +197,10 @@ padding:11px 20px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;tr
   @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
   /* --- calendar + day rows touch-friendly --- */
   .cal-day{min-height:56px}
-  .dayrow{flex-wrap:wrap}
-  .dayrow input[type=time]{width:auto;flex:1}
+  .dayrow{flex-wrap:wrap;gap:9px 10px}
+  .dayrow .dn{flex:1 1 auto;width:auto;min-width:64px}
+  .dayrow .av-start,.dayrow .av-end{flex:1 1 38%;min-width:0;width:auto}
+  .dayrow .av-save{flex:0 0 auto;margin-left:auto}
 }
 @media(max-width:640px) and (display-mode:standalone){ .main{padding-bottom:110px} }
 </style>
@@ -750,8 +752,7 @@ function avDayState(dt){
   }
   var r=avRuleFor(dt.getDay());
   if(r) return r.active?{open:true,custom:false,windows:[{start:String(r.start_time||"09:00").slice(0,5),end:String(r.end_time||"17:00").slice(0,5)}]}:{open:false,custom:false,windows:[]};
-  if(!AV.rules.length) return {open:dt.getDay()!==0,custom:false,windows:dt.getDay()!==0?[{start:"09:00",end:"17:00"}]:[]};
-  return {open:false,custom:false,windows:[]};
+  return dt.getDay()!==0?{open:true,custom:false,windows:[{start:"09:00",end:"17:00"}]}:{open:false,custom:false,windows:[]};
 }
 async function renderAvailability(v){
   var d=await api("availability_get",{});
@@ -760,7 +761,7 @@ async function renderAvailability(v){
   var byDay={}; AV.rules.forEach(function(r){ byDay[r.weekday]=r; });
   var h=head("Beschikbaarheid","Echte kalender per dag — deze week kan anders zijn dan volgende week");
   h+="<div class='panel'><div class='ph'><h3>Standaard week</h3></div><div style='padding:16px 18px'><div class='days'>";
-  [1,2,3,4,5,6,0].forEach(function(wd){ var r=byDay[wd]||{}; var active=r.id?r.active:false;
+  [1,2,3,4,5,6,0].forEach(function(wd){ var r=byDay[wd]||{}; var active=r.id?r.active:(wd!==0);
     h+="<div class='dayrow"+(active?"":" off")+"' data-wd='"+wd+"'"+(r.id?" data-id='"+r.id+"'":"")+">"+
       "<label class='switch'><input type='checkbox' class='av-on' "+(active?"checked":"")+"><span class='sl'></span></label>"+
       "<span class='dn'>"+DAYNAMES[wd]+"</span>"+

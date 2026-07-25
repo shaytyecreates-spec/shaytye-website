@@ -1285,14 +1285,13 @@ function dayInfo(dt){
     for (i=0;i<exs.length;i++){ if (exs[i].kind === "open"){ w.push({ start: exs[i].start_time || "09:00", end: exs[i].end_time || "17:00" }); } }
     return { open: w.length>0, windows: w };
   }
-  if (!AVAIL.rules.length){ return { open: dt.getDay() !== 0, windows:[{start:"09:00",end:"17:00"}], fallback:true }; }
   for (i=0;i<AVAIL.rules.length;i++){
     if (AVAIL.rules[i].weekday === dt.getDay()){
       var r = AVAIL.rules[i];
       return r.active ? { open:true, windows:[{ start: r.start_time || "09:00", end: r.end_time || "17:00" }] } : { open:false, windows:[] };
     }
   }
-  return { open:false, windows:[] };
+  return dt.getDay() !== 0 ? { open:true, windows:[{start:"09:00",end:"17:00"}], fallback:true } : { open:false, windows:[] };
 }
 function genSlots(start, end){
   function toMin(x){ var p = String(x).split(":"); return parseInt(p[0],10)*60 + parseInt(p[1]||"0",10); }
