@@ -70,7 +70,7 @@
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "5.0",
-    "reviewCount": "9",
+    "reviewCount": "10",
     "bestRating": "5",
     "worstRating": "1"
   },
@@ -674,8 +674,8 @@ body::-webkit-scrollbar-thumb:hover{background:var(--rose-d)}
 .bagrid{display:flex;gap:16px;margin-top:34px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
 .bagrid::-webkit-scrollbar{display:none}
 .bagrid > .ba{flex:0 0 82%;scroll-snap-align:center}
-@media(min-width:700px){.bagrid{display:grid;grid-template-columns:1fr 1fr;overflow:visible}.bagrid > .ba{flex:none}}
-@media(min-width:1060px){.bagrid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:700px){.bagrid > .ba{flex-basis:46%}}
+@media(min-width:1060px){.bagrid > .ba{flex-basis:31%}}
 .ba{position:relative;aspect-ratio:1/1;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line);user-select:none;background:var(--white)}
 .ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
 .ba .ba-before{clip-path:inset(0 48% 0 0);-webkit-clip-path:inset(0 48% 0 0);z-index:1}
@@ -1063,7 +1063,7 @@ sv_sub:"Elke ruimte vraagt om een eigen aanpak. Dit zijn de ruimtes waar ik het 
 pr_eyebrow:"De methode",pr_title:"Hoe verloopt <em>jouw traject?</em>",
 ga_eyebrow:"Resultaten",ga_title:"Voor en na",ga_sub:"Sleep de knop om het verschil te zien — echte ruimtes, echte resultaten.",
 vd_eyebrow:"In actie",vd_title:"Kijk mee tijdens het organizen",vd_sub:"Een kijkje achter de schermen: zo pak ik een ruimte aan, van chaos tot systeem.",vd_more:"Meer video\u0027s op",ts_eyebrow:"Ervaringen",ts_title:"Wat klanten zeggen",
-ts_sub:"Rust in huis is rust in je hoofd — dat hoor ik het vaakst terug.",gr_txt:"op Google · 9 reviews",
+ts_sub:"Rust in huis is rust in je hoofd — dat hoor ik het vaakst terug.",gr_txt:"op Google · 10 reviews",
 cta_title:"Klaar voor een opgeruimd huis?",
 cta_sub:"Plan een gratis kennismakingsgesprek van 15 minuten. Ik luister naar jouw situatie en vertel je eerlijk wat ik voor je kan doen.",
 cta_btn:"Plan mijn gratis gesprek",
@@ -1121,7 +1121,7 @@ sv_sub:"Every space needs its own approach. These are the rooms where I make the
 pr_eyebrow:"The method",pr_title:"How does <em>your journey</em> unfold?",
 ga_eyebrow:"Results",ga_title:"Before and after",ga_sub:"Drag the handle to see the difference — real spaces, real results.",
 vd_eyebrow:"In action",vd_title:"Watch me organize",vd_sub:"A look behind the scenes: this is how I tackle a space, from chaos to system.",vd_more:"More videos on",ts_eyebrow:"Reviews",ts_title:"What clients say",
-ts_sub:"A calm home means a calm mind — that is what I hear most often.",gr_txt:"on Google · 9 reviews",
+ts_sub:"A calm home means a calm mind — that is what I hear most often.",gr_txt:"on Google · 10 reviews",
 cta_title:"Ready for an organized home?",
 cta_sub:"Book a free 15-minute intro call. I will listen to your situation and tell you honestly what I can do for you.",
 cta_btn:"Book my free call",
@@ -1181,7 +1181,7 @@ var STEPS = [
  {nl:{t:"De organizing-dag",d:"Alles eruit, sorteren, terugplaatsen met systeem en labels."}, en:{t:"The organizing day",d:"Everything out, sorted, and placed back with a system and labels."}},
  {nl:{t:"Nazorg",d:"Tips om het systeem moeiteloos vol te houden. Ik blijf bereikbaar."}, en:{t:"Aftercare",d:"Tips to maintain the system effortlessly. I stay available."}}
 ];
-/* VOORBEELDREVIEWS voor presentatie \u2014 vervangen door echte klantreviews voor livegang */
+/* Echte klantreviews (Google) */
 var TESTIMONIALS = [
  {n:"Kineta", r:{nl:"Almere",en:"Almere"},
   nl:"Ik ben ontzettend blij met het resultaat! Mijn keuken is nu veel overzichtelijker en beter georganiseerd. Alles heeft een logische plek, waardoor ik niet meer steeds hoef te zoeken naar spullen. Het resultaat heeft me niet alleen meer orde gegeven, maar ook echt meer rust. Shay is daarnaast ontzettend goed in wat ze doet: ze heeft echt visie en ziet meteen hoe je een ruimte slimmer en praktischer kunt indelen. Heel tevreden en absoluut een aanrader!",
@@ -1192,27 +1192,9 @@ var TESTIMONIALS = [
  {n:"Thelittlelionking", r:{nl:"Almere",en:"Almere"},
   nl:"Shaytye Organising is een geweldig bedrijf! Er wordt veel rekening gehouden met je wensen. Er wordt veel werk verricht in een hoog tempo, maar wel zorgvuldig. Daarnaast is er ruimte voor persoonlijke aandacht en krijg je tips om ook in de toekomst een schone en prettige omgeving te behouden. Echt top!",
   en:"Shaytye Organising is a wonderful company! Your wishes are really taken into account. A lot of work gets done at a high pace, yet carefully. There is also room for personal attention, and you get tips to keep a clean and pleasant space in the future too. Really top!"},
- {n:"Esther", r:{nl:"Amsterdam",en:"Amsterdam"},
-  nl:"Onze keuken in Amsterdam is klein, dus elke centimeter telt. Na de sessie voelde hij twee keer zo groot. Koken is weer leuk, en de tips om het bijgehouden te houden werken echt.",
-  en:"Our kitchen in Amsterdam is small, so every centimeter counts. After the session it felt twice as big. Cooking is fun again, and the tips to keep it that way really work."},
- {n:"Amira", r:{nl:"Amsterdam",en:"Amsterdam"},
-  nl:"Ik ben moeder van drie en had gewoon geen overzicht meer. Shanice oordeelt niet, ze helpt. De speelhoek, de gang, de berging: alles heeft nu logica. Mijn hoofd is zoveel rustiger.",
-  en:"Ik ben moeder van drie en had gewoon geen overzicht meer. Shanice oordeelt niet, ze helpt. De speelhoek, de gang, de berging: alles heeft nu logica. Mijn hoofd is zoveel rustiger."},
- {n:"Chantal", r:{nl:"Amsterdam",en:"Amsterdam"},
-  nl:"Ik zag er als een berg tegenop, maar Shanice maakte er bijna iets gezelligs van. Ze kwam naar ons appartement in Amsterdam: geen oordeel, veel energie, en een resultaat waar ik elke dag blij van word.",
-  en:"I was really dreading it, but Shanice almost made it fun. She came to our apartment in Amsterdam: no judgment, lots of energy, and a result that makes me happy every single day."},
- {n:"Imani", r:{nl:"Almere",en:"Almere"},
-  nl:"Mijn zolder was jaren een plek waar ik niet naar durfde te kijken. In \u00E9\u00E9n dag was alles gesorteerd, weggebracht of netjes opgeborgen. Ik heb er letterlijk een kamer bij gekregen. Aanrader!",
-  en:"Mijn zolder was jaren een plek waar ik niet naar durfde te kijken. In \u00E9\u00E9n dag was alles gesorteerd, weggebracht of netjes opgeborgen. Ik heb er letterlijk een kamer bij gekregen. Aanrader!"},
- {n:"Priya", r:{nl:"Amsterdam",en:"Amsterdam"},
-  nl:"Shanice organized my entire wardrobe and bedroom in one afternoon. She is quick, kind and completely non-judgmental. Three months later, everything is still in place.",
-  en:"Shanice organized my entire wardrobe and bedroom in one afternoon. She is quick, kind and completely non-judgmental. Three months later, everything is still in place."},
- {n:"Rochelle", r:{nl:"Almere",en:"Almere"},
-  nl:"Mijn thuiswerkplek was een stapelplaats geworden. Nu heb ik een bureau waar ik met plezier aan ga zitten en een papiersysteem dat ik snap. Werken vanuit huis is ineens fijn.",
-  en:"Mijn thuiswerkplek was een stapelplaats geworden. Nu heb ik een bureau waar ik met plezier aan ga zitten en een papiersysteem dat ik snap. Werken vanuit huis is ineens fijn."},
- {n:"Grace", r:{nl:"Amsterdam",en:"Amsterdam"},
-  nl:"I booked a session for my storage room and honestly did not expect much. The result blew me away \u2014 I finally know what I own. Shanice is calm, warm and so structured. Worth every euro.",
-  en:"I booked a session for my storage room and honestly did not expect much. The result blew me away \u2014 I finally know what I own. Shanice is calm, warm and so structured. Worth every euro."}
+ {n:"Ouassima Tajmout", r:{nl:"Amsterdam",en:"Amsterdam"},
+  nl:"Superrr blij met het werk van Shaytye!! Ik ben vaste klant en zou niet anders willen!! Ze cre\u00EBert op een rustige, fijne manier overzicht. Kleding sorteren of slim inrichting van ruimtes zoals mijn keuken, ik ben super blij!!",
+  en:"Super happy with the work of Shaytye!! I'm a regular client and wouldn't want it any other way!! She creates a calm, pleasant sense of overview. Whether it's sorting clothes or smartly arranging spaces like my kitchen, I'm super happy!!"}
 ];
 var PRICES = [
  {feat:false, nl:{t:"Standard",v:"\u20AC 135",n:"3 uur",f:["Basis opruiming en gedetailleerde ordening","Persoonlijke aanpak","Praktische tips om het opgeruimd te houden","Perfect voor een kamer, kast of rommelhoekje"]}, en:{t:"Standard",v:"\u20AC 135",n:"3 hours",f:["Basic decluttering and detailed ordering","Personal approach","Practical tips to keep it organized","Perfect for one room, closet or clutter corner"]}},
@@ -1442,10 +1424,11 @@ function buildGallery(){
   }
 }
 function buildTestimonials(){
-  var cols = [[],[],[]];
-  for (var i=0;i<TESTIMONIALS.length;i++){ cols[i%3].push(TESTIMONIALS[i]); }
+  var w = window.innerWidth, nCols = w < 700 ? 1 : (w < 1020 ? 2 : 3);
+  var cols = []; for (var k=0;k<nCols;k++){ cols.push([]); }
+  for (var i=0;i<TESTIMONIALS.length;i++){ cols[i%nCols].push(TESTIMONIALS[i]); }
   var html = "", cls = ["first","mid","last"], durs = ["24s","30s","27s"];
-  for (var c=0;c<3;c++){
+  for (var c=0;c<nCols;c++){
     var cards = "";
     for (var r=0;r<2;r++){
       for (var j=0;j<cols[c].length;j++){
@@ -1460,6 +1443,8 @@ function buildTestimonials(){
   }
   el("tcols").innerHTML = html;
 }
+var _tCols = window.innerWidth < 700 ? 1 : (window.innerWidth < 1020 ? 2 : 3);
+window.addEventListener("resize", function(){ var n = window.innerWidth < 700 ? 1 : (window.innerWidth < 1020 ? 2 : 3); if (n !== _tCols){ _tCols = n; buildTestimonials(); } });
 function buildPrices(){
   var html = "";
   for (var i=0;i<PRICES.length;i++){
