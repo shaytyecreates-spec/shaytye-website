@@ -160,6 +160,47 @@ padding:11px 20px;border-radius:99px;font-size:14px;font-weight:500;opacity:0;tr
 .mobile-bar{display:none;align-items:center;gap:12px;margin-bottom:18px}
 .mobile-bar button{background:var(--cream);border:1px solid var(--line);border-radius:11px;width:42px;height:42px;font-size:19px}
 .mobile-bar b{font-family:'Fraunces',serif;font-size:18px}
+
+/* ============ MOBILE-APP POLISH (phones) ============ */
+@media(max-width:640px){
+  input,select,textarea{font-size:16px}            /* stop iOS zoom-on-focus */
+  .main{padding:16px 13px 88px}
+  .topbar h2{font-size:23px}
+  .toolbar{flex-wrap:wrap;gap:10px}
+  .toolbar input,.toolbar select{max-width:none;width:100%}
+  .btn.sm{padding:12px 18px;font-size:14px}
+  .btn.tiny{padding:9px 14px;font-size:13px}
+  .seg,.langtog{width:100%}
+  /* --- tables become stacked cards --- */
+  .panel{border:0;background:transparent;box-shadow:none;overflow:visible;margin-bottom:12px}
+  .panel .ph{padding:2px 2px 10px;border:0;background:transparent}
+  .tablewrap{overflow:visible}
+  table{font-size:14px}
+  table thead{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  table,tbody{display:block;width:100%}
+  tbody tr{display:block;background:var(--cream);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin:0 0 12px;padding:4px 4px}
+  tbody td{display:flex;justify-content:space-between;align-items:center;gap:14px;border:0;border-bottom:1px solid var(--line);padding:11px 15px;text-align:right}
+  tbody tr td:last-child{border-bottom:0}
+  tbody td::before{content:attr(data-label);font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2);text-align:left;flex:0 0 auto}
+  tbody td[data-label=""]::before,tbody td:not([data-label])::before{display:none}
+  tbody td[data-label=""]{justify-content:flex-end;flex-wrap:wrap;gap:7px;padding-top:12px}
+  tbody td.right{justify-content:space-between}
+  tr.clickable{cursor:pointer}
+  tr.clickable:active{transform:scale(.995)}
+  .empty{padding:26px 16px}
+  /* --- modals slide up as bottom sheets --- */
+  .overlay{padding:0;align-items:flex-end}
+  .modal{max-width:100%;width:100%;border-radius:22px 22px 0 0;max-height:94vh;display:flex;flex-direction:column;animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
+  .modal .mb{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .modal .mf{position:sticky;bottom:0;background:var(--cream);flex-wrap:wrap;gap:8px}
+  .modal .mf .btn{flex:1 1 auto;min-width:130px;width:auto}
+  @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  /* --- calendar + day rows touch-friendly --- */
+  .cal-day{min-height:56px}
+  .dayrow{flex-wrap:wrap}
+  .dayrow input[type=time]{width:auto;flex:1}
+}
+@media(max-width:640px) and (display-mode:standalone){ .main{padding-bottom:110px} }
 </style>
 </head>
 <body>
@@ -584,7 +625,7 @@ async function renderPayments(v){
   var d=await api("payments_all",{});
   var h=head("Bonnen","Betalingsbewijzen versturen");
   h+="<div class='toolbar'><button class='btn sm' id='rc-new'>+ Nieuwe bon</button></div>";
-  h+="<div class='card'>";
+  h+="<div class='panel'><div class='tablewrap'>";
   if(d.payments && d.payments.length){
     h+="<table><thead><tr><th>Cliënt</th><th>Dienst</th><th>Datum</th><th>Totaal</th><th>Status</th><th></th></tr></thead><tbody>";
     d.payments.forEach(function(p){
@@ -818,6 +859,24 @@ function closeModal(){ var o=$("overlay"); if(o) o.remove(); }
 
 /* ---------------- language toggle wiring ---------------- */
 document.querySelectorAll(".langbtn").forEach(function(b){ b.onclick=function(){ setLang(this.getAttribute("data-l")); }; });
+
+/* ---- responsive: label every table cell so it becomes a card on mobile ---- */
+function decorateTables(root){
+  (root||document).querySelectorAll("table").forEach(function(t){
+    var ths=[].slice.call(t.querySelectorAll("thead th")).map(function(x){ return x.textContent.trim(); });
+    if(!ths.length) return;
+    t.querySelectorAll("tbody tr").forEach(function(tr){
+      [].slice.call(tr.children).forEach(function(td,i){
+        if(ths[i]!==undefined && !td.hasAttribute("data-label")) td.setAttribute("data-label", ths[i]);
+      });
+    });
+  });
+}
+(function(){
+  var vw=document.getElementById("view");
+  if(!vw||!window.MutationObserver) return;
+  new MutationObserver(function(){ decorateTables(vw); }).observe(vw,{childList:true,subtree:true});
+})();
 setLang(LANG);
 
 /* ---------------- boot ---------------- */
