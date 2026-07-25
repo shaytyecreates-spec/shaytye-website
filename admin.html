@@ -309,7 +309,8 @@ function esc(s){ s = (s===null||s===undefined)?"":String(s);
 function toast(m,bad){ var t=$("toast"); t.textContent=m; t.className = bad?"show err":"show"; setTimeout(function(){t.className="";},2600); }
 function fmtDate(s){ if(!s) return "-"; var d=new Date(s); return d.toLocaleDateString("nl-NL",{day:"2-digit",month:"short",year:"numeric"}); }
 function fmtDateTime(s){ if(!s) return "-"; var d=new Date(s); return d.toLocaleDateString("nl-NL",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"}); }
-function money(n){ return "€ " + (Number(n||0)).toLocaleString("nl-NL",{minimumFractionDigits:0,maximumFractionDigits:2}); }
+function fmtTime(t){ return t?String(t).slice(0,5):""; }
+function money(n){ return "€ " + (Number(n||0)).toLocaleString("nl-NL",{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
 async function api(action, payload){
   var body = Object.assign({ action:action, token:TOKEN }, payload||{});
@@ -438,7 +439,7 @@ async function renderOverview(v){
   if((d.recentBookings||[]).length){
     h+="<table><thead><tr><th>Cliënt</th><th>Datum</th><th>Dienst</th><th>Status</th></tr></thead><tbody>";
     d.recentBookings.forEach(function(b){
-      h+="<tr><td>"+esc(b.client_name)+"</td><td>"+fmtDate(b.day)+" "+esc(b.start_time||"")+"</td><td class='muted'>"+esc(b.service||"-")+"</td><td>"+statusPill(b.status)+"</td></tr>";
+      h+="<tr><td>"+esc(b.client_name)+"</td><td>"+fmtDate(b.day)+" "+fmtTime(b.start_time)+"</td><td class='muted'>"+esc(b.service||"-")+"</td><td>"+statusPill(b.status)+"</td></tr>";
     });
     h+="</tbody></table>";
   } else { h+="<div class='empty'>Nog geen boekingen.</div>"; }
@@ -558,7 +559,7 @@ async function openClient(id){
         "<div style='display:flex;gap:5px;flex-shrink:0'><button class='btn tiny gray' data-payedit='"+p.id+"'>Bewerken</button><button class='btn tiny sm' data-paysend='"+p.id+"'>Versturen</button><button class='btn tiny danger' data-paydel='"+p.id+"'>&times;</button></div></div>";
     }).join("") : "<div class='muted' style='font-size:13px'>Nog geen bonnen.</div>";
     var histH="";
-    (d.bookings||[]).forEach(function(b){ histH+="<div class='note'><b>Boeking</b> · "+fmtDate(b.day)+" "+esc(b.start_time||"")+" <span class='muted'>"+esc(b.service||"")+"</span> "+statusPill(b.status)+"</div>"; });
+    (d.bookings||[]).forEach(function(b){ histH+="<div class='note'><b>Boeking</b> · "+fmtDate(b.day)+" "+fmtTime(b.start_time)+" <span class='muted'>"+esc(b.service||"")+"</span> "+statusPill(b.status)+"</div>"; });
     (d.entries||[]).forEach(function(e){ histH+="<div class='note'><b>Spel</b> · "+(e.won?("<span class='pill win'>"+esc(e.prize_label)+"</span>"):"<span class='muted'>geen prijs</span>")+"<div class='meta'>"+fmtDateTime(e.created_at)+"</div></div>"; });
     if(!histH) histH="<div class='muted' style='font-size:13px'>Geen historie.</div>";
     var body="<div style='margin-bottom:14px'>"+statusPill(c.status)+" "+(c.city?"<span class='muted'>· "+esc(c.city)+"</span>":"")+"</div>"+
@@ -699,7 +700,7 @@ async function renderBookings(v){
     d.bookings.forEach(function(b){
       h+="<tr><td><b>"+esc(b.client_name)+"</b>"+(b.message?"<div class='muted' style='font-size:12px;max-width:240px'>"+esc(b.message)+"</div>":"")+"</td>"+
         "<td class='muted'>"+esc(b.email||"")+(b.phone?"<br>"+esc(b.phone):"")+"</td>"+
-        "<td>"+fmtDate(b.day)+(b.start_time?"<br><span class='muted'>"+esc(b.start_time)+"</span>":"")+"</td>"+
+        "<td>"+fmtDate(b.day)+(b.start_time?"<br><span class='muted'>"+fmtTime(b.start_time)+"</span>":"")+"</td>"+
         "<td class='muted'>"+esc(b.service||"-")+"</td><td>"+statusPill(b.status)+"</td>"+
         "<td><div style='display:flex;flex-wrap:wrap;gap:4px;align-items:center'>"+
           "<button class='btn tiny' data-bkconfirm='"+b.id+"'>&#10003; Bevestigen</button>"+
