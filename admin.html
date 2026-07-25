@@ -350,6 +350,7 @@ $("l-verify").onclick = async function(){
   try{
     var d = await api("verify_code", { email:window._loginEmail, code:code });
     TOKEN = d.token; EMAIL = d.email;
+    try{ sessionStorage.setItem("shaytye_tok",TOKEN); sessionStorage.setItem("shaytye_email",EMAIL); }catch(e){}
     startApp();
   }catch(e){ lmsg(tr("Onjuiste of verlopen code."),"err"); this.disabled=false; }
 };
@@ -358,6 +359,7 @@ $("l-email").addEventListener("keydown",function(e){ if(e.key==="Enter") $("l-se
 
 function doLogout(silent){
   try{ if(TOKEN) api("logout",{}); }catch(e){}
+  try{ sessionStorage.removeItem("shaytye_tok"); sessionStorage.removeItem("shaytye_email"); }catch(e){}
   TOKEN=""; EMAIL="";
   $("app").classList.add("hide"); $("login").classList.remove("hide");
   $("step-code").classList.add("hide"); $("step-email").classList.remove("hide");
@@ -883,7 +885,9 @@ setLang(LANG);
 
 /* ---------------- boot ---------------- */
 (async function(){
+  try{ var _t=sessionStorage.getItem("shaytye_tok"), _e=sessionStorage.getItem("shaytye_email"); if(_t){ TOKEN=_t; EMAIL=_e||""; } }catch(e){}
   if(TOKEN){
+    $("login").classList.add("hide");
     try{ await api("me",{}); startApp(); }
     catch(e){ doLogout(true); }
   }
