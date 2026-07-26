@@ -1427,10 +1427,11 @@ function buildTestimonials(){
   var w = window.innerWidth, nCols = w < 700 ? 1 : (w < 1020 ? 2 : 3);
   var cols = []; for (var k=0;k<nCols;k++){ cols.push([]); }
   for (var i=0;i<TESTIMONIALS.length;i++){ cols[i%nCols].push(TESTIMONIALS[i]); }
+  var loop = TESTIMONIALS.length >= 9;
   var html = "", cls = ["first","mid","last"], durs = ["24s","30s","27s"];
   for (var c=0;c<nCols;c++){
     var cards = "";
-    for (var r=0;r<2;r++){
+    for (var r=0;r<(loop?2:1);r++){
       for (var j=0;j<cols[c].length;j++){
         var tt = cols[c][j];
         var initial = tt.n.replace(/[\[\]]/g,"").charAt(0).toUpperCase() || "S";
@@ -1439,7 +1440,7 @@ function buildTestimonials(){
         cards += "</div><p>" + esc(tt[LANG]) + "</p><div class='who'><div class='av'>" + initial + "</div><div><b>" + esc(tt.n) + "</b><span>" + esc(tt.r[LANG]) + "</span></div></div></div>";
       }
     }
-    html += "<div class='tcol " + cls[c] + "'><div class='tcol-track' style='--dur:" + durs[c] + "'>" + cards + "</div></div>";
+    html += "<div class='tcol " + cls[c] + "'><div class='tcol-track' style='" + (loop ? ("--dur:" + durs[c]) : "animation:none") + "'>" + cards + "</div></div>";
   }
   el("tcols").innerHTML = html;
 }
