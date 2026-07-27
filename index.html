@@ -229,7 +229,7 @@ main{padding-top:74px}
 .tcol.first{display:flex}
 .tcol-track{display:flex;flex-direction:column;animation:tscroll var(--dur,26s) linear infinite}
 .tcol:hover .tcol-track{animation-play-state:paused}
-@media(max-width:760px){.tcol-track{animation-duration:15s}}
+@media(max-width:760px){.tcol-track{animation-duration:28s}}
 @keyframes tscroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
 .tcard{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px;box-shadow:0 8px 24px rgba(36,29,24,.05);margin-bottom:20px}
 .tcard p{font-size:14.5px;color:var(--ink2);font-weight:300;margin-bottom:16px}
@@ -1425,22 +1425,22 @@ function buildGallery(){
 }
 function buildTestimonials(){
   var w = window.innerWidth, nCols = w < 700 ? 1 : (w < 1020 ? 2 : 3);
-  var cols = []; for (var k=0;k<nCols;k++){ cols.push([]); }
-  for (var i=0;i<TESTIMONIALS.length;i++){ cols[i%nCols].push(TESTIMONIALS[i]); }
-  var loop = (nCols === 1 && TESTIMONIALS.length >= 3);
-  var html = "", cls = ["first","mid","last"], durs = ["24s","30s","27s"];
+  var N = TESTIMONIALS.length;
+  var html = "", cls = ["first","mid","last"], durs = ["26s","32s","29s"];
   for (var c=0;c<nCols;c++){
+    // each column gets ALL reviews, rotated by column index: tall enough to loop seamlessly + columns look different
+    var colR = []; for (var j=0;j<N;j++){ colR.push(TESTIMONIALS[(j + c) % N]); }
     var cards = "";
-    for (var r=0;r<(loop?2:1);r++){
-      for (var j=0;j<cols[c].length;j++){
-        var tt = cols[c][j];
+    for (var r=0;r<2;r++){
+      for (var k=0;k<colR.length;k++){
+        var tt = colR[k];
         var initial = tt.n.replace(/[\[\]]/g,"").charAt(0).toUpperCase() || "S";
         cards += "<div class='tcard'><div class='stars'>";
         for (var st=0;st<5;st++){ cards += "<svg viewBox='0 0 24 24'><path d='M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z'/></svg>"; }
         cards += "</div><p>" + esc(tt[LANG]) + "</p><div class='who'><div class='av'>" + initial + "</div><div><b>" + esc(tt.n) + "</b><span>" + esc(tt.r[LANG]) + "</span></div></div></div>";
       }
     }
-    html += "<div class='tcol " + cls[c] + "'><div class='tcol-track' style='" + (loop ? ("--dur:" + durs[c]) : "animation:none") + "'>" + cards + "</div></div>";
+    html += "<div class='tcol " + cls[c] + "'><div class='tcol-track' style='--dur:" + durs[c] + "'>" + cards + "</div></div>";
   }
   el("tcols").innerHTML = html;
 }
