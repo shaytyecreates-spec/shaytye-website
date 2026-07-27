@@ -225,13 +225,13 @@ main{padding-top:74px}
 <style>
 /* TESTIMONIALS MARQUEE COLUMNS */
 .tcols{display:grid;gap:22px;margin-top:34px;max-height:640px;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,transparent,black 14%,black 86%,transparent);mask-image:linear-gradient(to bottom,transparent,black 14%,black 86%,transparent)}
-.tcol{display:none;flex-direction:column;gap:20px}
+.tcol{display:none;flex-direction:column}
 .tcol.first{display:flex}
-.tcol-track{display:flex;flex-direction:column;gap:20px;animation:tscroll var(--dur,26s) linear infinite}
+.tcol-track{display:flex;flex-direction:column;animation:tscroll var(--dur,26s) linear infinite}
 .tcol:hover .tcol-track{animation-play-state:paused}
 @media(max-width:760px){.tcol-track{animation-duration:15s}}
 @keyframes tscroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
-.tcard{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px;box-shadow:0 8px 24px rgba(36,29,24,.05)}
+.tcard{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px;box-shadow:0 8px 24px rgba(36,29,24,.05);margin-bottom:20px}
 .tcard p{font-size:14.5px;color:var(--ink2);font-weight:300;margin-bottom:16px}
 .tcard .who{display:flex;align-items:center;gap:12px}
 .tcard .av{width:40px;height:40px;border-radius:50%;background:var(--rose-l);color:var(--rose-d);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px}
@@ -1427,7 +1427,7 @@ function buildTestimonials(){
   var w = window.innerWidth, nCols = w < 700 ? 1 : (w < 1020 ? 2 : 3);
   var cols = []; for (var k=0;k<nCols;k++){ cols.push([]); }
   for (var i=0;i<TESTIMONIALS.length;i++){ cols[i%nCols].push(TESTIMONIALS[i]); }
-  var loop = TESTIMONIALS.length >= 9;
+  var loop = (nCols === 1 && TESTIMONIALS.length >= 3);
   var html = "", cls = ["first","mid","last"], durs = ["24s","30s","27s"];
   for (var c=0;c<nCols;c++){
     var cards = "";
