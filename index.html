@@ -1275,6 +1275,26 @@ function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
 var ADMIN_FN = "https://ccdiibhzrtakczvkvqyw.supabase.co/functions/v1/shaytye-admin";
 var PUB_KEY = "sb_publishable_Ds3dufQ1O9oQNGRJCa6QZg_9EBY7jq7";
 var AVAIL = { rules: [], exceptions: [], loaded: false };
+/* ---- anonymous visit tracking (no cookies, geo done server-side) ---- */
+(function(){
+  var sid = "";
+  try{ sid = sessionStorage.getItem("shy_sid") || ""; if (!sid){ sid = Math.random().toString(36).slice(2, 12); sessionStorage.setItem("shy_sid", sid); } }catch(e){}
+  var lastPath = "";
+  function track(){
+    var path = "/" + (location.hash ? location.hash.replace(/^#\/?/, "") : "");
+    if (path === lastPath) return;
+    lastPath = path;
+    try{
+      fetch(ADMIN_FN, { method:"POST", keepalive:true,
+        headers:{ "Authorization":"Bearer "+PUB_KEY, "apikey":PUB_KEY, "content-type":"application/json" },
+        body: JSON.stringify({ action:"track", path:path, ref:document.referrer || "", lang:navigator.language || "", sid:sid })
+      }).catch(function(){});
+    }catch(e){}
+  }
+  track();
+  var _tT = null;
+  window.addEventListener("hashchange", function(){ clearTimeout(_tT); _tT = setTimeout(track, 400); });
+})();
 function isoDay(dt){
   var mm = ("0" + (dt.getMonth()+1)).slice(-2), dd = ("0" + dt.getDate()).slice(-2);
   return dt.getFullYear() + "-" + mm + "-" + dd;
