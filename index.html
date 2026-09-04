@@ -1785,6 +1785,7 @@ function applyI18n(){
   buildServices(); buildSteps(); buildGallery(); buildTestimonials();
   buildPrices(); buildVals(); buildFaq(); buildPolicy(); if (window.buildArticles){ buildArticles(); } buildChips(); buildCal(); buildSlots();
   updateKm(); updateSummary(); fetchAvail();
+  fetchReviews();
   el("copy").textContent = String.fromCharCode(169) + " " + new Date().getFullYear() + " Shaytye Organizing — Almere";
 }
 
@@ -1906,6 +1907,26 @@ function buildGallery(){
       });
     })(cards[k]);
   }
+}
+
+/* ---- reviews come from the admin (Supabase); TESTIMONIALS above is the fallback ---- */
+function fetchReviews(){
+  try{
+    fetch(ADMIN_FN, {
+      method:"POST",
+      headers:{ "Authorization":"Bearer "+PUB_KEY, "apikey":PUB_KEY, "content-type":"application/json" },
+      body: JSON.stringify({ action:"public_reviews" })
+    })
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){
+      if (!d || !d.reviews || !d.reviews.length) return;
+      TESTIMONIALS = d.reviews.map(function(x){
+        return { n: x.author, r:{nl:"Via Google",en:"Via Google"}, nl: x.body_nl, en: x.body_en || x.body_nl };
+      });
+      buildTestimonials();
+    })
+    .catch(function(){});
+  }catch(e){}
 }
 function buildTestimonials(){
   var w = window.innerWidth, nCols = w < 700 ? 1 : (w < 1020 ? 2 : 3);
