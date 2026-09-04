@@ -3083,11 +3083,11 @@ document.addEventListener("DOMContentLoaded", function(){
         <div class="spin-err" id="spinErr" role="alert"></div>
         <label class="spin-consent">
           <input type="checkbox" id="spinConsent">
-          <span data-nl="Ik ga akkoord dat Shaytye mijn voornaam en mobiele nummer gebruikt om mij via WhatsApp en e-mail te contacteren over mijn prijs. Verplicht: geldig mobiel nummer en voornaam. Max. 2 deelnames per persoon." data-en="I agree that Shaytye uses my first name and mobile number to contact me via WhatsApp and email about my prize. Required: valid mobile number and first name. Max. 2 entries per person.">Ik ga akkoord...</span>
+          <span data-nl="Ik ga akkoord dat Shaytye mijn voornaam en mobiele nummer gebruikt om mij via WhatsApp en e-mail te contacteren over mijn prijs. Verplicht: geldig mobiel nummer en voornaam. Max. 2 deelnames per maand." data-en="I agree that Shaytye uses my first name and mobile number to contact me via WhatsApp and email about my prize. Required: valid mobile number and first name. Max. 2 entries per month.">Ik ga akkoord...</span>
         </label>
         <button type="submit" class="spin-btn" id="spinGo" data-nl="Draai het rad" data-en="Spin the wheel">Draai het rad</button>
       </form>
-      <p class="spin-fine" data-nl="Actie geldig t/m 31 augustus 2026. Alleen geldige Nederlandse mobiele nummers (06). Valse of dubbele nummers/e-mails worden geweigerd. Prijs eenmalig inwisselbaar bij een boeking, niet inwisselbaar voor contanten." data-en="Valid until 31 August 2026. Valid Dutch mobile numbers (06) only. Fake or duplicate numbers/emails are rejected. Prize redeemable once with a booking, not exchangeable for cash.">Actie geldig t/m 31 augustus 2026.</p>
+      <p class="spin-fine" data-nl="Alleen geldige Nederlandse mobiele nummers (06). Valse of dubbele nummers/e-mails worden geweigerd. Prijs eenmalig inwisselbaar bij een boeking, niet inwisselbaar voor contanten." data-en="Valid Dutch mobile numbers (06) only. Fake or duplicate numbers/emails are rejected. Prize redeemable once with a booking, not exchangeable for cash."></p>
     </div>
 
     <div class="spin-step" id="spinStep2" hidden>
@@ -3137,12 +3137,14 @@ document.addEventListener("DOMContentLoaded", function(){
   var WA = "31653910755";
   var SUPA_FN = "https://ccdiibhzrtakczvkvqyw.supabase.co/functions/v1/shaytye-game";
   var SUPA_KEY = "sb_publishable_Ds3dufQ1O9oQNGRJCa6QZg_9EBY7jq7";
-  var END = new Date(2026, 7, 31, 23, 59, 59);
+  /* Filled from the server (admin > Instellingen > Einddatum). The date used to be
+     hard-coded here, which silently killed the popup when it passed. */
+  var END = null;
   var SEG_MAP = { EUR5:[0,4], NONE:[1,5], EUR25:[2], AGAIN:[3,7], HOUR:[6] };
   var TXT = {
     nl:{ errName:"Vul je voornaam in.", errPhone:"Vul een geldig Nederlands mobiel nummer in (06xxxxxxxx).",
       errConsent:"Vink het vakje aan om deel te nemen.",
-      errLimit:"Je hebt al 2 keer meegedaan met dit nummer of e-mail. Bedankt voor je enthousiasme!",
+      errLimit:"Je hebt deze maand al 2 keer meegedaan met dit nummer. Volgende maand mag je weer!",
       errEmail:"Vul een geldig e-mailadres in.", errEnded:"De actie is helaas afgelopen.",
       errNetwork:"Verbinding mislukt. Probeer het zo opnieuw.", errGeneric:"Er ging iets mis. Probeer opnieuw.",
       again:"Nieuwe kans! Draai nog een keer.", spinAgainBtn:"Draai opnieuw",
@@ -3152,7 +3154,7 @@ document.addEventListener("DOMContentLoaded", function(){
       wa:"Hoi Shanice, ik heb bij het rad van Shaytye gewonnen: " },
     en:{ errName:"Please enter your first name.", errPhone:"Enter a valid Dutch mobile number (06xxxxxxxx).",
       errConsent:"Please tick the box to take part.",
-      errLimit:"You have already entered 2 times with this number or email. Thanks for your enthusiasm!",
+      errLimit:"You have already played 2 times with this number this month. You can play again next month!",
       errEmail:"Please enter a valid email address.", errEnded:"The promotion has ended.",
       errNetwork:"Connection failed. Please try again.", errGeneric:"Something went wrong. Please try again.",
       again:"New spin! Give it another go.", spinAgainBtn:"Spin again",
@@ -3327,7 +3329,8 @@ document.addEventListener("DOMContentLoaded", function(){
     document.body.classList.remove("spin-lock");
   }
 
-  function canRun(){ if((new Date()) > END) return false; if(shown) return false; return true; }
+  function gameOver(){ return END !== null && (new Date()) > END; }
+  function canRun(){ if(END === null || gameOver()) return false; if(shown) return false; return true; }
   function trigger(){
     if(shown || !canRun()) return;
     if(overlay.classList.contains("open")){ shown = true; return; }
@@ -3335,10 +3338,46 @@ document.addEventListener("DOMContentLoaded", function(){
     openOverlay(true);
   }
 
+  /* Ask the server whether the contest is still running and until when.
+     Shanice controls this from the admin (Instellingen > Einddatum). */
+  function loadGameStatus(){
+    api({ action:"status" }).then(function(res){
+      var d = res.data || {};
+      if(res.status !== 200 || !d.ok || !d.active){ launch.style.display = "none"; return; }
+      END = new Date(String(d.ends) + "T23:59:59");
+      if(gameOver()){ launch.style.display = "none"; return; }
+      launch.style.display = "";
+      showDeadline(d.ends);
+    }).catch(function(){ launch.style.display = "none"; });
+  }
+  /* Show the real closing date instead of a date frozen in the markup. */
+  function showDeadline(ends){
+    var MNL=["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+    var MEN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var p = String(ends).split("-");
+    if(p.length !== 3) return;
+    var mi = Number(p[1]) - 1, day = Number(p[2]);
+    var nodes = document.querySelectorAll(".spin-eyebrow");
+    for(var i=0;i<nodes.length;i++){
+      nodes[i].setAttribute("data-nl", "Exclusief \u00b7 t/m " + day + " " + MNL[mi]);
+      nodes[i].setAttribute("data-en", "Exclusive \u00b7 until " + MEN[mi] + " " + day);
+    }
+    var MFULL_NL=["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
+    var MFULL_EN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var fine = document.querySelectorAll(".spin-fine");
+    for(var j=0;j<fine.length;j++){
+      var bnl = fine[j].getAttribute("data-nl") || "", ben = fine[j].getAttribute("data-en") || "";
+      bnl = bnl.replace(/^Actie geldig t\/m [^.]*\. /, ""); ben = ben.replace(/^Valid until [^.]*\. /, "");
+      fine[j].setAttribute("data-nl", "Actie geldig t/m " + day + " " + MFULL_NL[mi] + " " + p[0] + ". " + bnl);
+      fine[j].setAttribute("data-en", "Valid until " + day + " " + MFULL_EN[mi] + " " + p[0] + ". " + ben);
+    }
+    applySpinLang();
+  }
   function initSpin(){
-    if((new Date()) > END){ launch.style.display = "none"; return; }
+    launch.style.display = "none";           /* stays hidden until the server confirms */
     applySpinLang();
     armedAt = (new Date()).getTime() + 8000;
+    loadGameStatus();
 
     id("spinForm").addEventListener("submit", function(e){
       e.preventDefault();
