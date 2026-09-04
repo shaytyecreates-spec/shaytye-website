@@ -780,6 +780,11 @@ footer ul a:hover{color:var(--rose-d)}
 .soc a:hover svg{fill:#fff}
 .soc svg{width:18px;height:18px;fill:var(--ink)}
 .f-bot{padding-top:26px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:12.5px}
+.f-credit{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:flex-end}
+.bz-credit{display:inline-flex;align-items:center;gap:8px;color:var(--ink2);text-decoration:none;opacity:.75;transition:opacity .2s ease}
+.bz-credit:hover{opacity:1}
+.bz-credit img{height:26px;width:auto;display:block}
+@media(max-width:560px){.f-bot{justify-content:center;text-align:center}.f-credit{justify-content:center;width:100%}}
 @media(min-width:800px){.f-grid{grid-template-columns:1.3fr 1fr 1fr 1fr}}
 
 /* REELS */
@@ -1419,7 +1424,13 @@ document.documentElement.className += " anim";
     </div>
     <div class="f-bot">
       <span id="copy"></span>
-      <span data-i18n="ft_made"></span>
+      <span class="f-credit">
+        <span data-i18n="ft_made"></span>
+        <a class="bz-credit" href="https://www.bizzyconsulting.agency/en" target="_blank" rel="noopener noreferrer">
+          <span data-i18n="ft_by"></span>
+          <img src="data:image/png;base64,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" alt="BIZZY Consulting" width="18" height="26" loading="lazy" decoding="async">
+        </a>
+      </span>
     </div>
   </div>
 </footer>
@@ -1502,7 +1513,7 @@ wa_help:"Opende WhatsApp niet? Je bericht is gekopieerd naar je klembord. Open z
 err_fill:"Vul alsjeblieft je naam, e-mailadres en telefoonnummer in en kies een datum en tijd.",
 ft_about:"home organizer vanuit Almere, werkzaam door heel Nederland. Rust, overzicht en systemen die blijven werken.",
 ft_nav:"Navigatie",ft_info:"Informatie",ft_area:"Werkgebied",ft_contact:"Contact",ft_area2:"Heel Nederland (0,40 EUR/km buiten Almere)",
-ft_made:"Met liefde georganiseerd",ft_fee:"Reiskosten berekenen",wa_chat:"Chat met Shanice via WhatsApp",
+ft_made:"Met liefde georganiseerd",ft_by:"Website gemaakt door",ft_fee:"Reiskosten berekenen",wa_chat:"Chat met Shanice via WhatsApp",
 band:["Kledingkasten","Keukens","Bergingen","Slaapkamers","Woonkamers","Voorraadkasten"],
 months:["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"],
 days:["Ma","Di","Wo","Do","Vr","Za","Zo"],
@@ -1560,7 +1571,7 @@ wa_help:"WhatsApp did not open? Your message was copied to your clipboard. Open 
 err_fill:"Please fill in your name, email and phone number and choose a date and time.",
 ft_about:"home organizer based in Almere, working across the Netherlands. Calm, clarity and systems that keep working.",
 ft_nav:"Navigation",ft_info:"Information",ft_area:"Service area",ft_contact:"Contact",ft_area2:"The whole of the Netherlands (EUR 0.40/km outside Almere)",
-ft_made:"Organized with love",ft_fee:"Fee calculator",wa_chat:"Chat with Shanice on WhatsApp",
+ft_made:"Organized with love",ft_by:"Website created by",ft_fee:"Fee calculator",wa_chat:"Chat with Shanice on WhatsApp",
 band:["Closets","Kitchens","Storage rooms","Bedrooms","Living rooms","Pantries"],
 months:["January","February","March","April","May","June","July","August","September","October","November","December"],
 days:["Mo","Tu","We","Th","Fr","Sa","Su"],
