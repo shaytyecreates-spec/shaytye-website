@@ -316,8 +316,9 @@ var T = {
  "Nieuwe boeking":"New booking","+ Nieuwe boeking":"+ New booking","Naam en datum verplicht":"Name and date required","Deze boeking verwijderen?":"Delete this booking?","Bevestigen":"Confirm","Deze boeking bevestigen en de cliënt een bevestigingsmail sturen?":"Confirm this booking and send the client a confirmation email?","Deze boeking annuleren en de cliënt een annuleringsmail sturen?":"Cancel this booking and send the client a cancellation email?","Boeking bevestigd · mail verstuurd":"Booking confirmed · email sent","Boeking bevestigd (geen e-mail)":"Booking confirmed (no email)","Boeking geannuleerd · mail verstuurd":"Booking cancelled · email sent","Boeking geannuleerd (geen e-mail)":"Booking cancelled (no email)","Bonnen":"Receipts","Betalingsbewijzen versturen":"Send payment receipts","kies cliënt":"choose client","Kies een cliënt":"Choose a client","Deze bon naar de cliënt versturen?":"Send this receipt to the client?","Opslaan &amp; versturen":"Save &amp; send","Nog geen bonnen. Maak er een aan met “+ Nieuwe bon”.":"No receipts yet. Create one with “+ New receipt”.","Tijdslots":"Time slots","+ Tijdslot toevoegen":"+ Add time slot","Wijzigingen worden automatisch opgeslagen.":"Changes are saved automatically.","Datum *":"Date *","Tijd":"Time",
  "Standaard week":"Default week","Kalender":"Calendar","Dag aanpassen":"Edit day","Van":"From","Tot":"To","Terug naar standaard":"Back to default","Ma":"Mo","Di":"Tu","Wo":"We","Do":"Th","Vr":"Fr","Za":"Sa","Zo":"Su",
  "Betalingen / bonnen":"Payments / receipts","+ Nieuwe bon":"+ New receipt","Nieuwe bon":"New receipt","Bon bewerken":"Edit receipt","Versturen":"Send","Bon verstuurd":"Receipt sent","Deze bon verwijderen?":"Delete this receipt?","concept":"draft","verstuurd":"sent","Historie":"History","Boeking":"Booking","Spel":"Game","geen prijs":"no prize","Geen historie.":"No history.","Nog geen bonnen.":"No receipts yet.","Sessiedatum":"Session date","Uren":"Hours","Uurtarief (€)":"Hourly rate (€)","Parkeerkosten (€)":"Parking (€)","Kilometers":"Kilometers","Betaalwijze":"Payment method","Overboeking":"Bank transfer","Contant":"Cash","Totaal":"Total","Reiskosten €0,80/km (heen en terug).":"Travel €0.80/km (round trip).","Notitie toevoegen":"Add note",
- "Overzicht":"Overview","CRM Jeu":"Game CRM","CRM Cliënten":"Client CRM","Boekingen":"Bookings","Beschikbaarheid":"Availability","Instellingen":"Settings",
- "Bezoekers":"Visitors",
+ "Overzicht":"Overview","Spel CRM":"Game CRM","CRM Cliënten":"Client CRM","Boekingen":"Bookings","Beschikbaarheid":"Availability","Instellingen":"Settings",
+ "Bezoekers":"Visitors", "Tekst":"Text","Spel CRM":"Game CRM",
+ "Aanbetaling (\u20AC)":"Deposit (\u20AC)","Nog te voldoen":"Still to pay","Aanbetaling":"Deposit","Bedrag (\u20AC) *":"Amount (\u20AC) *","De aanbetaling is niet-restitueerbaar.":"The deposit is non-refundable.",
  "Reviews die op de site staan":"Reviews shown on the site","Beheer wat er op shaytye.com wordt getoond":"Manage what is shown on shaytye.com","+ Review toevoegen":"+ Add review","Nieuwe review":"New review","Review bewerken":"Edit review","Naam *":"Name *","Tekst (NL) *":"Text (NL) *","Tekst (EN)":"Text (EN)","Zichtbaar op de site":"Visible on the site","Volgorde":"Order","Nog geen reviews.":"No reviews yet.","Deze review verwijderen?":"Delete this review?","Naam en Nederlandse tekst zijn verplicht":"Name and Dutch text are required","Leeg laten = zelfde tekst als NL":"Leave empty = same text as NL","zichtbaar":"visible","verborgen":"hidden","Bron":"Source","Deze lijst voedt rechtstreeks de site \u2014 een wijziging is direct zichtbaar.":"This list feeds the site directly \u2014 a change shows up immediately.",
  "E-MAIL":"EMAIL","TELEFOON":"PHONE","BRON":"SOURCE","BESTEED":"SPENT","Cliënt *":"Client *",
 
@@ -400,7 +401,22 @@ function toast(m,bad){ var t=$("toast"); t.textContent=m; t.className = bad?"sho
 function fmtDate(s){ if(!s) return "-"; var d=new Date(s); return d.getDate()+" "+monthShort(d.getMonth())+" "+d.getFullYear(); }
 function fmtDateTime(s){ if(!s) return "-"; var d=new Date(s); return d.getDate()+" "+monthShort(d.getMonth())+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2); }
 function fmtTime(t){ return t?String(t).slice(0,5):""; }
-function money(n){ return "€ " + (Number(n||0)).toLocaleString("nl-NL",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function money(n){ return "\u20AC " + (Number(n||0)).toLocaleString("nl-NL",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+/* Amounts are typed the Dutch way: 135,50 as well as 135.50 both parse. */
+function num(x){
+  if(x===null||x===undefined) return 0;
+  var s=String(x).trim().replace(/\s|\u20AC/g,"");
+  if(!s) return 0;
+  if(s.indexOf(",")>-1 && s.indexOf(".")>-1) s=s.replace(/\./g,"").replace(",",".");   /* 1.234,50 */
+  else s=s.replace(",",".");
+  var v=parseFloat(s);
+  return isNaN(v)?0:v;
+}
+/* Show a number back in a field the way she typed it: comma decimals, no currency. */
+function amt(n){
+  if(n===null||n===undefined||n==="") return "";
+  return String(n).replace(".",",");
+}
 
 async function api(action, payload){
   var body = Object.assign({ action:action, token:TOKEN }, payload||{});
@@ -458,7 +474,7 @@ $("logout").onclick = function(){ doLogout(); };
 /* ---------------- SHELL ---------------- */
 var TABS = [
   { id:"overview",  ic:"◈", label:"Overzicht" },
-  { id:"game",      ic:"❀", label:"CRM Jeu" },
+  { id:"game",      ic:"❀", label:"Spel CRM" },
   { id:"clients",   ic:"●", label:"CRM Cliënten" },
   { id:"bookings",  ic:"▣", label:"Boekingen" },
   { id:"receipts",  ic:"€", label:"Bonnen" },
@@ -549,7 +565,7 @@ async function renderOverview(v){
 /* ---------------- GAME / JEU ---------------- */
 STATE.gameFilter="all";
 async function renderGame(v){
-  v.innerHTML = head("CRM Jeu","Inzendingen van het rad van fortuin");
+  v.innerHTML = head("Spel CRM","Inzendingen van het rad van fortuin");
   var seg="<div class='seg'>";
   [["all","Alles"],["winners","Winnaars"],["unclaimed","Niet geclaimd"],["unredeemed","Niet verzilverd"]].forEach(function(f){
     seg+="<button class='"+(STATE.gameFilter===f[0]?"on":"")+"' data-f='"+f[0]+"'>"+f[1]+"</button>";
@@ -570,7 +586,7 @@ async function renderGame(v){
     });
     rows+="</tbody></table>";
   } else { rows="<div class='empty'>Geen inzendingen in deze filter.</div>"; }
-  v.innerHTML = TL(head("CRM Jeu","Inzendingen van het rad van fortuin")+
+  v.innerHTML = TL(head("Spel CRM","Inzendingen van het rad van fortuin")+
     "<div class='toolbar'>"+seg+"</div><div class='panel'><div class='tablewrap'>"+rows+"</div></div>");
   // wire
   var segs=v.querySelectorAll(".seg button");
@@ -620,7 +636,7 @@ function clientModal(c){
     "<div class='grid2'><div class='field'><label>Plaats</label><input id='m-city' value='"+esc(c.city||"")+"'></div>"+
     "<div class='field'><label>Status</label><select id='m-status'>"+statusOpts(c.status||"lead")+"</select></div></div>"+
     "<div class='grid2'><div class='field'><label>Bron</label><input id='m-source' value='"+esc(c.source||"")+"' placeholder='"+tr('spel, website, doorverwijzing...')+"'></div>"+
-    "<div class='field'><label>Besteed (€)</label><input id='m-spent' type='number' step='0.01' value='"+esc(c.total_spent||"")+"'></div></div>"+
+    "<div class='field'><label>Besteed (€)</label><input id='m-spent' type='text' inputmode='decimal' value='"+esc(amt(c.total_spent||""))+"'></div></div>"+
     "<div class='field'><label>Tags (komma-gescheiden)</label><input id='m-tags' value='"+esc((c.tags||[]).join(", "))+"'></div>"+
     "<div class='field'><label>Notitie</label><textarea id='m-notes'>"+esc(c.notes||"")+"</textarea></div>";
   var foot=(c.id?"<button class='btn danger sm' id='m-del'>Verwijderen</button>":"")+
@@ -630,7 +646,7 @@ function clientModal(c){
   $("m-save").onclick=async function(){
     var payload={ name:$("m-name").value.trim(), email:$("m-email").value.trim(), phone:$("m-phone").value.trim(),
       city:$("m-city").value.trim(), status:$("m-status").value, source:$("m-source").value.trim(),
-      total_spent: $("m-spent").value?Number($("m-spent").value):0,
+      total_spent: num($("m-spent").value),
       tags: $("m-tags").value.split(",").map(function(s){return s.trim();}).filter(Boolean),
       notes:$("m-notes").value.trim() };
     if(!payload.name){ toast(tr("Naam is verplicht"),1); return; }
@@ -692,13 +708,16 @@ function paymentModal(clientId, p){
   function v(x,dflt){ return (x!==undefined&&x!==null)?x:dflt; }
   var body="<div class='grid2'>"+
     "<div class='field'><label>Dienst</label><input id='p-service' value='"+esc(p.service||"")+"'></div>"+
-    "<div class='field'><label>Sessiedatum</label><input id='p-date' type='date' value='"+esc(p.session_date?String(p.session_date).slice(0,10):"")+"'></div></div>"+
+    "<div class='field'><label>Sessiedatum</label><div class='dpwrap' id='p-datewrap'><input id='p-date' placeholder='"+tr('Kies een datum')+"'></div></div></div>"+
     "<div class='grid2'>"+
-    "<div class='field'><label>Uren</label><input id='p-hours' type='number' step='0.5' value='"+esc(v(p.hours,""))+"'></div>"+
-    "<div class='field'><label>Uurtarief (€)</label><input id='p-rate' type='number' value='"+esc(v(p.hourly_rate,45))+"'></div></div>"+
+    "<div class='field'><label>Uren</label><input id='p-hours' type='text' inputmode='decimal' value='"+esc(amt(v(p.hours,"")))+"'></div>"+
+    "<div class='field'><label>Uurtarief (€)</label><input id='p-rate' type='text' inputmode='decimal' value='"+esc(amt(v(p.hourly_rate,45)))+"'></div></div>"+
     "<div class='grid2'>"+
-    "<div class='field'><label>Parkeerkosten (€)</label><input id='p-parking' type='number' step='0.01' value='"+esc(v(p.parking,0))+"'></div>"+
-    "<div class='field'><label>Kilometers</label><input id='p-km' type='number' value='"+esc(v(p.km,0))+"'></div></div>"+
+    "<div class='field'><label>Parkeerkosten (€)</label><input id='p-parking' type='text' inputmode='decimal' value='"+esc(amt(v(p.parking,0)))+"'></div>"+
+    "<div class='field'><label>Kilometers</label><input id='p-km' type='text' inputmode='decimal' value='"+esc(amt(v(p.km,0)))+"'></div></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Aanbetaling (€)</label><input id='p-deposit' type='text' inputmode='decimal' value='"+esc(amt(v(p.deposit,0)))+"' placeholder='0,00'></div>"+
+    "<div class='field'><label>Nog te voldoen</label><input id='p-due' readonly style='background:var(--cream2)'></div></div>"+
     "<div class='grid2'>"+
     "<div class='field'><label>Betaalwijze</label><select id='p-method'><option value='virement'"+((p.method!=='cash'&&p.method!=='contant')?" selected":"")+">Overboeking</option><option value='cash'"+((p.method==='cash'||p.method==='contant')?" selected":"")+">Contant</option></select></div>"+
     "<div class='field'><label>Totaal</label><input id='p-total' readonly style='font-weight:700;background:var(--cream2)'></div></div>"+
@@ -706,13 +725,20 @@ function paymentModal(clientId, p){
     "<div class='muted' style='font-size:12px'>Reiskosten €0,80/km (heen en terug).</div>";
   var foot="<button class='btn gray sm' id='pm-cancel'>Annuleren</button><button class='btn sm' id='pm-save'>Opslaan</button>";
   modal(p.id?"Bon bewerken":"Nieuwe bon", body, foot);
-  function calc(){ var t=Number($("p-hours").value||0)*Number($("p-rate").value||0)+Number($("p-parking").value||0)+Number($("p-km").value||0)*0.80; $("p-total").value=money(Math.round(t*100)/100); }
-  ["p-hours","p-rate","p-parking","p-km"].forEach(function(fid){ $(fid).oninput=calc; }); calc();
+  makeDatePicker("p-datewrap", p.session_date?String(p.session_date).slice(0,10):isoToday(), null);
+  function calc(){
+    var t=num($("p-hours").value)*num($("p-rate").value)+num($("p-parking").value)+num($("p-km").value)*0.80;
+    t=Math.round(t*100)/100;
+    var dep=num($("p-deposit").value);
+    $("p-total").value=money(t);
+    $("p-due").value=money(Math.max(0, Math.round((t-dep)*100)/100));
+  }
+  ["p-hours","p-rate","p-parking","p-km","p-deposit"].forEach(function(fid){ $(fid).oninput=calc; }); calc();
   $("pm-cancel").onclick=function(){ closeModal(); openClient(clientId); };
   $("pm-save").onclick=async function(){
-    var payload={ client_id:clientId, service:$("p-service").value.trim(), session_date:$("p-date").value||null,
-      hours:Number($("p-hours").value||0), hourly_rate:Number($("p-rate").value||45),
-      parking:Number($("p-parking").value||0), km:Number($("p-km").value||0),
+    var payload={ client_id:clientId, service:$("p-service").value.trim(), session_date:$("p-datewrap").getValue()||null,
+      hours:num($("p-hours").value), hourly_rate:(String($("p-rate").value).trim()===""?45:num($("p-rate").value)), deposit:num($("p-deposit").value),
+      parking:num($("p-parking").value), km:num($("p-km").value),
       method:$("p-method").value, note:$("p-note").value.trim() };
     this.disabled=true;
     try{ if(p.id){ payload.id=p.id; await api("payment_update",payload); } else { await api("payment_create",payload); } closeModal(); toast(tr("Opgeslagen")); openClient(clientId); }
@@ -759,13 +785,16 @@ async function receiptModal(p){
   var body="<div class='field'><label>Cliënt *</label><select id='p-client'"+(p.id?" disabled":"")+">"+opts+"</select></div>"+
     "<div class='grid2'>"+
     "<div class='field'><label>Dienst</label><input id='p-service' value='"+esc(p.service||"")+"'></div>"+
-    "<div class='field'><label>Sessiedatum</label><input id='p-date' type='date' value='"+esc(p.session_date?String(p.session_date).slice(0,10):"")+"'></div></div>"+
+    "<div class='field'><label>Sessiedatum</label><div class='dpwrap' id='p-datewrap'><input id='p-date' placeholder='"+tr('Kies een datum')+"'></div></div></div>"+
     "<div class='grid2'>"+
-    "<div class='field'><label>Uren</label><input id='p-hours' type='number' step='0.5' value='"+esc(v(p.hours,""))+"'></div>"+
-    "<div class='field'><label>Uurtarief (€)</label><input id='p-rate' type='number' value='"+esc(v(p.hourly_rate,45))+"'></div></div>"+
+    "<div class='field'><label>Uren</label><input id='p-hours' type='text' inputmode='decimal' value='"+esc(amt(v(p.hours,"")))+"'></div>"+
+    "<div class='field'><label>Uurtarief (€)</label><input id='p-rate' type='text' inputmode='decimal' value='"+esc(amt(v(p.hourly_rate,45)))+"'></div></div>"+
     "<div class='grid2'>"+
-    "<div class='field'><label>Parkeerkosten (€)</label><input id='p-parking' type='number' step='0.01' value='"+esc(v(p.parking,0))+"'></div>"+
-    "<div class='field'><label>Kilometers</label><input id='p-km' type='number' value='"+esc(v(p.km,0))+"'></div></div>"+
+    "<div class='field'><label>Parkeerkosten (€)</label><input id='p-parking' type='text' inputmode='decimal' value='"+esc(amt(v(p.parking,0)))+"'></div>"+
+    "<div class='field'><label>Kilometers</label><input id='p-km' type='text' inputmode='decimal' value='"+esc(amt(v(p.km,0)))+"'></div></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Aanbetaling (€)</label><input id='p-deposit' type='text' inputmode='decimal' value='"+esc(amt(v(p.deposit,0)))+"' placeholder='0,00'></div>"+
+    "<div class='field'><label>Nog te voldoen</label><input id='p-due' readonly style='background:var(--cream2)'></div></div>"+
     "<div class='grid2'>"+
     "<div class='field'><label>Betaalwijze</label><select id='p-method'><option value='virement'"+((p.method!=='cash'&&p.method!=='contant')?" selected":"")+">Overboeking</option><option value='cash'"+((p.method==='cash'||p.method==='contant')?" selected":"")+">Contant</option></select></div>"+
     "<div class='field'><label>Totaal</label><input id='p-total' readonly style='font-weight:700;background:var(--cream2)'></div></div>"+
@@ -773,15 +802,22 @@ async function receiptModal(p){
     "<div class='muted' style='font-size:12px'>Reiskosten €0,80/km (heen en terug).</div>";
   var foot="<button class='btn gray sm' id='pm-cancel'>Annuleren</button><button class='btn gray sm' id='pm-save'>Opslaan</button><button class='btn sm' id='pm-savesend'>Opslaan &amp; versturen</button>";
   modal(p.id?"Bon bewerken":"Nieuwe bon", body, foot);
-  function calc(){ var t=Number($("p-hours").value||0)*Number($("p-rate").value||0)+Number($("p-parking").value||0)+Number($("p-km").value||0)*0.80; $("p-total").value=money(Math.round(t*100)/100); }
-  ["p-hours","p-rate","p-parking","p-km"].forEach(function(fid){ $(fid).oninput=calc; }); calc();
+  makeDatePicker("p-datewrap", p.session_date?String(p.session_date).slice(0,10):isoToday(), null);
+  function calc(){
+    var t=num($("p-hours").value)*num($("p-rate").value)+num($("p-parking").value)+num($("p-km").value)*0.80;
+    t=Math.round(t*100)/100;
+    var dep=num($("p-deposit").value);
+    $("p-total").value=money(t);
+    $("p-due").value=money(Math.max(0, Math.round((t-dep)*100)/100));
+  }
+  ["p-hours","p-rate","p-parking","p-km","p-deposit"].forEach(function(fid){ $(fid).oninput=calc; }); calc();
   $("pm-cancel").onclick=function(){ closeModal(); renderPayments($("view")); };
   async function save(){
     var cid=p.id?p.client_id:$("p-client").value;
     if(!cid){ toast(tr("Kies een cliënt"),1); return null; }
-    var payload={ client_id:cid, service:$("p-service").value.trim(), session_date:$("p-date").value||null,
-      hours:Number($("p-hours").value||0), hourly_rate:Number($("p-rate").value||45),
-      parking:Number($("p-parking").value||0), km:Number($("p-km").value||0),
+    var payload={ client_id:cid, service:$("p-service").value.trim(), session_date:$("p-datewrap").getValue()||null,
+      hours:num($("p-hours").value), hourly_rate:(String($("p-rate").value).trim()===""?45:num($("p-rate").value)), deposit:num($("p-deposit").value),
+      parking:num($("p-parking").value), km:num($("p-km").value),
       method:$("p-method").value, note:$("p-note").value.trim() };
     if(p.id){ payload.id=p.id; await api("payment_update",payload); return p.id; }
     var r=await api("payment_create",payload); return r.payment.id;
@@ -823,13 +859,18 @@ async function renderBookings(v){
 function bookingModal(v){
   var body="<div class='grid2'><div class='field'><label>Naam *</label><input id='bk-name'></div><div class='field'><label>Telefoon</label><input id='bk-phone'></div></div>"+
     "<div class='field'><label>E-mail</label><input id='bk-email'></div>"+
-    "<div class='grid2'><div class='field'><label>Datum *</label><input id='bk-day' type='date'></div><div class='field'><label>Tijd</label><input id='bk-time' type='time'></div></div>"+
+    "<div class='grid2'><div class='field'><label>Datum *</label><div class='dpwrap' id='bk-daywrap'><input id='bk-day' placeholder='"+tr('Kies een datum')+"'></div></div><div class='field'><label>Tijd</label><input id='bk-time' type='time'></div></div>"+
     "<div class='field'><label>Dienst</label><input id='bk-service'></div>"+
+    "<div class='grid2'>"+
+    "<div class='field'><label>Uren</label><input id='bk-hours' type='text' inputmode='decimal' placeholder='3'></div>"+
+    "<div class='field'><label>Kilometers</label><input id='bk-km' type='text' inputmode='decimal' placeholder='0'></div></div>"+
+    "<div class='field'><label>Parkeerkosten (\u20AC)</label><input id='bk-parking' type='text' inputmode='decimal' placeholder='0,00'></div>"+
     "<div class='field'><label>Notitie</label><textarea id='bk-msg'></textarea></div>";
   modal("Nieuwe boeking", body, "<button class='btn gray sm' id='bk-cancel'>Annuleren</button><button class='btn sm' id='bk-save'>Opslaan</button>");
+  makeDatePicker("bk-daywrap", isoToday(), null);
   $("bk-cancel").onclick=closeModal;
-  $("bk-save").onclick=async function(){ var name=$("bk-name").value.trim(), day=$("bk-day").value; if(!name||!day){ toast(tr("Naam en datum verplicht"),1); return; } this.disabled=true;
-    try{ await api("booking_create",{client_name:name,email:$("bk-email").value.trim(),phone:$("bk-phone").value.trim(),day:day,start_time:$("bk-time").value||null,service:$("bk-service").value.trim(),message:$("bk-msg").value.trim(),status:"confirmed"}); closeModal(); toast(tr("Opgeslagen")); loadStats(); renderBookings(v); }
+  $("bk-save").onclick=async function(){ var name=$("bk-name").value.trim(), day=$("bk-daywrap").getValue(); if(!name||!day){ toast(tr("Naam en datum verplicht"),1); return; } this.disabled=true;
+    try{ await api("booking_create",{client_name:name,email:$("bk-email").value.trim(),phone:$("bk-phone").value.trim(),day:day,start_time:$("bk-time").value||null,service:$("bk-service").value.trim(),message:$("bk-msg").value.trim(),hours:num($("bk-hours").value)||null,parking:num($("bk-parking").value)||null,km:num($("bk-km").value)||null,status:"confirmed"}); closeModal(); toast(tr("Opgeslagen")); loadStats(); renderBookings(v); }
     catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; } };
 }
 
@@ -1141,7 +1182,7 @@ async function renderIncome(v){
   /* ---- entry form ---- */
   h+="<div class='panel'><div class='ph'><h3>Omzet toevoegen of aanpassen</h3></div><div style='padding:16px 18px'>"+
      "<div class='grid2'><div class='field'><label>Datum *</label><div class='dpwrap' id='in-daywrap'><input id='in-day' placeholder='"+tr("Kies een datum")+"'></div></div>"+
-     "<div class='field'><label>Bedrag (€) *</label><input type='number' step='0.01' min='0' id='in-amt' placeholder='0,00'></div></div>"+
+     "<div class='field'><label>Bedrag (€) *</label><input type='text' inputmode='decimal' id='in-amt' placeholder='0,00'></div></div>"+
      "<div class='field'><label>Notitie</label><input id='in-note' placeholder='"+tr("bijv. Advanced pakket — Almere")+"'></div>"+
      "<button class='btn sm' id='in-save'>Opslaan</button>"+
      "<div class='muted' style='font-size:12px;margin-top:8px'>Eén bedrag per dag. Sla je dezelfde datum nogmaals op, dan wordt die vervangen.</div>"+
@@ -1177,17 +1218,18 @@ async function renderIncome(v){
   makeDatePicker("in-daywrap", today, null);
   $("inc-range").querySelectorAll("button").forEach(function(b){ b.onclick=function(){ STATE.incRange=this.getAttribute("data-r"); renderIncome(v); }; });
   $("in-save").onclick=async function(){
-    var day=$("in-daywrap").getValue(), amt=$("in-amt").value;
+    var day=$("in-daywrap").getValue(), amtRaw=$("in-amt").value;
     if(!day){ toast(tr("Datum is verplicht"),1); return; }
-    if(amt===""||isNaN(Number(amt))||Number(amt)<0){ toast(tr("Vul een geldig bedrag in"),1); return; }
+    var amtVal=num(amtRaw);
+    if(amtRaw.trim()==="" || amtVal<0){ toast(tr("Vul een geldig bedrag in"),1); return; }
     this.disabled=true;
-    try{ await api("income_set",{day:day, amount:Number(amt), note:$("in-note").value.trim()}); toast(tr("Opgeslagen")); renderIncome(v); }
+    try{ await api("income_set",{day:day, amount:amtVal, note:$("in-note").value.trim()}); toast(tr("Opgeslagen")); renderIncome(v); }
     catch(e){ toast(tr("Fout")+": "+e.message,1); this.disabled=false; }
   };
   v.querySelectorAll("[data-inedit]").forEach(function(b){ b.onclick=function(e){
     e.stopPropagation();
     $("in-daywrap").setValue(this.getAttribute("data-day"));
-    $("in-amt").value=this.getAttribute("data-amt"); $("in-note").value=this.getAttribute("data-note");
+    $("in-amt").value=amt(this.getAttribute("data-amt")); $("in-note").value=this.getAttribute("data-note");
     $("in-amt").scrollIntoView({behavior:"smooth",block:"center"});
   };});
   v.querySelectorAll("[data-indel]").forEach(function(b){ b.onclick=async function(e){
@@ -1404,7 +1446,7 @@ async function renderSettings(v){
   var h=head("Instellingen","Het spel en algemene instellingen");
   h+="<div class='panel'><div class='ph'><h3>Rad van fortuin</h3></div><div style='padding:18px'>"+
     "<div class='dayrow' style='border:0;padding:0;margin-bottom:14px'><label class='switch'><input type='checkbox' id='s-active' "+(c.active?"checked":"")+"><span class='sl'></span></label><span class='dn' style='width:auto'>Spel actief</span></div>"+
-    "<div class='grid2'><div class='field'><label>Einddatum</label><input type='date' id='s-ends' value='"+esc(c.ends||"")+"'></div>"+
+    "<div class='grid2'><div class='field'><label>Einddatum</label><input type='text' id='s-ends' inputmode='numeric' placeholder='JJJJ-MM-DD' value='"+esc(c.ends||"")+"'></div>"+
     "<div class='field'><label>Max. per persoon</label><input type='number' id='s-max' value='"+esc(c.max_per_person||2)+"'></div></div>"+
     "<div class='muted' style='font-size:12px;margin-top:4px'>Wijzigingen worden automatisch opgeslagen.</div></div></div>";
   h+="<div class='panel'><div class='ph'><h3>Prijskansen (gewichten)</h3></div><div style='padding:18px'>"+

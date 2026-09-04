@@ -1081,6 +1081,7 @@ body::-webkit-scrollbar-thumb:hover{background:var(--rose-d)}
 .grbadge:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(205,135,165,.2)}
 .grbadge .grstars{color:#FBBC05;letter-spacing:1px;font-size:15px}
 .grbadge .grsub{color:var(--ink2);font-weight:500}
+.deposit-note{border-left:3px solid var(--rose-d);padding-left:11px;margin-bottom:10px;font-weight:500;color:var(--ink)}
 .grwrite{display:inline-block;font-size:13.5px;color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px;transition:color .2s ease,border-color .2s ease}
 .grwrite:hover{color:var(--rose-d);border-color:var(--rose-d)}
 /* CURSOR TRAIL */
@@ -1378,6 +1379,7 @@ document.documentElement.className += " anim";
           <div class="srow tot"><span data-i18n="sum_cost"></span><b data-i18n="sum_free"></b></div>
           <button class="btn" id="bkSend"><span data-i18n="sum_btn"></span></button>
           <a id="bkMail" href="#" style="display:none;margin-top:12px;font-size:13px;color:var(--rose-d);text-decoration:underline">contact@shaytye.com</a>
+          <div class="note deposit-note" data-i18n="sum_deposit"></div>
           <div class="note" data-i18n="sum_note"></div>
           <div class="ok" id="bkOk"></div>
           <div id="bkHelp" style="display:none;font-size:12.5px;color:var(--ink2);margin-top:10px"></div>
@@ -1495,7 +1497,7 @@ room_living:"Woonkamer",room_kitchen:"Keuken",room_bed:"Slaapkamer",room_storage
 sum_title:"Jouw afspraak",sum_type:"Type",sum_typeval:"Kennismaking (videocall)",sum_dur:"Duur",
 sum_date:"Datum",sum_time:"Tijd",sum_rooms:"Ruimtes",sum_cost:"Kosten",sum_free:"Gratis",
 sum_btn:"Verstuur via WhatsApp",
-sum_note:"Je aanvraag opent in WhatsApp met een samenvatting — daar is Shanice het snelst bereikbaar. Liever mailen? Dat kan ook, via de knop hieronder.",
+sum_deposit:"Let op: bij het vastleggen van een afspraak wordt een aanbetaling gevraagd. Deze aanbetaling is niet-restitueerbaar.",sum_note:"Je aanvraag opent in WhatsApp met een samenvatting — daar is Shanice het snelst bereikbaar. Liever mailen? Dat kan ook, via de knop hieronder.",
 wa_help:"Opende WhatsApp niet? Je bericht is gekopieerd naar je klembord. Open zelf",sum_ok:"Dank je wel! Je aanvraag staat klaar in WhatsApp. Verstuur het bericht en ik neem zo snel mogelijk contact met je op. — Shanice",
 err_fill:"Vul alsjeblieft je naam, e-mailadres en telefoonnummer in en kies een datum en tijd.",
 ft_about:"home organizer vanuit Almere, werkzaam door heel Nederland. Rust, overzicht en systemen die blijven werken.",
@@ -1553,7 +1555,7 @@ room_living:"Living room",room_kitchen:"Kitchen",room_bed:"Bedroom",room_storage
 sum_title:"Your appointment",sum_type:"Type",sum_typeval:"Intro video call",sum_dur:"Duration",
 sum_date:"Date",sum_time:"Time",sum_rooms:"Rooms",sum_cost:"Cost",sum_free:"Free",
 sum_btn:"Send via WhatsApp",
-sum_note:"Your request opens in WhatsApp with a summary — that is where Shanice responds fastest. Prefer email? That works too, via the button below.",
+sum_deposit:"Please note: booking an appointment requires a deposit. This deposit is non-refundable.",sum_note:"Your request opens in WhatsApp with a summary — that is where Shanice responds fastest. Prefer email? That works too, via the button below.",
 wa_help:"WhatsApp did not open? Your message was copied to your clipboard. Open it yourself via",sum_ok:"Thank you! Your request is ready in WhatsApp. Send the message and I will contact you as soon as possible. — Shanice",
 err_fill:"Please fill in your name, email and phone number and choose a date and time.",
 ft_about:"home organizer based in Almere, working across the Netherlands. Calm, clarity and systems that keep working.",
@@ -1924,8 +1926,24 @@ function fetchReviews(){
         return { n: x.author, r:{nl:"Via Google",en:"Via Google"}, nl: x.body_nl, en: x.body_en || x.body_nl };
       });
       buildTestimonials();
+      syncReviewCount(d.googleTotal || d.reviews.length);
     })
     .catch(function(){});
+  }catch(e){}
+}
+/* keep the badge and the structured data in step with what is actually shown */
+function syncReviewCount(n){
+  if (!n) return;
+  var el2 = document.querySelector(".grsub");
+  if (el2){
+    el2.textContent = (LANG === "en" ? "on Google \u00b7 " : "op Google \u00b7 ") + n + " reviews";
+  }
+  try{
+    var s = document.querySelector('script[type="application/ld+json"]');
+    if (s){
+      var o = JSON.parse(s.textContent);
+      if (o && o.aggregateRating){ o.aggregateRating.reviewCount = String(n); s.textContent = JSON.stringify(o); }
+    }
   }catch(e){}
 }
 function buildTestimonials(){
