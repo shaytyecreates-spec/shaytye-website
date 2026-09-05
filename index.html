@@ -762,20 +762,6 @@ main{padding-top:74px}
 .todo{border:1.5px dashed var(--rose-d);background:#FBF3F0}
 .todo .lbl{display:inline-block;background:var(--rose-d);color:#fff;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;padding:4px 10px;border-radius:6px;margin-bottom:12px}
 /* CTA + FOOTER */
-.pzgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:38px;align-items:stretch}
-.pz{background:var(--white);border:1px solid var(--line);border-radius:22px;padding:34px 26px 30px;text-align:center;position:relative;display:flex;flex-direction:column;transition:var(--tr)}
-.pz:hover{transform:translateY(-4px);box-shadow:0 18px 44px rgba(217,137,159,.16)}
-.pz-top{border-color:var(--rose-d);box-shadow:0 14px 40px rgba(217,137,159,.20)}
-.pz-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--cream2);border:1px solid var(--line);color:var(--ink2);
-  font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:5px 14px;border-radius:99px;white-space:nowrap}
-.pz-badge-top{background:var(--rose-d);border-color:var(--rose-d);color:#fff}
-.pz-val{font-family:'Fraunces',serif;font-size:clamp(34px,5vw,46px);font-weight:600;line-height:1.05;color:var(--rose-d);margin:14px 0 6px}
-.pz-top .pz-val{color:var(--ink)}
-.pz-name{font-weight:600;font-size:16px;margin-bottom:8px}
-.pz-d{color:var(--ink2);font-size:14px;font-weight:300;line-height:1.6;margin:0}
-.pz-cta{text-align:center;margin-top:34px}
-.pz-fine{color:var(--ink2);font-size:12.5px;font-weight:300;margin:14px auto 0;max-width:520px;line-height:1.6}
-@media(max-width:860px){.pzgrid{grid-template-columns:1fr;gap:30px;margin-top:44px}}
 .cta{background:linear-gradient(135deg,#FFF7FA 0%,#FFFDFB 55%,#FFF4EC 100%);border:1px solid #F0DAE2;box-shadow:var(--shadow);border-radius:26px;padding:40px 8%;text-align:center;color:var(--ink);position:relative;overflow:hidden}
 .cta::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(242,199,213,.7),transparent 70%);top:-140px;right:-90px}
 .cta h2{font-size:clamp(28px,4vw,44px);color:var(--ink);margin-bottom:14px}
@@ -1240,38 +1226,6 @@ document.documentElement.className += " anim";
     <div class="tcols" id="tcols"></div>
   </div></div>
 
-  <div class="sec" id="prizes"><div class="wrap">
-    <div class="rv" style="text-align:center;max-width:640px;margin:0 auto">
-      <div class="eyebrow" style="justify-content:center" data-i18n="pz_eyebrow"></div>
-      <h2 class="sec-t" data-i18n="pz_title"></h2>
-      <p class="sec-sub" style="margin:0 auto" data-i18n="pz_sub"></p>
-    </div>
-    <div class="pzgrid rv">
-      <div class="pz">
-        <div class="pz-badge" data-i18n="pz_common"></div>
-        <div class="pz-val">&euro;5</div>
-        <div class="pz-name" data-i18n="pz_5t"></div>
-        <p class="pz-d" data-i18n="pz_5d"></p>
-      </div>
-      <div class="pz pz-top">
-        <div class="pz-badge pz-badge-top" data-i18n="pz_best"></div>
-        <div class="pz-val" data-i18n="pz_hourv"></div>
-        <div class="pz-name" data-i18n="pz_hourt"></div>
-        <p class="pz-d" data-i18n="pz_hourd"></p>
-      </div>
-      <div class="pz">
-        <div class="pz-badge" data-i18n="pz_rare"></div>
-        <div class="pz-val">&euro;25</div>
-        <div class="pz-name" data-i18n="pz_25t"></div>
-        <p class="pz-d" data-i18n="pz_25d"></p>
-      </div>
-    </div>
-    <div class="pz-cta rv">
-      <button class="btn" type="button" id="pzSpin"><span data-i18n="pz_btn"></span></button>
-      <p class="pz-fine" data-i18n="pz_fine"></p>
-    </div>
-  </div></div>
-
   <div class="wrap"><div class="cta rv">
     <h2 data-i18n="cta_title"></h2>
     <p data-i18n="cta_sub"></p>
@@ -1559,7 +1513,7 @@ wa_help:"Opende WhatsApp niet? Je bericht is gekopieerd naar je klembord. Open z
 err_fill:"Vul alsjeblieft je naam, e-mailadres en telefoonnummer in en kies een datum en tijd.",
 ft_about:"home organizer vanuit Almere, werkzaam door heel Nederland. Rust, overzicht en systemen die blijven werken.",
 ft_nav:"Navigatie",ft_info:"Informatie",ft_area:"Werkgebied",ft_contact:"Contact",ft_area2:"Heel Nederland (0,40 EUR/km buiten Almere)",
-pz_eyebrow:"Draai & win",pz_title:"Wat je kunt winnen",pz_sub:"Draai aan het rad en maak kans op korting op je eerste sessie \u2014 of op een volledig gratis uur organizing.",pz_common:"Meest gewonnen",pz_best:"Hoofdprijs",pz_rare:"Zeldzaam",pz_5t:"Korting op je sessie",pz_5d:"\u20AC5 korting op elk pakket, direct te gebruiken bij je eerste boeking.",pz_hourv:"1 uur",pz_hourt:"Gratis uur organizing",pz_hourd:"Een heel uur extra bij je sessie, ter waarde van \u20AC45. De mooiste prijs van het rad.",pz_25t:"De grote korting",pz_25d:"\u20AC25 korting op je sessie \u2014 zeldzaam, dus draai op tijd.",pz_btn:"Draai aan het rad",pz_fine:"Gratis meedoen, max. 2 keer per maand per telefoonnummer. Prijs eenmalig inwisselbaar bij een boeking, niet inwisselbaar voor contanten.",ft_made:"Met liefde georganiseerd",ft_by:"Website gemaakt door",ft_fee:"Reiskosten berekenen",wa_chat:"Chat met Shanice via WhatsApp",
+ft_made:"Met liefde georganiseerd",ft_by:"Website gemaakt door",ft_fee:"Reiskosten berekenen",wa_chat:"Chat met Shanice via WhatsApp",
 band:["Kledingkasten","Keukens","Bergingen","Slaapkamers","Woonkamers","Voorraadkasten"],
 months:["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"],
 days:["Ma","Di","Wo","Do","Vr","Za","Zo"],
@@ -1617,7 +1571,7 @@ wa_help:"WhatsApp did not open? Your message was copied to your clipboard. Open 
 err_fill:"Please fill in your name, email and phone number and choose a date and time.",
 ft_about:"home organizer based in Almere, working across the Netherlands. Calm, clarity and systems that keep working.",
 ft_nav:"Navigation",ft_info:"Information",ft_area:"Service area",ft_contact:"Contact",ft_area2:"The whole of the Netherlands (EUR 0.40/km outside Almere)",
-pz_eyebrow:"Spin & win",pz_title:"What you can win",pz_sub:"Spin the wheel for a discount on your first session \u2014 or a completely free hour of organizing.",pz_common:"Most won",pz_best:"Top prize",pz_rare:"Rare",pz_5t:"Discount on your session",pz_5d:"\u20AC5 off any package, usable straight away on your first booking.",pz_hourv:"1 hour",pz_hourt:"Free hour of organizing",pz_hourd:"A full extra hour with your session, worth \u20AC45. The best prize on the wheel.",pz_25t:"The big discount",pz_25d:"\u20AC25 off your session \u2014 rare, so spin while you can.",pz_btn:"Spin the wheel",pz_fine:"Free to enter, max. 2 times per month per phone number. Prize redeemable once with a booking, not exchangeable for cash.",ft_made:"Organized with love",ft_by:"Website created by",ft_fee:"Fee calculator",wa_chat:"Chat with Shanice on WhatsApp",
+ft_made:"Organized with love",ft_by:"Website created by",ft_fee:"Fee calculator",wa_chat:"Chat with Shanice on WhatsApp",
 band:["Closets","Kitchens","Storage rooms","Bedrooms","Living rooms","Pantries"],
 months:["January","February","March","April","May","June","July","August","September","October","November","December"],
 days:["Mo","Tu","We","Th","Fr","Sa","Su"],
@@ -3400,19 +3354,12 @@ document.addEventListener("DOMContentLoaded", function(){
   function loadGameStatus(){
     api({ action:"status" }).then(function(res){
       var d = res.data || {};
-      if(res.status !== 200 || !d.ok || !d.active){ hideGame(); return; }
+      if(res.status !== 200 || !d.ok || !d.active){ launch.style.display = "none"; return; }
       END = new Date(String(d.ends) + "T23:59:59");
-      if(gameOver()){ hideGame(); return; }
+      if(gameOver()){ launch.style.display = "none"; return; }
       launch.style.display = "";
-      var pz = document.getElementById("prizes");
-      if(pz) pz.style.display = "";
       showDeadline(d.ends);
-    }).catch(function(){ hideGame(); });
-  }
-  function hideGame(){
-    launch.style.display = "none";
-    var pz = document.getElementById("prizes");
-    if(pz) pz.style.display = "none";
+    }).catch(function(){ launch.style.display = "none"; });
   }
   /* Show the real closing date instead of a date frozen in the markup. */
   function showDeadline(ends){
@@ -3439,10 +3386,6 @@ document.addEventListener("DOMContentLoaded", function(){
   }
   function initSpin(){
     launch.style.display = "none";           /* stays hidden until the server confirms */
-    var pzInit = document.getElementById("prizes");
-    if(pzInit) pzInit.style.display = "none";
-    var pzBtn = document.getElementById("pzSpin");
-    if(pzBtn) pzBtn.addEventListener("click", function(){ shown = true; openOverlay(true); });
     applySpinLang();
     armedAt = (new Date()).getTime() + 8000;
     loadGameStatus();
