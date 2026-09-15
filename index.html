@@ -649,6 +649,12 @@ main{padding-top:74px}
 .price li{display:flex;gap:10px;font-size:14px;color:var(--ink2);align-items:flex-start}
 .price li svg{width:16px;height:16px;flex-shrink:0;margin-top:3px;color:var(--rose-d)}
 .price .btn{margin-top:auto;justify-content:center}
+.subs{display:grid;gap:22px;margin-top:34px;align-items:stretch}
+@media(min-width:760px){.subs{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1060px){.subs{grid-template-columns:repeat(3,1fr)}}
+.psave{display:inline-block;background:#F6EFE6;color:#8A6A3B;border-radius:99px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;padding:6px 13px;margin-bottom:4px;align-self:flex-start}
+.pmeta{font-size:13px;color:var(--ink2);margin:-14px 0 20px}
+.subnote{margin-top:22px;font-size:13px;color:var(--ink2);line-height:1.7;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:16px 20px}
 @media(min-width:760px){.prices{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1160px){.prices{grid-template-columns:repeat(4,1fr)}.price.feat{transform:scale(1.04)}.price.feat:hover{transform:scale(1.04) translateY(-8px)}}
 /* KM WIDGET */
@@ -1251,6 +1257,14 @@ document.documentElement.className += " anim";
       <div class="prices" id="pricebox"></div>
     </div>
 
+    <div style="margin-top:64px">
+      <div class="eyebrow" data-i18n="sub_eyebrow"></div>
+      <h2 class="sec-t" data-i18n="sub_title"></h2>
+      <p class="sec-sub" data-i18n="sub_sub"></p>
+      <div class="subs" id="subbox"></div>
+      <p class="subnote" data-i18n="sub_note"></p>
+    </div>
+
     <div class="kmw rv" id="feecalc">
       <div>
         <h3 data-i18n="km_title"></h3>
@@ -1482,6 +1496,9 @@ svp_title:"Mijn diensten",
 svp_sub:"Van een enkele kast tot een complete woning: ik sorteer, categoriseer en creeer een systeem dat bij jouw leven past. Opbergmateriaal stem ik vooraf met je af.",
 pp_eyebrow:"Tarieven",pp_title:"Aanbod",
 pp_sub:"Transparante tarieven, geen verrassingen. Elk traject start met een gratis en vrijblijvend kennismakingsgesprek via videocall. Elke boeking is vanaf minimaal 3 uur; extra tijd bijboeken kan altijd in overleg.",
+sub_eyebrow:"Extra dienst",sub_title:"Maandabonnement",
+sub_sub:"Blijvend overzicht in plaats van \u00E9\u00E9n grote opruimdag. Elke maand een vaste sessie van minimaal 5 uur, met een vaste dag en een vast tarief. Hoe langer je kiest, hoe voordeliger het uurtarief.",
+sub_note:"Minimaal 5 uur per maand. Ongebruikte uren kunnen in overleg \u00E9\u00E9n maand worden meegenomen. Reiskosten buiten Almere en betaald parkeren zijn niet inbegrepen. Het abonnement start na het gratis kennismakingsgesprek.",
 km_title:"Reiskosten berekenen",
 km_sub:"Ik werk door heel Nederland. Binnen Almere zijn reiskosten inbegrepen; daarbuiten worden reiskosten (heen en terug) op basis van de afstand berekend \u2014 reken hieronder je exacte kosten uit. Betaald parkeren is voor rekening van de klant.",
 km_lbl:"Adres of postcode van de klant",km_lbl2:"Afstand vanaf Almere (km)",km_ph:"Bijv. Stationsplein 1, Utrecht",km_manual:"Of vul de afstand handmatig in",km_res:"Reiskosten",km_free:"Gratis",km_free_city:"Gemeente Almere — reiskosten gratis",km_detail:"km",km_est:"geschatte afstand",km_calc:"Berekenen...",km_err:"Adres niet gevonden — vul de afstand handmatig in",km_city:"Plaats: ",
@@ -1540,6 +1557,9 @@ svp_title:"My services",
 svp_sub:"From a single closet to a complete home: I sort, categorize and create a system that fits your life. Storage materials are discussed with you in advance.",
 pp_eyebrow:"Pricing",pp_title:"Offers",
 pp_sub:"Transparent pricing, no surprises. Every project starts with a free, no-obligation intro video call. Every booking starts from a minimum of 3 hours; extra time can always be added in consultation.",
+sub_eyebrow:"Extra service",sub_title:"Monthly subscription",
+sub_sub:"Lasting overview instead of one big clear-out. Every month a fixed session of at least 5 hours, on a fixed day and at a fixed rate. The longer you commit, the lower the hourly rate.",
+sub_note:"Minimum of 5 hours per month. Unused hours can be carried over one month in consultation. Travel outside Almere and paid parking are not included. The subscription starts after the free intro video call.",
 km_title:"Calculate travel fee",
 km_sub:"I work across the whole of the Netherlands. Within Almere travel is included; outside Almere the travel fee is based on the distance (round trip) \u2014 calculate your exact cost below. Paid parking is at the client\u0027s expense.",
 km_lbl:"Client address or postcode",km_lbl2:"Distance from Almere (km)",km_ph:"E.g. Stationsplein 1, Utrecht",km_manual:"Or enter the distance manually",km_res:"Travel fee",km_free:"Free",km_free_city:"Municipality of Almere — travel is free",km_detail:"km",km_est:"estimated distance",km_calc:"Calculating...",km_err:"Address not found — enter the distance manually",km_city:"City: ",
@@ -1679,6 +1699,11 @@ var PRICES = [
  {feat:false, nl:{t:"Pro",v:"\u20AC 405",n:"9 uur (volledige dag)",f:["Diepgaande organisatie van meerdere zones","Aanpak op maat (bijv. kledingkast + slaapkamer + administratie)","In overleg: hulp bij spullen wegdoen of herinrichten","Complete make-over van een ruimte of groot project"]}, en:{t:"Pro",v:"\u20AC 405",n:"9 hours (full day)",f:["In-depth organization of multiple zones","Tailored approach (e.g. wardrobe + bedroom + admin)","On request: help letting go or redesigning","Complete make-over of a space or large project"]}},
  {feat:false, nl:{t:"Custom",v:"Op maat",n:"prijs op aanvraag",f:["Meerdaagse projecten en volledige woningen","Plan volledig afgestemd op jouw situatie","Advies over opbergmaterialen inbegrepen","Persoonlijke offerte na de gratis videocall"]}, en:{t:"Custom",v:"Tailored",n:"price on request",f:["Multi-day projects and full homes","Plan fully adapted to your situation","Storage material advice included","Personal quote after the free video call"]}}
 ];
+var SUBS = [
+ {feat:false, nl:{t:"3 maanden",v:"\u20AC 225",n:"per maand \u00B7 5 uur \u00B7 \u20AC 45 per uur",s:"",f:["Elke maand een vaste sessie van 5 uur","Vaste dag in overleg ingepland","Voorrang bij het inplannen","Maandelijks per Tikkie te betalen"]}, en:{t:"3 months",v:"\u20AC 225",n:"per month \u00B7 5 hours \u00B7 \u20AC 45 per hour",s:"",f:["A fixed 5-hour session every month","Fixed day planned in consultation","Priority when scheduling","Paid monthly via Tikkie"]}},
+ {feat:true, nl:{t:"6 maanden",v:"\u20AC 215",n:"per maand \u00B7 5 uur \u00B7 \u20AC 43 per uur",s:"Bespaar \u20AC 60",f:["Alles uit het 3-maandenabonnement","Voordeliger uurtarief","Tussentijdse check-in per bericht","Advies over opbergmaterialen inbegrepen"]}, en:{t:"6 months",v:"\u20AC 215",n:"per month \u00B7 5 hours \u00B7 \u20AC 43 per hour",s:"Save \u20AC 60",f:["Everything in the 3-month plan","Lower hourly rate","Check-in by message in between","Storage material advice included"]}},
+ {feat:false, nl:{t:"1 jaar",v:"\u20AC 200",n:"per maand \u00B7 5 uur \u00B7 \u20AC 40 per uur",s:"Bespaar \u20AC 300",f:["Alles uit het 6-maandenabonnement","Het voordeligste uurtarief","Seizoenswissel van de kledingkast inbegrepen","\u00C9\u00E9n extra uur cadeau per kwartaal"]}, en:{t:"1 year",v:"\u20AC 200",n:"per month \u00B7 5 hours \u00B7 \u20AC 40 per hour",s:"Save \u20AC 300",f:["Everything in the 6-month plan","The best hourly rate","Seasonal wardrobe switch included","One extra hour free every quarter"]}}
+];
 var FAQS = [
  {nl:{q:"Hoe ziet een opruimsessie eruit?",a:"We starten met een korte rondgang. Daarna halen we alles uit de ruimte, sorteren we per categorie, en plaats ik alles terug volgens een logisch systeem. Jij beslist altijd zelf welke spullen bewaard, weggegeven of weggegooid worden — ik adviseer, maar neem geen eindbeslissingen."}, en:{q:"What does an organizing session look like?",a:"We start with a short walkthrough. Then everything comes out of the space, we sort by category, and I place everything back following a logical system. You always decide which items are kept, donated or discarded — I advise, but never take final decisions."}},
  {nl:{q:"Hoe werkt het kennismakingsgesprek?",a:"Vooraf vindt er altijd een gratis en vrijblijvend kennismakingsgesprek plaats via Zoom of FaceTime. We bespreken jouw wensen, doelen en verwachtingen, en aan de hand van foto\u0027s of video\u0027s maak ik een voorlopige inschatting van de benodigde tijd."}, en:{q:"How does the intro call work?",a:"Every project starts with a free, no-obligation intro call via Zoom or FaceTime. We discuss your wishes, goals and expectations, and based on photos or videos I make a preliminary estimate of the time needed."}},
@@ -1692,7 +1717,7 @@ var FAQS = [
 ];
 var POLICY = [
  {todo:false, nl:{t:"Kennismakingsgesprek",b:"Vooraf vindt er altijd een gratis en vrijblijvend kennismakingsgesprek plaats via Zoom of FaceTime. Tijdens dit gesprek bespreken we jouw wensen, doelen en verwachtingen, en krijg ik een goed beeld van de ruimte(s) die georganiseerd moeten worden. Ik vind het belangrijk om te weten met wie ik samenwerk voordat ik in jouw persoonlijke omgeving kom."}, en:{t:"Intro call",b:"Every project starts with a free, no-obligation intro call via Zoom or FaceTime. We discuss your wishes, goals and expectations, and I get a clear picture of the space(s) to be organized. I find it important to know who I am working with before entering your personal environment."}},
- {todo:false, nl:{t:"Tarieven",b:"Standard (3 uur): 135 EUR. Advanced (6 uur): 270 EUR. Pro (9 uur / volledige dag): 405 EUR. Custom: op maat, prijs op aanvraag. Elke boeking is vanaf minimaal 3 uur. Extra tijd die aansluit op een bestaande sessie kan in overleg worden bijgeboekt."}, en:{t:"Pricing",b:"Standard (3 hours): EUR 135. Advanced (6 hours): EUR 270. Pro (9 hours / full day): EUR 405. Custom: tailored, price on request. Every booking starts from a minimum of 3 hours. Additional time connected to an existing session can be added in consultation."}},
+ {todo:false, nl:{t:"Tarieven",b:"Standard (3 uur): 135 EUR. Advanced (6 uur): 270 EUR. Pro (9 uur / volledige dag): 405 EUR. Custom: op maat, prijs op aanvraag. Elke boeking is vanaf minimaal 3 uur. Extra tijd die aansluit op een bestaande sessie kan in overleg worden bijgeboekt. Daarnaast is er een maandabonnement als extra dienst, met minimaal 5 uur per maand: 3 maanden 225 EUR per maand (45 EUR per uur), 6 maanden 215 EUR per maand (43 EUR per uur), 1 jaar 200 EUR per maand (40 EUR per uur)."}, en:{t:"Pricing",b:"Standard (3 hours): EUR 135. Advanced (6 hours): EUR 270. Pro (9 hours / full day): EUR 405. Custom: tailored, price on request. Every booking starts from a minimum of 3 hours. Additional time connected to an existing session can be added in consultation. There is also a monthly subscription as an extra service, with a minimum of 5 hours per month: 3 months EUR 225 per month (EUR 45 per hour), 6 months EUR 215 per month (EUR 43 per hour), 1 year EUR 200 per month (EUR 40 per hour)."}},
  {todo:false, nl:{t:"Betaling",b:"Het Standard-pakket dient vooraf volledig betaald te worden via Tikkie om de afspraak te bevestigen. Voor het Advanced- en Pro-pakket betaal je een aanbetaling vooraf, en het resterende bedrag na afloop van de sessie (contant). Bijboekingen worden na afloop betaald via Tikkie."}, en:{t:"Payment",b:"The Standard package must be paid in full in advance via Tikkie to confirm the appointment. For the Advanced and Pro packages you pay a deposit upfront, and the remaining amount after the session (cash). Additional bookings are paid afterwards via Tikkie."}},
  {todo:false, nl:{t:"Afspraken en annulering",b:"Bij annulering binnen 24 uur wordt 50% van het bedrag in rekening gebracht. Bij een no-show zonder afmelding wordt het volledige bedrag gerekend. Wijzigingen of annuleringen kunnen eenvoudig via WhatsApp of e-mail worden doorgegeven; Shaytye bevestigt wijzigingen altijd schriftelijk om misverstanden te voorkomen."}, en:{t:"Appointments and cancellation",b:"Cancellations within 24 hours are charged at 50% of the amount. A no-show without notice is charged in full. Changes or cancellations can easily be communicated via WhatsApp or email; Shaytye always confirms changes in writing to avoid misunderstandings."}},
  {todo:false, nl:{t:"Tijdsduur",b:"Tijdens het kennismakingsgesprek wordt aan de hand van foto\u0027s of video\u0027s een voorlopige inschatting gemaakt van de benodigde tijd. In de praktijk kan een opruimsessie langer duren dan verwacht: elke ruimte is anders en ieder project uniek. Indien er extra tijd nodig is, wordt dit altijd in overleg besproken en bijgeboekt."}, en:{t:"Duration",b:"During the intro call a preliminary time estimate is made based on photos or videos. In practice a session can take longer than expected: every space is different and every project unique. If extra time is needed, this is always discussed first and added in consultation."}},
@@ -1796,7 +1821,7 @@ function applyI18n(){
   el("lnl").className = LANG==="nl" ? "on":"";
   el("len").className = LANG==="en" ? "on":"";
   buildServices(); buildSteps(); buildGallery(); buildTestimonials();
-  buildPrices(); buildVals(); buildFaq(); buildPolicy(); if (window.buildArticles){ buildArticles(); } buildChips(); buildCal(); buildSlots();
+  buildPrices(); buildSubs(); buildVals(); buildFaq(); buildPolicy(); if (window.buildArticles){ buildArticles(); } buildChips(); buildCal(); buildSlots();
   updateKm(); updateSummary(); fetchAvail();
   fetchReviews();
   el("copy").textContent = String.fromCharCode(169) + " " + new Date().getFullYear() + " Shaytye Organizing — Almere";
@@ -1999,6 +2024,24 @@ function buildPrices(){
     html += "</ul><a href='#booking' class='btn " + (p.feat ? "btn-dark":"btn-line") + "'><span>" + t("hero_cta1") + "</span></a></div>";
   }
   el("pricebox").innerHTML = html;
+}
+function buildSubs(){
+  var html = "";
+  for (var i=0;i<SUBS.length;i++){
+    var p = SUBS[i], c = p[LANG];
+    html += "<div class='price" + (p.feat ? " feat":"") + " rv'>";
+    if (p.feat){
+      html += "<div class='pbadge'><svg viewBox='0 0 24 24'><path d='M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z'/></svg>" + (LANG === "nl" ? "Meest gekozen" : "Most chosen") + "</div>";
+    }
+    html += "<h3>" + c.t + "</h3><div class='pval'>" + c.v + "</div><div class='pnote'>" + c.n + "</div>";
+    if (c.s){ html += "<div class='psave'>" + c.s + "</div>"; }
+    html += "<ul>";
+    for (var f=0;f<c.f.length;f++){
+      html += "<li><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4'><path d='M20 6L9 17l-5-5'/></svg>" + c.f[f] + "</li>";
+    }
+    html += "</ul><a href='#booking' class='btn " + (p.feat ? "btn-dark":"btn-line") + "'><span>" + t("hero_cta1") + "</span></a></div>";
+  }
+  el("subbox").innerHTML = html;
 }
 function buildVals(){
   var icons = ["M12 21C7 17 3 13.5 3 9.5A4.5 4.5 0 0112 6a4.5 4.5 0 019 3.5c0 4-4 7.5-9 11.5z","M16 11a4 4 0 10-8 0M4 21v-1a6 6 0 016-6h4a6 6 0 016 6v1","M7 3v18M3 7h18M3 15h18","M12 3a9 9 0 100 18 9 9 0 000-18zM12 8v4l3 2"];
