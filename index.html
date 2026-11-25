@@ -666,6 +666,7 @@ main{padding-top:74px}
 .pnew{display:block}
 .pdeal{position:absolute;top:16px;left:0;background:#D9899F;color:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding:6px 13px 6px 16px;border-radius:0 99px 99px 0;box-shadow:0 6px 16px rgba(217,137,159,.35)}
 .price.has-deal{padding-top:64px}
+body.bf-on .price{padding-top:64px}
 .promostrip{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(100deg,#FBEAF0 0%,#FAF2EA 100%);border:1px solid #F3DCE5;border-radius:16px;padding:14px 20px;margin-top:26px;font-size:14px;color:#221B1F}
 .promostrip b{font-weight:700}
 .promostrip .pct{background:#D9899F;color:#fff;border-radius:99px;padding:5px 13px;font-size:13px;font-weight:700;letter-spacing:.04em}
@@ -1528,12 +1529,12 @@ cta_btn:"Plan mijn gratis gesprek",
 svp_title:"Mijn diensten",
 svp_sub:"Van een enkele kast tot een complete woning: ik sorteer, categoriseer en creeer een systeem dat bij jouw leven past. Opbergmateriaal stem ik vooraf met je af.",
 pp_eyebrow:"Tarieven",pp_title:"Aanbod",
-bf_a:"Black Friday",bf_b:"20% korting op alle diensten",bf_c:"t/m 7 december",bf_d:"Boek je gratis kennismaking",
-pr_tag:"Actie",pr_strip:"20% korting op alle diensten \u2014 van",
-pr_pop_eyebrow:"Tijdelijke actie",pr_pop_h:"20% korting op alle diensten",
-pr_pop_sub:"Boek je sessie v\u00F3\u00F3r de deadline en ontvang 20% korting op elk pakket \u00E9n op elk maandabonnement.",
+bf_a:"Black Friday",bf_b:"20% korting vanaf 6 uur",bf_c:"t/m 7 december",bf_d:"Boek je gratis kennismaking",
+pr_tag:"Actie",pr_strip:"20% korting op elk pakket vanaf 6 uur, van",
+pr_pop_eyebrow:"Tijdelijke actie",pr_pop_h:"20% korting vanaf 6 uur",
+pr_pop_sub:"Boek een sessie van 6 uur of meer v\u00F3\u00F3r de deadline en ontvang 20% korting. Geldt op Advanced, Pro en maatwerkprojecten.",
 pr_pop_cta:"Plan je gratis gesprek",
-pr_pop_fine:"Geldt voor alle boekingen die uiterlijk op de einddatum worden vastgelegd, na het gratis kennismakingsgesprek. Niet te combineren met andere acties.",
+pr_pop_fine:"Geldt voor pakketten vanaf 6 uur, bij boekingen die uiterlijk op de einddatum worden vastgelegd, na het gratis kennismakingsgesprek. Niet geldig op Standard (3 uur) en op de maandabonnementen. Niet te combineren met andere acties.",
 pr_pop_skip:"Nee, bedankt",
 pp_sub:"Transparante tarieven, geen verrassingen. Elk traject start met een gratis en vrijblijvend kennismakingsgesprek via videocall. Elke boeking is vanaf minimaal 3 uur; extra tijd bijboeken kan altijd in overleg.",
 sub_eyebrow:"Extra dienst",sub_title:"Maandabonnement",
@@ -1596,12 +1597,12 @@ cta_btn:"Book my free call",
 svp_title:"My services",
 svp_sub:"From a single closet to a complete home: I sort, categorize and create a system that fits your life. Storage materials are discussed with you in advance.",
 pp_eyebrow:"Pricing",pp_title:"Offers",
-bf_a:"Black Friday",bf_b:"20% off all services",bf_c:"until 7 December",bf_d:"Book your free intro call",
-pr_tag:"Offer",pr_strip:"20% off all services \u2014 from",
-pr_pop_eyebrow:"Limited offer",pr_pop_h:"20% off all services",
-pr_pop_sub:"Book your session before the deadline and get 20% off every package and every monthly subscription.",
+bf_a:"Black Friday",bf_b:"20% off from 6 hours",bf_c:"until 7 December",bf_d:"Book your free intro call",
+pr_tag:"Offer",pr_strip:"20% off every package from 6 hours, from",
+pr_pop_eyebrow:"Limited offer",pr_pop_h:"20% off from 6 hours",
+pr_pop_sub:"Book a session of 6 hours or more before the deadline and get 20% off. Applies to Advanced, Pro and custom projects.",
 pr_pop_cta:"Book your free intro call",
-pr_pop_fine:"Applies to all bookings confirmed on or before the end date, after the free intro video call. Cannot be combined with other offers.",
+pr_pop_fine:"Applies to packages of 6 hours and up, for bookings confirmed on or before the end date, after the free intro video call. Not valid on Standard (3 hours) or on the monthly subscriptions. Cannot be combined with other offers.",
 pr_pop_skip:"No, thanks",
 pp_sub:"Transparent pricing, no surprises. Every project starts with a free, no-obligation intro video call. Every booking starts from a minimum of 3 hours; extra time can always be added in consultation.",
 sub_eyebrow:"Extra service",sub_title:"Monthly subscription",
@@ -1741,15 +1742,15 @@ var TESTIMONIALS = [
   en:"Super happy with the work of Shaytye!! I'm a regular client and wouldn't want it any other way!! She creates a calm, pleasant sense of overview. Whether it's sorting clothes or smartly arranging spaces like my kitchen, I'm super happy!!"}
 ];
 var PRICES = [
- {feat:false, nl:{t:"Standard",v:"\u20AC 135",n:"3 uur",f:["Basis opruiming en gedetailleerde ordening","Persoonlijke aanpak","Praktische tips om het opgeruimd te houden","Perfect voor een kamer, kast of rommelhoekje"]}, en:{t:"Standard",v:"\u20AC 135",n:"3 hours",f:["Basic decluttering and detailed ordering","Personal approach","Practical tips to keep it organized","Perfect for one room, closet or clutter corner"]}},
- {feat:true, nl:{t:"Advanced",v:"\u20AC 270",n:"6 uur",f:["Uitgebreide opruim- en organiseersessie","Samen herindelen voor meer overzicht","Kleine stylingtips en hulp bij spullen wegdoen","Ideaal voor een grotere ruimte of meerdere kleinere ruimtes"]}, en:{t:"Advanced",v:"\u20AC 270",n:"6 hours",f:["Extensive declutter and organizing session","Rearranging together for more overview","Small styling tips and help letting go of items","Ideal for a larger space or several smaller spaces"]}},
- {feat:false, nl:{t:"Pro",v:"\u20AC 405",n:"9 uur (volledige dag)",f:["Diepgaande organisatie van meerdere zones","Aanpak op maat (bijv. kledingkast + slaapkamer + administratie)","In overleg: hulp bij spullen wegdoen of herinrichten","Complete make-over van een ruimte of groot project"]}, en:{t:"Pro",v:"\u20AC 405",n:"9 hours (full day)",f:["In-depth organization of multiple zones","Tailored approach (e.g. wardrobe + bedroom + admin)","On request: help letting go or redesigning","Complete make-over of a space or large project"]}},
- {feat:false, nl:{t:"Custom",v:"Op maat",n:"prijs op aanvraag",f:["Meerdaagse projecten en volledige woningen","Plan volledig afgestemd op jouw situatie","Advies over opbergmaterialen inbegrepen","Persoonlijke offerte na de gratis videocall"]}, en:{t:"Custom",v:"Tailored",n:"price on request",f:["Multi-day projects and full homes","Plan fully adapted to your situation","Storage material advice included","Personal quote after the free video call"]}}
+ {h:3, feat:false, nl:{t:"Standard",v:"\u20AC 135",n:"3 uur",f:["Basis opruiming en gedetailleerde ordening","Persoonlijke aanpak","Praktische tips om het opgeruimd te houden","Perfect voor een kamer, kast of rommelhoekje"]}, en:{t:"Standard",v:"\u20AC 135",n:"3 hours",f:["Basic decluttering and detailed ordering","Personal approach","Practical tips to keep it organized","Perfect for one room, closet or clutter corner"]}},
+ {h:6, feat:true, nl:{t:"Advanced",v:"\u20AC 270",n:"6 uur",f:["Uitgebreide opruim- en organiseersessie","Samen herindelen voor meer overzicht","Kleine stylingtips en hulp bij spullen wegdoen","Ideaal voor een grotere ruimte of meerdere kleinere ruimtes"]}, en:{t:"Advanced",v:"\u20AC 270",n:"6 hours",f:["Extensive declutter and organizing session","Rearranging together for more overview","Small styling tips and help letting go of items","Ideal for a larger space or several smaller spaces"]}},
+ {h:9, feat:false, nl:{t:"Pro",v:"\u20AC 405",n:"9 uur (volledige dag)",f:["Diepgaande organisatie van meerdere zones","Aanpak op maat (bijv. kledingkast + slaapkamer + administratie)","In overleg: hulp bij spullen wegdoen of herinrichten","Complete make-over van een ruimte of groot project"]}, en:{t:"Pro",v:"\u20AC 405",n:"9 hours (full day)",f:["In-depth organization of multiple zones","Tailored approach (e.g. wardrobe + bedroom + admin)","On request: help letting go or redesigning","Complete make-over of a space or large project"]}},
+ {h:9, feat:false, nl:{t:"Custom",v:"Op maat",n:"prijs op aanvraag",f:["Meerdaagse projecten en volledige woningen","Plan volledig afgestemd op jouw situatie","Advies over opbergmaterialen inbegrepen","Persoonlijke offerte na de gratis videocall"]}, en:{t:"Custom",v:"Tailored",n:"price on request",f:["Multi-day projects and full homes","Plan fully adapted to your situation","Storage material advice included","Personal quote after the free video call"]}}
 ];
 var SUBS = [
- {feat:false, nl:{t:"3 maanden",v:"\u20AC 225",n:"per maand \u00B7 5 uur \u00B7 \u20AC 45 per uur",s:"",f:["Elke maand een vaste sessie van 5 uur","Vaste dag in overleg ingepland","Voorrang bij het inplannen","Maandelijks per Tikkie te betalen"]}, en:{t:"3 months",v:"\u20AC 225",n:"per month \u00B7 5 hours \u00B7 \u20AC 45 per hour",s:"",f:["A fixed 5-hour session every month","Fixed day planned in consultation","Priority when scheduling","Paid monthly via Tikkie"]}},
- {feat:true, nl:{t:"6 maanden",v:"\u20AC 215",n:"per maand \u00B7 5 uur \u00B7 \u20AC 43 per uur",s:"Bespaar \u20AC 60",f:["Alles uit het 3-maandenabonnement","Voordeliger uurtarief","Tussentijdse check-in per bericht","Advies over opbergmaterialen inbegrepen"]}, en:{t:"6 months",v:"\u20AC 215",n:"per month \u00B7 5 hours \u00B7 \u20AC 43 per hour",s:"Save \u20AC 60",f:["Everything in the 3-month plan","Lower hourly rate","Check-in by message in between","Storage material advice included"]}},
- {feat:false, nl:{t:"1 jaar",v:"\u20AC 200",n:"per maand \u00B7 5 uur \u00B7 \u20AC 40 per uur",s:"Bespaar \u20AC 300",f:["Alles uit het 6-maandenabonnement","Het voordeligste uurtarief","Seizoenswissel van de kledingkast inbegrepen","\u00C9\u00E9n extra uur cadeau per kwartaal"]}, en:{t:"1 year",v:"\u20AC 200",n:"per month \u00B7 5 hours \u00B7 \u20AC 40 per hour",s:"Save \u20AC 300",f:["Everything in the 6-month plan","The best hourly rate","Seasonal wardrobe switch included","One extra hour free every quarter"]}}
+ {h:5, feat:false, nl:{t:"3 maanden",v:"\u20AC 225",n:"per maand \u00B7 5 uur \u00B7 \u20AC 45 per uur",s:"",f:["Elke maand een vaste sessie van 5 uur","Vaste dag in overleg ingepland","Voorrang bij het inplannen","Maandelijks per Tikkie te betalen"]}, en:{t:"3 months",v:"\u20AC 225",n:"per month \u00B7 5 hours \u00B7 \u20AC 45 per hour",s:"",f:["A fixed 5-hour session every month","Fixed day planned in consultation","Priority when scheduling","Paid monthly via Tikkie"]}},
+ {h:5, feat:true, nl:{t:"6 maanden",v:"\u20AC 215",n:"per maand \u00B7 5 uur \u00B7 \u20AC 43 per uur",s:"Bespaar \u20AC 60",f:["Alles uit het 3-maandenabonnement","Voordeliger uurtarief","Tussentijdse check-in per bericht","Advies over opbergmaterialen inbegrepen"]}, en:{t:"6 months",v:"\u20AC 215",n:"per month \u00B7 5 hours \u00B7 \u20AC 43 per hour",s:"Save \u20AC 60",f:["Everything in the 3-month plan","Lower hourly rate","Check-in by message in between","Storage material advice included"]}},
+ {h:5, feat:false, nl:{t:"1 jaar",v:"\u20AC 200",n:"per maand \u00B7 5 uur \u00B7 \u20AC 40 per uur",s:"Bespaar \u20AC 300",f:["Alles uit het 6-maandenabonnement","Het voordeligste uurtarief","Seizoenswissel van de kledingkast inbegrepen","\u00C9\u00E9n extra uur cadeau per kwartaal"]}, en:{t:"1 year",v:"\u20AC 200",n:"per month \u00B7 5 hours \u00B7 \u20AC 40 per hour",s:"Save \u20AC 300",f:["Everything in the 6-month plan","The best hourly rate","Seasonal wardrobe switch included","One extra hour free every quarter"]}}
 ];
 var FAQS = [
  {nl:{q:"Hoe ziet een opruimsessie eruit?",a:"We starten met een korte rondgang. Daarna halen we alles uit de ruimte, sorteren we per categorie, en plaats ik alles terug volgens een logisch systeem. Jij beslist altijd zelf welke spullen bewaard, weggegeven of weggegooid worden — ik adviseer, maar neem geen eindbeslissingen."}, en:{q:"What does an organizing session look like?",a:"We start with a short walkthrough. Then everything comes out of the space, we sort by category, and I place everything back following a logical system. You always decide which items are kept, donated or discarded — I advise, but never take final decisions."}},
@@ -1764,7 +1765,7 @@ var FAQS = [
 ];
 var POLICY = [
  {todo:false, nl:{t:"Kennismakingsgesprek",b:"Vooraf vindt er altijd een gratis en vrijblijvend kennismakingsgesprek plaats via Zoom of FaceTime. Tijdens dit gesprek bespreken we jouw wensen, doelen en verwachtingen, en krijg ik een goed beeld van de ruimte(s) die georganiseerd moeten worden. Ik vind het belangrijk om te weten met wie ik samenwerk voordat ik in jouw persoonlijke omgeving kom."}, en:{t:"Intro call",b:"Every project starts with a free, no-obligation intro call via Zoom or FaceTime. We discuss your wishes, goals and expectations, and I get a clear picture of the space(s) to be organized. I find it important to know who I am working with before entering your personal environment."}},
- {todo:false, nl:{t:"Tarieven",b:"Standard (3 uur): 135 EUR. Advanced (6 uur): 270 EUR. Pro (9 uur / volledige dag): 405 EUR. Custom: op maat, prijs op aanvraag. Elke boeking is vanaf minimaal 3 uur. Extra tijd die aansluit op een bestaande sessie kan in overleg worden bijgeboekt. Daarnaast is er een maandabonnement als extra dienst, met minimaal 5 uur per maand: 3 maanden 225 EUR per maand (45 EUR per uur), 6 maanden 215 EUR per maand (43 EUR per uur), 1 jaar 200 EUR per maand (40 EUR per uur). ACTIE: van 26 november t/m 7 december 2026 geldt 20% korting op alle diensten, dus Standard 108 EUR, Advanced 216 EUR, Pro 324 EUR, en de abonnementen 180, 172 en 160 EUR per maand."}, en:{t:"Pricing",b:"Standard (3 hours): EUR 135. Advanced (6 hours): EUR 270. Pro (9 hours / full day): EUR 405. Custom: tailored, price on request. Every booking starts from a minimum of 3 hours. Additional time connected to an existing session can be added in consultation. There is also a monthly subscription as an extra service, with a minimum of 5 hours per month: 3 months EUR 225 per month (EUR 45 per hour), 6 months EUR 215 per month (EUR 43 per hour), 1 year EUR 200 per month (EUR 40 per hour). OFFER: from 26 November to 7 December 2026 there is 20% off all services, so Standard EUR 108, Advanced EUR 216, Pro EUR 324, and the subscriptions EUR 180, 172 and 160 per month."}},
+ {todo:false, nl:{t:"Tarieven",b:"Standard (3 uur): 135 EUR. Advanced (6 uur): 270 EUR. Pro (9 uur / volledige dag): 405 EUR. Custom: op maat, prijs op aanvraag. Elke boeking is vanaf minimaal 3 uur. Extra tijd die aansluit op een bestaande sessie kan in overleg worden bijgeboekt. Daarnaast is er een maandabonnement als extra dienst, met minimaal 5 uur per maand: 3 maanden 225 EUR per maand (45 EUR per uur), 6 maanden 215 EUR per maand (43 EUR per uur), 1 jaar 200 EUR per maand (40 EUR per uur). ACTIE: van 25 november t/m 7 december 2026 geldt 20% korting op pakketten vanaf 6 uur: Advanced 216 EUR in plaats van 270 EUR, Pro 324 EUR in plaats van 405 EUR, en Custom-projecten. Standard (3 uur) en de maandabonnementen (5 uur per maand) vallen NIET onder de actie en houden hun normale prijs."}, en:{t:"Pricing",b:"Standard (3 hours): EUR 135. Advanced (6 hours): EUR 270. Pro (9 hours / full day): EUR 405. Custom: tailored, price on request. Every booking starts from a minimum of 3 hours. Additional time connected to an existing session can be added in consultation. There is also a monthly subscription as an extra service, with a minimum of 5 hours per month: 3 months EUR 225 per month (EUR 45 per hour), 6 months EUR 215 per month (EUR 43 per hour), 1 year EUR 200 per month (EUR 40 per hour). OFFER: from 25 November to 7 December 2026 there is 20% off packages of 6 hours and up: Advanced EUR 216 instead of EUR 270, Pro EUR 324 instead of EUR 405, and Custom projects. Standard (3 hours) and the monthly subscriptions (5 hours per month) are NOT part of the offer and keep their normal price."}},
  {todo:false, nl:{t:"Betaling",b:"Het Standard-pakket dient vooraf volledig betaald te worden via Tikkie om de afspraak te bevestigen. Voor het Advanced- en Pro-pakket betaal je een aanbetaling vooraf, en het resterende bedrag na afloop van de sessie (contant). Bijboekingen worden na afloop betaald via Tikkie."}, en:{t:"Payment",b:"The Standard package must be paid in full in advance via Tikkie to confirm the appointment. For the Advanced and Pro packages you pay a deposit upfront, and the remaining amount after the session (cash). Additional bookings are paid afterwards via Tikkie."}},
  {todo:false, nl:{t:"Afspraken en annulering",b:"Bij annulering binnen 24 uur wordt 50% van het bedrag in rekening gebracht. Bij een no-show zonder afmelding wordt het volledige bedrag gerekend. Wijzigingen of annuleringen kunnen eenvoudig via WhatsApp of e-mail worden doorgegeven; Shaytye bevestigt wijzigingen altijd schriftelijk om misverstanden te voorkomen."}, en:{t:"Appointments and cancellation",b:"Cancellations within 24 hours are charged at 50% of the amount. A no-show without notice is charged in full. Changes or cancellations can easily be communicated via WhatsApp or email; Shaytye always confirms changes in writing to avoid misunderstandings."}},
  {todo:false, nl:{t:"Tijdsduur",b:"Tijdens het kennismakingsgesprek wordt aan de hand van foto\u0027s of video\u0027s een voorlopige inschatting gemaakt van de benodigde tijd. In de praktijk kan een opruimsessie langer duren dan verwacht: elke ruimte is anders en ieder project uniek. Indien er extra tijd nodig is, wordt dit altijd in overleg besproken en bijgeboekt."}, en:{t:"Duration",b:"During the intro call a preliminary time estimate is made based on photos or videos. In practice a session can take longer than expected: every space is different and every project unique. If extra time is needed, this is always discussed first and added in consultation."}},
@@ -2072,8 +2073,10 @@ function promoEndText(){ return promoDay(PROMO.end); }
 window.__promo = { on: promoOn, pct: PROMO.pct, range: promoRangeText, txt: function(k){ return t(k); } };
 var MONTHS_NL_SITE = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
 var MONTHS_EN_SITE = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-function priceHtml(v){
-  if (!promoOn()) { return v; }
+var PROMO_MIN_HOURS = 6;
+function promoFits(h){ return promoOn() && (h || 0) >= PROMO_MIN_HOURS; }
+function priceHtml(v, h){
+  if (!promoFits(h)) { return v; }
   var m = String(v).match(/(\d[\d.,]*)/);
   if (!m) { return v; }
   var n = parseFloat(m[1].replace(/\./g, "").replace(",", "."));
@@ -2081,21 +2084,20 @@ function priceHtml(v){
   var nw = Math.round(n * (100 - PROMO.pct) / 100);
   return "<span class='pold'>" + v + "</span><span class='pnew'>\u20AC " + nw + "</span>";
 }
-function dealBadge(v){
-  if (!promoOn()) { return ""; }
-  if (!String(v).match(/\d/)) { return ""; }
+function dealBadge(v, h){
+  if (!promoFits(h)) { return ""; }
   return "<div class='pdeal'>-" + PROMO.pct + "%</div>";
 }
-function dealCls(v){ return (promoOn() && String(v).match(/\d/)) ? " has-deal" : ""; }
+function dealCls(v, h){ return promoFits(h) ? " has-deal" : ""; }
 function buildPrices(){
   var html = "";
   for (var i=0;i<PRICES.length;i++){
     var p = PRICES[i], c = p[LANG];
-    html += "<div class='price" + (p.feat ? " feat":"") + dealCls(c.v) + " rv'>";
+    html += "<div class='price" + (p.feat ? " feat":"") + dealCls(c.v, p.h) + " rv'>";
     if (p.feat){
       html += "<div class='pbadge'><svg viewBox='0 0 24 24'><path d='M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z'/></svg>" + "Top seller" + "</div>";
     }
-    html += dealBadge(c.v) + "<h3>" + c.t + "</h3><div class='pval'>" + priceHtml(c.v) + "</div><div class='pnote'>" + c.n + "</div><ul>";
+    html += dealBadge(c.v, p.h) + "<h3>" + c.t + "</h3><div class='pval'>" + priceHtml(c.v, p.h) + "</div><div class='pnote'>" + c.n + "</div><ul>";
     for (var f=0;f<c.f.length;f++){
       html += "<li><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4'><path d='M20 6L9 17l-5-5'/></svg>" + c.f[f] + "</li>";
     }
@@ -2129,11 +2131,11 @@ function buildSubs(){
   var html = "";
   for (var i=0;i<SUBS.length;i++){
     var p = SUBS[i], c = p[LANG];
-    html += "<div class='price" + (p.feat ? " feat":"") + dealCls(c.v) + " rv'>";
+    html += "<div class='price" + (p.feat ? " feat":"") + dealCls(c.v, p.h) + " rv'>";
     if (p.feat){
       html += "<div class='pbadge'><svg viewBox='0 0 24 24'><path d='M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z'/></svg>" + (LANG === "nl" ? "Meest gekozen" : "Most chosen") + "</div>";
     }
-    html += dealBadge(c.v) + "<h3>" + c.t + "</h3><div class='pval'>" + priceHtml(c.v) + "</div><div class='pnote'>" + c.n + "</div>";
+    html += dealBadge(c.v, p.h) + "<h3>" + c.t + "</h3><div class='pval'>" + priceHtml(c.v, p.h) + "</div><div class='pnote'>" + c.n + "</div>";
     if (c.s){ html += "<div class='psave'>" + c.s + "</div>"; }
     html += "<ul>";
     for (var f=0;f<c.f.length;f++){
